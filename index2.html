@@ -1,0 +1,4791 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>B.almeter VIP | منظومة الريسبشن والمبيعات والإدارة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-main: #060b16;
+        --bg-card: #0f172a;
+        --bg-input: #090e1a;
+        --border: #1e293b;
+        --border-light: #334155;
+        --primary: #06b6d4;
+        --primary-hover: #0891b2;
+        --gold: #f59e0b;
+        --gold-hover: #d97706;
+        --success: #10b981;
+        --danger: #ef4444;
+        --purple: #ec4899;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --radius: 14px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Cairo", sans-serif;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      html,
+      body {
+        background-color: var(--bg-main);
+        color: var(--text-main);
+        min-height: 100vh;
+        width: 100%;
+        overflow-x: hidden;
+        line-height: 1.5;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .app-container {
+        max-width: 1440px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 10px;
+        flex: 1;
+      }
+
+      .mobile-container {
+        max-width: 560px;
+        width: 100%;
+        margin: 0 auto;
+      }
+
+      /* Top Header - 100% Mobile Fit */
+      .top-header {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+      }
+
+      .brand-box {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .brand-title {
+        font-size: 0.98rem;
+        font-weight: 900;
+        color: var(--primary);
+      }
+
+      .sync-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 3px 9px;
+        border-radius: 999px;
+        background: rgba(16, 185, 129, 0.12);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+
+      .sync-badge.offline {
+        background: rgba(245, 158, 11, 0.12);
+        color: #fbbf24;
+        border-color: rgba(245, 158, 11, 0.3);
+      }
+
+      .mode-badge {
+        display: none;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.74rem;
+        font-weight: 800;
+        padding: 3px 9px;
+        border-radius: 8px;
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--gold);
+        border: 1px solid rgba(245, 158, 11, 0.35);
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      /* Buttons - Responsive & Never Overflowing */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 9px 12px;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 800;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        text-decoration: none;
+        text-align: center;
+        line-height: 1.35;
+      }
+
+      .btn:active {
+        transform: scale(0.97);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--primary), #0284c7);
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.25);
+      }
+
+      .btn-gold {
+        background: linear-gradient(135deg, var(--gold), #d97706);
+        color: #000;
+      }
+
+      .btn-success {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+      }
+
+      .btn-danger {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border-color: rgba(239, 68, 68, 0.35);
+      }
+
+      .btn-outline {
+        background: #1e293b;
+        color: var(--text-main);
+        border-color: var(--border-light);
+      }
+
+      .btn-block {
+        width: 100%;
+        padding: 13px 10px;
+        font-size: 0.94rem;
+        white-space: normal;
+      }
+
+      /* Exhibition Bar - Full Width Stacked List */
+      .exhibition-bar {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 10px 12px;
+        margin-bottom: 12px;
+      }
+
+      .exh-bar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        cursor: pointer;
+      }
+
+      .exh-pills-stacked {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        margin-top: 10px;
+        width: 100%;
+      }
+
+      .exh-pill {
+        width: 100%;
+        padding: 11px 14px;
+        border-radius: 10px;
+        font-size: 0.92rem;
+        font-weight: 800;
+        background: var(--bg-input);
+        color: var(--text-muted);
+        border: 1.5px solid var(--border-light);
+        cursor: pointer;
+        transition: 0.18s;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .exh-pill.active {
+        background: rgba(6, 182, 212, 0.18);
+        color: #fff;
+        border-color: var(--primary);
+        box-shadow: 0 0 12px rgba(6, 182, 212, 0.25);
+      }
+
+      /* Landing Screen */
+      .landing-wrapper {
+        max-width: 560px;
+        margin: 10px auto;
+      }
+
+      .landing-title-box {
+        text-align: center;
+        margin-bottom: 14px;
+      }
+
+      .landing-title-box h2 {
+        font-size: 1.15rem;
+        color: var(--text-main);
+        font-weight: 900;
+        margin-bottom: 4px;
+      }
+
+      .landing-title-box p {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+      }
+
+      .mode-cards-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .mode-big-card {
+        background: var(--bg-card);
+        border: 1.5px solid var(--border-light);
+        border-radius: 14px;
+        padding: 15px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+      }
+
+      .mode-big-card.reception-card {
+        border-right: 5px solid var(--primary);
+      }
+
+      .mode-big-card.sales-card {
+        border-right: 5px solid var(--success);
+      }
+
+      .mode-big-card.admin-card {
+        border-right: 5px solid var(--gold);
+      }
+
+      .mode-card-info h3 {
+        font-size: 1.02rem;
+        font-weight: 900;
+        margin-bottom: 3px;
+      }
+
+      .mode-card-info p {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        line-height: 1.4;
+      }
+
+      .mode-card-arrow {
+        font-size: 1.25rem;
+        background: var(--bg-input);
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--border-light);
+        flex-shrink: 0;
+      }
+
+      /* Cards */
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+        margin-bottom: 12px;
+        width: 100%;
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 10px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid var(--border);
+        gap: 8px;
+      }
+
+      .card-title {
+        font-size: 0.95rem;
+        font-weight: 900;
+        color: var(--primary);
+        line-height: 1.4;
+      }
+
+      /* Progressive Step Accordion (Reception Mobile UX) */
+      .step-accordion {
+        background: rgba(9, 14, 26, 0.65);
+        border: 1.5px solid var(--border-light);
+        border-radius: 12px;
+        margin-bottom: 10px;
+        overflow: hidden;
+        transition: all 0.2s ease;
+      }
+
+      .step-accordion.active-step {
+        border-color: var(--primary);
+        background: rgba(15, 23, 42, 0.95);
+        box-shadow: 0 4px 16px rgba(6, 182, 212, 0.12);
+      }
+
+      .step-accordion.done-step {
+        border-color: rgba(16, 185, 129, 0.45);
+      }
+
+      .step-accordion.locked-step {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+
+      .step-header {
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .step-header-title {
+        font-size: 0.9rem;
+        font-weight: 900;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .step-summary-badge {
+        font-size: 0.75rem;
+        font-weight: 800;
+        padding: 3px 8px;
+        border-radius: 6px;
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+        max-width: 175px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .step-body {
+        padding: 0 12px 14px;
+        border-top: 1px solid var(--border);
+        padding-top: 12px;
+        display: none;
+      }
+
+      .step-accordion.active-step .step-body {
+        display: block;
+      }
+
+      /* Form Controls */
+      .form-group {
+        margin-bottom: 12px;
+      }
+
+      .form-label {
+        display: block;
+        font-size: 0.83rem;
+        font-weight: 800;
+        color: #cbd5e1;
+        margin-bottom: 6px;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 11px 12px;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-main);
+        background: var(--bg-input);
+        border: 1.5px solid var(--border-light);
+        border-radius: 10px;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      .form-control:focus {
+        border-color: var(--primary);
+      }
+
+      textarea.form-control {
+        min-height: 80px;
+        resize: vertical;
+      }
+
+      /* Touch Chips for Client Card */
+      .survey-section {
+        background: var(--bg-input);
+        border: 1px solid var(--border-light);
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+
+      .survey-title {
+        font-size: 0.83rem;
+        font-weight: 900;
+        color: var(--primary);
+        margin-bottom: 8px;
+      }
+
+      .chips-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 7px;
+      }
+
+      .touch-chip {
+        padding: 9px 6px;
+        border-radius: 9px;
+        background: var(--bg-card);
+        border: 1.5px solid var(--border-light);
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-align: center;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.15s ease;
+      }
+
+      .touch-chip.selected {
+        background: rgba(6, 182, 212, 0.2);
+        border-color: var(--primary);
+        color: #fff;
+      }
+
+      .other-input-wrap {
+        display: none;
+        margin-top: 8px;
+      }
+
+      /* Options Stack & Grid */
+      .options-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .options-grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+
+      .option-card-btn {
+        background: var(--bg-input);
+        border: 1.5px solid var(--border-light);
+        border-radius: 10px;
+        padding: 11px 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.18s;
+        font-size: 0.84rem;
+        font-weight: 800;
+        color: var(--text-muted);
+        width: 100%;
+      }
+
+      .option-card-btn.active {
+        background: rgba(6, 182, 212, 0.18);
+        border-color: var(--primary);
+        color: #fff;
+      }
+
+      .option-card-btn.active-gold {
+        background: rgba(245, 158, 11, 0.22);
+        border-color: var(--gold);
+        color: #fff;
+      }
+
+      /* Highlight & Warning Boxes */
+      .info-highlight-box {
+        background: rgba(6, 182, 212, 0.1);
+        border: 1.5px solid rgba(6, 182, 212, 0.45);
+        border-radius: 10px;
+        padding: 11px;
+        margin-top: 8px;
+        margin-bottom: 10px;
+        font-size: 0.84rem;
+        display: none;
+      }
+
+      .duplicate-error-box {
+        background: rgba(239, 68, 68, 0.16);
+        border: 2px solid #ef4444;
+        color: #fecaca;
+        border-radius: 10px;
+        padding: 12px;
+        margin-top: 8px;
+        margin-bottom: 10px;
+        font-size: 0.84rem;
+        font-weight: 800;
+        text-align: center;
+        display: none;
+      }
+
+      /* Search Dropdown List */
+      .search-matches-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 8px;
+        max-height: 240px;
+        overflow-y: auto;
+      }
+
+      .search-match-item {
+        background: var(--bg-input);
+        border: 1.5px solid var(--border-light);
+        border-radius: 10px;
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        cursor: pointer;
+      }
+
+      .search-match-item:hover,
+      .search-match-item.selected {
+        border-color: var(--success);
+        background: rgba(16, 185, 129, 0.14);
+      }
+
+      /* Previous Sittings History Box */
+      .history-sittings-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .history-sitting-card {
+        background: rgba(15, 23, 42, 0.9);
+        border-right: 4px solid var(--gold);
+        border-top: 1px solid var(--border-light);
+        border-left: 1px solid var(--border-light);
+        border-bottom: 1px solid var(--border-light);
+        border-radius: 8px;
+        padding: 9px 10px;
+      }
+
+      .history-sitting-card.live-now {
+        border-right-color: var(--success);
+        background: rgba(16, 185, 129, 0.1);
+      }
+
+      /* Commission Detail Box inside Admin Table */
+      .comm-detail-box {
+        background: rgba(9, 14, 26, 0.75);
+        border: 1px solid var(--border-light);
+        border-right: 3px solid var(--primary);
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 0.79rem;
+        line-height: 1.6;
+      }
+
+      /* Badges */
+      .badge-code {
+        background: rgba(6, 182, 212, 0.15);
+        color: var(--primary);
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-weight: 800;
+        font-size: 0.76rem;
+        display: inline-block;
+      }
+
+      .badge-gold {
+        background: rgba(245, 158, 11, 0.16);
+        color: var(--gold);
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-weight: 800;
+        font-size: 0.76rem;
+        display: inline-block;
+      }
+
+      .badge-success {
+        background: rgba(16, 185, 129, 0.18);
+        color: #34d399;
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-weight: 800;
+        font-size: 0.76rem;
+        display: inline-block;
+      }
+
+      .badge-live {
+        background: rgba(16, 185, 129, 0.22);
+        color: #34d399;
+        border: 1px solid #10b981;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-weight: 900;
+        font-size: 0.74rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        animation: pulseGlow 1.6s infinite;
+      }
+
+      @keyframes pulseGlow {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.65;
+        }
+      }
+
+      /* Admin Desktop Layout */
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+
+      .kpi-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px;
+        text-align: center;
+      }
+
+      .kpi-card .label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 700;
+      }
+
+      .kpi-card .val {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: var(--primary);
+        margin-top: 2px;
+      }
+
+      .admin-tabs {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 6px;
+        margin-bottom: 14px;
+      }
+
+      .admin-tab-btn {
+        padding: 10px 14px;
+        border-radius: 10px;
+        background: var(--bg-card);
+        color: var(--text-muted);
+        border: 1px solid var(--border-light);
+        font-weight: 800;
+        font-size: 0.85rem;
+        cursor: pointer;
+        white-space: nowrap;
+        flex: 1;
+        text-align: center;
+      }
+
+      .admin-tab-btn.active {
+        background: var(--gold);
+        color: #000;
+        border-color: var(--gold);
+      }
+
+      .excel-filter-bar {
+        background: linear-gradient(
+          135deg,
+          rgba(6, 182, 212, 0.12),
+          rgba(245, 158, 11, 0.08)
+        );
+        border: 1.5px solid rgba(6, 182, 212, 0.4);
+        border-radius: 14px;
+        padding: 14px;
+        margin-bottom: 14px;
+      }
+
+      .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 920px;
+      }
+
+      th,
+      td {
+        padding: 10px 12px;
+        text-align: right;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.83rem;
+        vertical-align: top;
+      }
+
+      th {
+        background: #131c31;
+        color: var(--primary);
+        font-weight: 800;
+        white-space: nowrap;
+      }
+
+      tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      /* Password Modal */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.82);
+        backdrop-filter: blur(4px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        padding: 14px;
+      }
+
+      .modal-box {
+        background: var(--bg-card);
+        border: 1px solid var(--border-light);
+        border-radius: 16px;
+        padding: 20px;
+        width: 100%;
+        max-width: 370px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.65);
+      }
+
+      /* Footer */
+      .dev-footer {
+        text-align: center;
+        padding: 14px 10px 20px;
+        margin-top: 20px;
+        border-top: 1px solid var(--border);
+        color: var(--text-muted);
+        font-size: 0.82rem;
+        font-weight: 700;
+        direction: ltr;
+      }
+
+      .dev-footer a {
+        color: var(--gold);
+        font-weight: 900;
+        background: rgba(245, 158, 11, 0.12);
+        border: 1px solid rgba(245, 158, 11, 0.35);
+        padding: 3px 11px;
+        border-radius: 999px;
+        margin-left: 5px;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Top Header -->
+      <header class="top-header">
+        <div class="brand-box">
+          <div class="brand-title">B.almeter VIP | منظومة المعارض</div>
+          <div id="syncStatusBadge" class="sync-badge">🟢 متصل لايف</div>
+          <div id="activeModeBadge" class="mode-badge"></div>
+        </div>
+        <div class="header-actions">
+          <button
+            class="btn btn-outline"
+            style="padding: 6px 10px; font-size: 0.78rem"
+            onclick="manualFullSync()"
+          >
+            🔄 تحديث
+          </button>
+          <button
+            id="switchModeBtn"
+            class="btn btn-danger"
+            style="display: none; padding: 6px 10px; font-size: 0.78rem"
+            onclick="logoutAndReturnToLanding()"
+          >
+            🚪 تغيير الوضع
+          </button>
+        </div>
+      </header>
+
+      <!-- Exhibition Selector Bar (Full-Width Stacked List + Collapsible in Modes) -->
+      <section
+        class="exhibition-bar mobile-container"
+        id="exhibitionBarSection"
+      >
+        <div class="exh-bar-header" onclick="toggleExhibitionListDrawer()">
+          <div style="font-size: 0.88rem; font-weight: 900; color: var(--gold)">
+            📍 المعرض الحالي:
+            <span id="currentExhHeaderName" style="color: #fff"></span>
+          </div>
+          <span
+            id="exhDrawerToggleBtn"
+            style="
+              font-size: 0.76rem;
+              font-weight: 800;
+              color: var(--primary);
+              background: rgba(6, 182, 212, 0.12);
+              padding: 3px 9px;
+              border-radius: 6px;
+            "
+          >
+            تغيير المعرض ▾
+          </span>
+        </div>
+        <div id="exhibitionPills" class="exh-pills-stacked"></div>
+      </section>
+
+      <!-- ==================================================== -->
+      <!-- 0. LANDING SCREEN (3 BIG BUTTONS)                    -->
+      <!-- ==================================================== -->
+      <section id="landingScreen" class="landing-wrapper">
+        <div class="landing-title-box">
+          <h2>اختر قسم التشغيل — <span id="landingExhName"></span></h2>
+          <p>واجهة سريعة مخصصة للموبايل للريسبشن والسيلز، وللابتوب للإدارة</p>
+        </div>
+
+        <div class="mode-cards-grid">
+          <div
+            class="mode-big-card reception-card"
+            onclick="openPasswordModal('RECEPTION')"
+          >
+            <div class="mode-card-info">
+              <h3 style="color: var(--primary)">🛎️ 1. دخول الريسبشن</h3>
+              <p>
+                خطوات متسلسلة سريعة، منع تكرار العميل، إصدار كود تلقائي لغير
+                المدعوين، وكارت العميل باللمس.
+              </p>
+            </div>
+            <div class="mode-card-arrow" style="color: var(--primary)">🔒</div>
+          </div>
+
+          <div
+            class="mode-big-card sales-card"
+            onclick="openPasswordModal('SALES')"
+          >
+            <div class="mode-card-info">
+              <h3 style="color: var(--success)">💼 2. دخول سيلز القعدة</h3>
+              <p>
+                حفظ تلقائي للجلسة ضد غلق المتصفح، عرض آراء من سبقك، وتسجيل قرارك
+                ورأيك إجبارياً.
+              </p>
+            </div>
+            <div class="mode-card-arrow" style="color: var(--success)">🔒</div>
+          </div>
+
+          <div
+            class="mode-big-card admin-card"
+            onclick="openPasswordModal('ADMIN')"
+          >
+            <div class="mode-card-info">
+              <h3 style="color: var(--gold)">👑 3. دخول الإدارة الشاملة</h3>
+              <p>
+                رادار حي بتفصيل كامل لتقسيمة الكومشن وأصل كل عميل، وتحميل شيتات
+                الإكسيل باليوم وبالمعرض وبالسيلز.
+              </p>
+            </div>
+            <div class="mode-card-arrow" style="color: var(--gold)">🔑</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================== -->
+      <!-- 1. RECEPTION MODE (STEP-BY-STEP ACCORDION WIZARD)    -->
+      <!-- ==================================================== -->
+      <section
+        id="receptionScreen"
+        class="mobile-container"
+        style="display: none"
+      >
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              🛎️ كارت استقبال عميل —
+              <span class="active-exh-label" style="color: var(--gold)"></span>
+            </div>
+            <button
+              type="button"
+              class="btn btn-outline"
+              style="padding: 5px 10px; font-size: 0.76rem"
+              onclick="resetReceptionForm()"
+            >
+              ✨ عميل جديد
+            </button>
+          </div>
+
+          <!-- Anti-Duplicate Strict Warning -->
+          <div id="recDuplicateErrorBox" class="duplicate-error-box"></div>
+
+          <!-- STEP 1: CLIENT IDENTIFICATION -->
+          <div id="recStep1" class="step-accordion active-step">
+            <div class="step-header" onclick="goToReceptionStep(1)">
+              <div class="step-header-title">
+                <span>1️⃣ بيانات العميل أو الدعوة</span>
+              </div>
+              <span
+                id="recStep1Badge"
+                class="step-summary-badge"
+                style="display: none"
+              ></span>
+            </div>
+            <div class="step-body">
+              <label class="form-label"
+                >ابحث بكود الدعوة أو رقم الموبايل أو الاسم:</label
+              >
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  gap: 8px;
+                  margin-bottom: 6px;
+                "
+              >
+                <input
+                  type="text"
+                  id="recLookupInput"
+                  class="form-control"
+                  placeholder="🔍 اكتب كود الدعوة (مثال: 7004) أو الرقم أو الاسم..."
+                  oninput="handleReceptionLookup()"
+                />
+                <button
+                  type="button"
+                  class="btn btn-outline btn-block"
+                  style="padding: 9px; font-size: 0.82rem"
+                  onclick="enableManualWalkinClient()"
+                >
+                  ➕ عميل جديد ملوش دعوة (إصدار دعوة فورية له)
+                </button>
+              </div>
+
+              <div
+                id="recMatchesDropdown"
+                class="search-matches-list"
+                style="display: none"
+              ></div>
+
+              <!-- Found Invitation Box -->
+              <div id="recFoundTicketBox" class="info-highlight-box"></div>
+
+              <!-- Walk-in Client Inputs (Auto-generates new sequential invitation code!) -->
+              <div
+                id="recManualClientBox"
+                style="
+                  display: none;
+                  background: var(--bg-input);
+                  padding: 12px;
+                  border-radius: 10px;
+                  border: 1.5px solid var(--gold);
+                  margin-top: 8px;
+                "
+              >
+                <div
+                  style="
+                    font-size: 0.83rem;
+                    font-weight: 900;
+                    color: var(--gold);
+                    margin-bottom: 8px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                  "
+                >
+                  <span>🎫 عميل بدون دعوة مسبقة:</span>
+                  <span
+                    id="recWalkinGeneratedCodeBadge"
+                    class="badge-gold"
+                  ></span>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">اسم العميل الثلاثي *:</label>
+                  <input
+                    type="text"
+                    id="recManualName"
+                    class="form-control"
+                    placeholder="اكتب اسم العميل بالكامل..."
+                    oninput="checkReceptionDuplicateWalkin()"
+                  />
+                </div>
+                <div class="form-group" style="margin-bottom: 10px">
+                  <label class="form-label">رقم موبايل العميل *:</label>
+                  <input
+                    type="tel"
+                    id="recManualPhone"
+                    class="form-control"
+                    dir="ltr"
+                    style="text-align: right"
+                    placeholder="01012345678"
+                    oninput="checkReceptionDuplicateWalkin()"
+                  />
+                </div>
+                <button
+                  type="button"
+                  id="recStep1NextBtn"
+                  class="btn btn-primary btn-block"
+                  onclick="confirmReceptionStep1()"
+                >
+                  التالي: تحديد تقسيمة النص الأول ⬅️
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 2: STRICTLY SEPARATED 1ST HALF COMMISSION OPTIONS -->
+          <div id="recStep2" class="step-accordion locked-step">
+            <div class="step-header" onclick="goToReceptionStep(2)">
+              <div class="step-header-title">
+                <span>2️⃣ السيلز المتابع (النص الأول 50%)</span>
+              </div>
+              <span
+                id="recStep2Badge"
+                class="step-summary-badge"
+                style="display: none"
+              ></span>
+            </div>
+            <div class="step-body">
+              <!-- GROUP A: ONLY SHOWN WHEN CLIENT HAS AN INVITATION -->
+              <div id="recInvitedOptionsGroup" style="display: none">
+                <label class="form-label" style="color: var(--primary)"
+                  >🎫 العميل له دعوة مسجلة — اختر مستحق النص الأول (50%):</label
+                >
+                <div class="options-stack">
+                  <div
+                    id="recSplitBtnDefault"
+                    class="option-card-btn active"
+                    onclick="setReceptionFirstSplit('DEFAULT')"
+                  >
+                    🏅 السيلز صاحب الدعوة الأصلي
+                  </div>
+                  <div
+                    id="recSplitBtnCustom"
+                    class="option-card-btn"
+                    onclick="setReceptionFirstSplit('CUSTOM')"
+                  >
+                    🗣️ سيلز آخر (العميل فاكر اسمه)
+                  </div>
+                </div>
+              </div>
+
+              <!-- GROUP B: ONLY SHOWN WHEN CLIENT HAS NO INVITATION (WALK-IN) -->
+              <div id="recWalkinOptionsGroup" style="display: none">
+                <label class="form-label" style="color: var(--gold)"
+                  >🆕 العميل ملوش دعوة سابقة — اختر تبعيته للنص الأول
+                  (50%):</label
+                >
+                <div class="options-stack">
+                  <div
+                    id="recSplitBtnCompany"
+                    class="option-card-btn active"
+                    onclick="setReceptionFirstSplit('COMPANY')"
+                  >
+                    🏢 عميل شركة (مباشر)
+                  </div>
+                  <div
+                    id="recSplitBtnCompanion"
+                    class="option-card-btn"
+                    onclick="setReceptionFirstSplit('COMPANION')"
+                  >
+                    👥 جاي من طرف عميل حاضر بالمعرض (يتبع نفس السيلز)
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sub-Box 1: Custom Sales Rep Search (Only for Invited -> Custom) -->
+              <div
+                id="recCustomSalesBox"
+                style="
+                  display: none;
+                  background: var(--bg-input);
+                  padding: 10px;
+                  border-radius: 10px;
+                  border: 1px solid var(--primary);
+                  margin-top: 10px;
+                "
+              >
+                <label class="form-label"
+                  >ابحث واختر اسم السيلز اللي العميل فاكره:</label
+                >
+                <input
+                  type="text"
+                  id="recSalesSearchInput"
+                  class="form-control"
+                  placeholder="🔍 اكتب اسم السيلز أو الكود..."
+                  oninput="populateReceptionSalesSelect()"
+                  style="margin-bottom: 8px"
+                />
+                <select
+                  id="recCustomSalesSelect"
+                  class="form-control"
+                  onchange="updateStep2SummaryBadge()"
+                ></select>
+              </div>
+
+              <!-- Sub-Box 2: Companion of an Already Checked-in Client (Only for Walk-in -> Companion) -->
+              <div
+                id="recCompanionBox"
+                style="
+                  display: none;
+                  background: var(--bg-input);
+                  padding: 10px;
+                  border-radius: 10px;
+                  border: 1.5px solid var(--gold);
+                  margin-top: 10px;
+                "
+              >
+                <label class="form-label" style="color: var(--gold)"
+                  >🔍 ابحث عن العميل الأصلي (يشترط أن يكون دخل المعرض
+                  فعلياً):</label
+                >
+                <input
+                  type="text"
+                  id="recCompanionSearchInput"
+                  class="form-control"
+                  placeholder="اكتب اسم أو كود أو رقم العميل اللي جاي من طرفه..."
+                  oninput="handleCompanionClientSearch()"
+                />
+                <div
+                  id="recCompanionMatchesList"
+                  class="search-matches-list"
+                  style="display: none"
+                ></div>
+                <div
+                  id="recSelectedCompanionBox"
+                  class="info-highlight-box"
+                  style="margin-top: 8px; margin-bottom: 0"
+                ></div>
+              </div>
+
+              <button
+                type="button"
+                class="btn btn-primary btn-block"
+                style="margin-top: 12px"
+                onclick="confirmReceptionStep2()"
+              >
+                التالي: كارت اهتمامات العميل ⬅️
+              </button>
+            </div>
+          </div>
+
+          <!-- STEP 3: ELECTRONIC CLIENT CARD & SUBMIT -->
+          <div id="recStep3" class="step-accordion locked-step">
+            <div class="step-header" onclick="goToReceptionStep(3)">
+              <div class="step-header-title">
+                <span>3️⃣ كارت العميل والحفظ النهائي</span>
+              </div>
+            </div>
+            <div class="step-body">
+              <div class="survey-section">
+                <div class="survey-title">📍 مهتم بمنطقة (اختر باللمس):</div>
+                <div class="chips-grid">
+                  <div
+                    class="touch-chip"
+                    onclick="toggleSurveyChip(this, 'area', 'العاصمة الإدارية')"
+                  >
+                    العاصمة الإدارية
+                  </div>
+                  <div
+                    class="touch-chip"
+                    onclick="toggleSurveyChip(this, 'area', 'التجمع الخامس')"
+                  >
+                    التجمع الخامس
+                  </div>
+                  <div
+                    class="touch-chip"
+                    onclick="toggleSurveyChip(this, 'area', 'أكتوبر وزايد')"
+                  >
+                    أكتوبر وزايد
+                  </div>
+                  <div
+                    class="touch-chip"
+                    onclick="toggleSurveyChip(this, 'area', 'الساحل الشمالي')"
+                  >
+                    الساحل الشمالي
+                  </div>
+                  <div
+                    class="touch-chip"
+                    onclick="toggleSurveyChip(this, 'area', 'مدينة نصر')"
+                  >
+                    مدينة نصر
+                  </div>
+                  <div
+                    class="touch-chip"
+                    onclick="toggleSurveyChip(this, 'area', 'أخرى')"
+                  >
+                    أخرى
+                  </div>
+                </div>
+                <div id="otherAreaWrap" class="other-input-wrap">
+                  <input
+                    type="text"
+                    id="otherAreaInput"
+                    class="form-control"
+                    placeholder="اكتب المنطقة الأخرى (اختياري)..."
+                  />
+                </div>
+              </div>
+
+              <div class="survey-section">
+                <div class="survey-title">🏢 نوع الاستثمار (اختر باللمس):</div>
+                <div class="chips-grid">
+                  <div
+                    class="touch-chip"
+                    onclick="toggleSurveyChip(this, 'type', 'تجاري')"
+                  >
+                    🛍️ تجاري
+                  </div>
+                  <div
+                    class="touch-chip"
+                    onclick="toggleSurveyChip(this, 'type', 'إداري')"
+                  >
+                    🏢 إداري
+                  </div>
+                  <div
+                    class="touch-chip"
+                    onclick="toggleSurveyChip(this, 'type', 'فندقي')"
+                  >
+                    🏨 فندقي
+                  </div>
+                  <div
+                    class="touch-chip"
+                    onclick="toggleSurveyChip(this, 'type', 'طبي')"
+                  >
+                    ➕ طبي
+                  </div>
+                  <div
+                    class="touch-chip"
+                    style="grid-column: span 2"
+                    onclick="toggleSurveyChip(this, 'type', 'أخرى')"
+                  >
+                    أخرى
+                  </div>
+                </div>
+                <div id="otherTypeWrap" class="other-input-wrap">
+                  <input
+                    type="text"
+                    id="otherTypeInput"
+                    class="form-control"
+                    placeholder="اكتب نوع الاستثمار الآخر (اختياري)..."
+                  />
+                </div>
+              </div>
+
+              <div class="survey-section">
+                <div class="survey-title">⚙️ النظام المفضل (اختر باللمس):</div>
+                <div class="chips-grid">
+                  <div
+                    class="touch-chip"
+                    onclick="toggleSurveyChip(this, 'sys', 'الجمعية العقارية')"
+                  >
+                    👥 الجمعية العقارية
+                  </div>
+                  <div
+                    class="touch-chip"
+                    onclick="toggleSurveyChip(this, 'sys', 'الوديعة العقارية')"
+                  >
+                    🪙 الوديعة العقارية
+                  </div>
+                  <div
+                    class="touch-chip"
+                    onclick="toggleSurveyChip(this, 'sys', 'الاستلام الفوري')"
+                  >
+                    🔑 الاستلام الفوري
+                  </div>
+                  <div
+                    class="touch-chip"
+                    onclick="toggleSurveyChip(this, 'sys', 'أخرى')"
+                  >
+                    أخرى
+                  </div>
+                </div>
+                <div id="otherSysWrap" class="other-input-wrap">
+                  <input
+                    type="text"
+                    id="otherSysInput"
+                    class="form-control"
+                    placeholder="اكتب النظام الآخر (اختياري)..."
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">📝 ملاحظات الريسبشن (اختياري):</label>
+                <input
+                  type="text"
+                  id="recNotesInput"
+                  class="form-control"
+                  placeholder="أي ملاحظة سريعة عن العميل..."
+                />
+              </div>
+
+              <button
+                type="button"
+                id="recSubmitBtn"
+                class="btn btn-success btn-block"
+                onclick="submitReceptionCheckin()"
+              >
+                ✅ تسجيل دخول العميل وحفظ الكارت
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================== -->
+      <!-- 2. SALES CLOSER MODE (PERSISTENT SESSION ON PHONE)   -->
+      <!-- ==================================================== -->
+      <section id="salesScreen" class="mobile-container" style="display: none">
+        <!-- Collapsible Sales Rep Identity Card -->
+        <div
+          class="card"
+          style="
+            padding: 12px 14px;
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.4);
+          "
+        >
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 8px;
+              cursor: pointer;
+            "
+            onclick="toggleCloserIdentityDrawer()"
+          >
+            <div style="font-size: 0.85rem; font-weight: 900; color: #34d399">
+              👤 سيلز القعدة:
+              <span id="closerActiveNameBadge" style="color: #fff"></span>
+            </div>
+            <span
+              style="
+                font-size: 0.74rem;
+                font-weight: 800;
+                color: var(--gold);
+                background: rgba(245, 158, 11, 0.14);
+                padding: 3px 8px;
+                border-radius: 6px;
+              "
+            >
+              تغيير الاسم ▾
+            </span>
+          </div>
+
+          <div
+            id="closerIdentityDrawer"
+            style="display: none; margin-top: 10px"
+          >
+            <input
+              type="text"
+              id="closerSelfSearch"
+              class="form-control"
+              placeholder="🔍 ابحث عن اسمك أو كودك..."
+              oninput="populateCloserSelfSelect()"
+              style="margin-bottom: 8px"
+            />
+            <select
+              id="closerSelfSelect"
+              class="form-control"
+              onchange="onCloserIdentityChange()"
+            ></select>
+          </div>
+        </div>
+
+        <!-- Main Sales Search & Sitting Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title" style="color: var(--success)">
+              🔍 ابحث عن العميل لبدء القعدة
+            </div>
+            <button
+              type="button"
+              class="btn btn-outline"
+              style="padding: 4px 10px; font-size: 0.75rem"
+              onclick="clearActiveSalesSessionAndReset()"
+            >
+              ✨ بحث عن عميل آخر
+            </button>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 6px">
+            <input
+              type="text"
+              id="salesClientSearchInput"
+              class="form-control"
+              placeholder="🔢 اكتب كود العميل (مثال: 7004) أو اسمه أو تليفونه..."
+              oninput="handleSalesSearchInput()"
+            />
+            <div
+              id="salesMatchesList"
+              class="search-matches-list"
+              style="display: none"
+            ></div>
+          </div>
+
+          <!-- Active Client Workspace (Persists across browser restarts!) -->
+          <div
+            id="salesActiveClientWorkspace"
+            style="display: none; margin-top: 12px"
+          >
+            <!-- Auto-Sitting Live Banner -->
+            <div
+              id="salesSittingNowBanner"
+              style="
+                background: rgba(16, 185, 129, 0.16);
+                border: 1.5px solid #10b981;
+                color: #a7f3d0;
+                padding: 10px;
+                border-radius: 10px;
+                margin-bottom: 10px;
+                font-size: 0.82rem;
+                font-weight: 800;
+                text-align: center;
+              "
+            ></div>
+
+            <!-- Client Profile & Reception Card Summary -->
+            <div
+              id="salesClientProfileCard"
+              style="
+                background: var(--bg-input);
+                border: 1px solid var(--border-light);
+                border-radius: 10px;
+                padding: 11px;
+                margin-bottom: 10px;
+              "
+            ></div>
+
+            <!-- Previous Sales Reps Opinions & Notes -->
+            <div
+              style="
+                background: var(--bg-input);
+                border: 1px solid var(--border-light);
+                border-radius: 10px;
+                padding: 11px;
+                margin-bottom: 12px;
+              "
+            >
+              <div
+                style="
+                  font-size: 0.83rem;
+                  font-weight: 900;
+                  color: var(--gold);
+                  margin-bottom: 6px;
+                "
+              >
+                💬 آراء وملاحظات السيلز الذين قعدوا مع العميل قبلك:
+              </div>
+              <div
+                id="salesPreviousOpinionsList"
+                class="history-sittings-list"
+              ></div>
+            </div>
+
+            <!-- Mandatory 6 Outcomes -->
+            <div class="form-group">
+              <label class="form-label" style="color: var(--gold)"
+                >1. القرار النهائي للقعدة * (إجباري تختار واحد):</label
+              >
+              <div class="options-grid-2" id="salesOutcomeGrid">
+                <div
+                  class="option-card-btn"
+                  data-outcome="💰 اشترى (تعاقد)"
+                  onclick="selectSalesOutcome('💰 اشترى (تعاقد)', this)"
+                >
+                  💰 اشترى (تعاقد)
+                </div>
+                <div
+                  class="option-card-btn"
+                  data-outcome="💳 دفع حجز"
+                  onclick="selectSalesOutcome('💳 دفع حجز', this)"
+                >
+                  💳 دفع حجز
+                </div>
+                <div
+                  class="option-card-btn"
+                  data-outcome="🔥 مهتم وعاوز متابعة"
+                  onclick="selectSalesOutcome('🔥 مهتم وعاوز متابعة', this)"
+                >
+                  🔥 مهتم وعاوز متابعة
+                </div>
+                <div
+                  class="option-card-btn"
+                  data-outcome="🏢 مهتم بمشروع آخر"
+                  onclick="selectSalesOutcome('🏢 مهتم بمشروع آخر', this)"
+                >
+                  🏢 مهتم بمشروع آخر
+                </div>
+                <div
+                  class="option-card-btn"
+                  data-outcome="📅 تواصل لاحقاً"
+                  onclick="selectSalesOutcome('📅 تواصل لاحقاً', this)"
+                >
+                  📅 تواصل لاحقاً
+                </div>
+                <div
+                  class="option-card-btn"
+                  data-outcome="❌ لم يتم (استفسار فقط)"
+                  onclick="selectSalesOutcome('❌ لم يتم (استفسار فقط)', this)"
+                >
+                  ❌ لم يتم (استفسار فقط)
+                </div>
+              </div>
+            </div>
+
+            <!-- Mandatory Opinion / Reason -->
+            <div class="form-group">
+              <label class="form-label" style="color: #f87171"
+                >2. اكتب رأيك / السبب / تفاصيل القعدة * (إجباري):</label
+              >
+              <textarea
+                id="salesSittingNotes"
+                class="form-control"
+                placeholder="اكتب رأيك بالتفصيل: العميل مهتم بإيه، الميزانية، سبب القرار..."
+                oninput="saveActiveSalesDraftToLocal()"
+              ></textarea>
+            </div>
+
+            <button
+              type="button"
+              id="salesSaveFinalBtn"
+              class="btn btn-success btn-block"
+              onclick="submitSalesFinalOutcome()"
+            >
+              ✅ إنهاء القعدة وحفظ قراري ورأيي
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================== -->
+      <!-- 3. MASTER ADMIN MODE (LAPTOP RADAR & EXCEL CENTER)   -->
+      <!-- ==================================================== -->
+      <section id="adminScreen" style="display: none">
+        <!-- Live Radar KPIs -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="label">إجمالي دعوات المعرض</div>
+            <div class="val" id="admKpiInvitations">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="label">حضروا بالريسبشن</div>
+            <div class="val" id="admKpiAttended" style="color: var(--primary)">
+              0
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="label">🟢 قاعدين مع السيلز الآن</div>
+            <div class="val" id="admKpiSittingNow" style="color: #34d399">
+              0
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="label">إجمالي القعدات المكتملة</div>
+            <div
+              class="val"
+              id="admKpiTotalSittings"
+              style="color: var(--gold)"
+            >
+              0
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="label">💰 اشترى / دفع حجز</div>
+            <div class="val" id="admKpiDeals" style="color: var(--success)">
+              0
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="label">🔥 مهتم / مشروع آخر</div>
+            <div class="val" id="admKpiFollowups" style="color: var(--purple)">
+              0
+            </div>
+          </div>
+        </div>
+
+        <!-- Admin Tabs -->
+        <div class="admin-tabs">
+          <button
+            class="admin-tab-btn active"
+            onclick="switchAdminTab('admTabRadar', this)"
+          >
+            📡 رادار المعرض الحي ومركز شيتات الإكسيل
+          </button>
+          <button
+            class="admin-tab-btn"
+            onclick="switchAdminTab('admTabSalesStats', this)"
+          >
+            📊 إحصائيات السيلز المفصلة
+          </button>
+          <button
+            class="admin-tab-btn"
+            onclick="switchAdminTab('admTabSettings', this)"
+          >
+            🔑 باسوردات المعارض وإعدادات الداتا
+          </button>
+        </div>
+
+        <!-- Admin Tab 1: Excel Export Center + Live Radar Table -->
+        <div id="admTabRadar" class="adm-subtab">
+          <div class="excel-filter-bar">
+            <div
+              style="
+                font-size: 0.96rem;
+                font-weight: 900;
+                color: var(--gold);
+                margin-bottom: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 8px;
+              "
+            >
+              <span>📥 مركز تحميل شيتات الإكسيل المخصصة (CSV)</span>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap">
+                <button
+                  class="btn btn-gold"
+                  style="padding: 7px 12px; font-size: 0.8rem"
+                  onclick="exportSalesTeamSummaryExcel()"
+                >
+                  📈 شيت ملخص أرقام كل السيلز
+                </button>
+                <button
+                  class="btn btn-success"
+                  style="padding: 7px 12px; font-size: 0.8rem"
+                  onclick="copyAdminWhatsAppReport()"
+                >
+                  🟢 نسخ تقرير واتساب حسب الفلتر
+                </button>
+              </div>
+            </div>
+
+            <div
+              style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 10px;
+                align-items: end;
+              "
+            >
+              <div>
+                <label class="form-label" style="font-size: 0.78rem"
+                  >1. اختر المعرض للشيت:</label
+                >
+                <select
+                  id="excelExhFilter"
+                  class="form-control"
+                  style="padding: 9px 12px; font-size: 0.85rem"
+                  onchange="onAdminFilterChange()"
+                ></select>
+              </div>
+              <div>
+                <label class="form-label" style="font-size: 0.78rem"
+                  >2. اختر اليوم / التاريخ:</label
+                >
+                <select
+                  id="excelDateFilter"
+                  class="form-control"
+                  style="padding: 9px 12px; font-size: 0.85rem"
+                  onchange="renderAdminDashboard()"
+                ></select>
+              </div>
+              <div>
+                <label class="form-label" style="font-size: 0.78rem"
+                  >3. اختر السيلز (أو المجمع للكل):</label
+                >
+                <select
+                  id="excelSalesFilter"
+                  class="form-control"
+                  style="padding: 9px 12px; font-size: 0.85rem"
+                  onchange="renderAdminRadarTable()"
+                ></select>
+              </div>
+              <div>
+                <button
+                  class="btn btn-primary btn-block"
+                  style="padding: 10px 12px"
+                  onclick="exportFilteredMasterExcel()"
+                >
+                  📊 تحميل شيت الإكسيل المفصل
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- LIVE RADAR TABLE -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                📡 رادار العملاء وتفصيل الكومشن والآراء لحظة بلحظة (<span
+                  id="admRadarCount"
+                  >0</span
+                >
+                عميل)
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap">
+                <input
+                  type="text"
+                  id="admRadarSearch"
+                  class="form-control"
+                  placeholder="🔍 بحث بالعميل، الكود، الرقم، السيلز، أو الرأي..."
+                  style="width: 260px; padding: 7px 12px; font-size: 0.83rem"
+                  oninput="renderAdminRadarTable()"
+                />
+                <select
+                  id="admStatusFilter"
+                  class="form-control"
+                  style="width: 185px; padding: 7px 10px; font-size: 0.83rem"
+                  onchange="renderAdminRadarTable()"
+                >
+                  <option value="ALL">كل الحالات</option>
+                  <option value="LIVE_NOW">🟢 قاعد مع السيلز الآن</option>
+                  <option value="NO_SITTING">⏳ لم يقعد معه سيلز بعد</option>
+                  <option value="💰 اشترى (تعاقد)">💰 اشترى (تعاقد)</option>
+                  <option value="💳 دفع حجز">💳 دفع حجز</option>
+                  <option value="🔥 مهتم وعاوز متابعة">
+                    🔥 مهتم وعاوز متابعة
+                  </option>
+                  <option value="🏢 مهتم بمشروع آخر">🏢 مهتم بمشروع آخر</option>
+                  <option value="📅 تواصل لاحقاً">📅 تواصل لاحقاً</option>
+                  <option value="❌ لم يتم (استفسار فقط)">
+                    ❌ لم يتم (استفسار فقط)
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>كود العميل والوقت</th>
+                    <th>بيانات العميل</th>
+                    <th>تفصيل أصل العميل والنص الأول (50% المتابعة)</th>
+                    <th>كارت العميل (الاهتمامات)</th>
+                    <th>النص الثاني (50% القعدة والبيع) + الرأي الكامل</th>
+                    <th>إجراء</th>
+                  </tr>
+                </thead>
+                <tbody id="admRadarTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Admin Tab 2: Sales Team Detailed Matrix -->
+        <div id="admTabSalesStats" class="adm-subtab" style="display: none">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                📊 جدول إنجاز السيلز الشامل (حسب المعرض واليوم المحددين)
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>الكود</th>
+                    <th>اسم السيلز</th>
+                    <th>الدعوات المصدرة</th>
+                    <th>حضر له (نص أول 50%)</th>
+                    <th>قعد معهم (نص ثاني 50%)</th>
+                    <th>🟢 قاعد حالياً</th>
+                    <th>💰 اشترى / حجز</th>
+                    <th>🔥 مهتم / مشروع آخر</th>
+                    <th>شيت السيلز الفردي</th>
+                  </tr>
+                </thead>
+                <tbody id="admSalesStatsTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Admin Tab 3: Passwords & Cloud Settings -->
+        <div id="admTabSettings" class="adm-subtab" style="display: none">
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+              gap: 14px;
+            "
+          >
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  🔑 باسوردات المعارض (ريسبشن & سيلز)
+                </div>
+              </div>
+              <div id="admPasswordsList"></div>
+              <button
+                class="btn btn-gold btn-block"
+                onclick="saveAdminPasswords()"
+              >
+                💾 حفظ جميع الباسوردات في السحابة
+              </button>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">⚙️ إعدادات المعارض والربط السحابي</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">إضافة معرض جديد:</label>
+                <div style="display: flex; gap: 8px">
+                  <input
+                    type="text"
+                    id="admNewExhName"
+                    class="form-control"
+                    placeholder="اسم المعرض الجديد..."
+                  />
+                  <button
+                    class="btn btn-primary"
+                    onclick="adminAddExhibition()"
+                  >
+                    + إضافة
+                  </button>
+                </div>
+              </div>
+              <hr
+                style="
+                  border: 0;
+                  border-top: 1px solid var(--border);
+                  margin: 14px 0;
+                "
+              />
+              <div class="form-group">
+                <label class="form-label">رابط قاعدة بيانات Firebase:</label>
+                <input
+                  type="text"
+                  id="admFirebaseUrlInput"
+                  class="form-control"
+                  dir="ltr"
+                />
+              </div>
+              <button
+                class="btn btn-outline btn-block"
+                onclick="saveFirebaseUrlSetting()"
+              >
+                💾 تحديث رابط قاعدة البيانات
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Developer Signature Footer -->
+      <footer class="dev-footer">
+        ⚡ Developed by
+        <a
+          href="https://mohhamedallam12345-ops.github.io/Ny-profile/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          ENG/ M.Allam ↗
+        </a>
+      </footer>
+    </div>
+
+    <!-- Password Modal -->
+    <div id="passwordModal" class="modal-overlay">
+      <div class="modal-box">
+        <h3 id="modalTitle" style="color: var(--gold); margin-bottom: 6px">
+          🔒 إدخال كلمة المرور
+        </h3>
+        <p
+          id="modalSubtitle"
+          style="
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+          "
+        ></p>
+        <input
+          type="password"
+          id="modalPasswordInput"
+          class="form-control"
+          placeholder="اكتب الباسورد هنا..."
+          dir="ltr"
+          style="margin-bottom: 14px; text-align: center; font-size: 18px"
+          onkeydown="if (event.key === 'Enter') verifyModePassword();"
+        />
+        <div style="display: flex; gap: 8px">
+          <button
+            class="btn btn-gold"
+            style="flex: 1"
+            onclick="verifyModePassword()"
+          >
+            دخول ✅
+          </button>
+          <button
+            class="btn btn-outline"
+            style="flex: 1"
+            onclick="closePasswordModal()"
+          >
+            إلغاء
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const DEFAULT_FIREBASE_URL =
+        "https://balmetr-vip-default-rtdb.firebaseio.com";
+      const MASTER_PASS_1 = "2242006,mo";
+      const MASTER_PASS_2 = "mo,2242006";
+      const LOCAL_STORAGE_KEY = "BALMETR_VIP_PRO_V7_FINAL";
+      const ACTIVE_MODE_SESSION_KEY = "BALMETR_ACTIVE_MODE_SESSION";
+      const ACTIVE_SALES_DRAFT_KEY = "BALMETR_ACTIVE_SALES_DRAFT";
+
+      let appState = {
+        firebaseUrl: DEFAULT_FIREBASE_URL,
+        activeExhibitionId: "exh_sohag",
+        exhibitionsMeta: {
+          exh_sohag: { id: "exh_sohag", name: "معرض سوهاج" },
+        },
+        exhibitionPasswords: {
+          exh_sohag: { receptionPass: "1010", salesPass: "2020" },
+        },
+        salesTeam: [
+          { code: "S11", name: "محمد" },
+          { code: "S12", name: "أحمد" },
+          { code: "S13", name: "محمود" },
+          { code: "S14", name: "مصطفى" },
+          { code: "S15", name: "سارة" },
+          { code: "S16", name: "نور" },
+          { code: "S17", name: "هدى" },
+          { code: "S18", name: "كريم" },
+          { code: "S19", name: "ياسمين" },
+          { code: "S20", name: "عمر" },
+        ],
+        invitations: [],
+        checkinsMap: {},
+        lastReceptionCloudTs: 0,
+        lastInvitationsCloudTs: 0,
+      };
+
+      let currentMode = "LANDING"; // LANDING | RECEPTION | SALES | ADMIN
+      let pendingTargetMode = null;
+      let isSyncing = false;
+      let isExhDrawerOpen = true;
+
+      // Reception Wizard State
+      let recCurrentStep = 1;
+      let recStep1Completed = false;
+      let recStep2Completed = false;
+      let recSelectedInv = null;
+      let recIsWalkin = false;
+      let recAssignedWalkinSeq = null;
+      let recFirstSplitMode = "DEFAULT"; // DEFAULT | CUSTOM | COMPANY | COMPANION
+      let recCompanionHostCheckin = null;
+      let recSurvey = {
+        area: [],
+        type: [],
+        sys: [],
+      };
+
+      // Sales Closer State
+      let salesActiveCheckinId = null;
+      let salesChosenOutcome = "";
+
+      window.addEventListener("DOMContentLoaded", async () => {
+        loadLocalState();
+        restoreSavedModeAndSession();
+        renderAllUI();
+        await initialSmartSync();
+        restoreSalesSittingAfterSync();
+
+        // 13-byte lightweight heartbeat every 14 seconds
+        setInterval(() => {
+          if (!isSyncing && !document.hidden) {
+            checkHeartbeatAndSync();
+          }
+        }, 14000);
+      });
+
+      /* ==================================================== */
+      /* HELPERS & NORMALIZATION                              */
+      /* ==================================================== */
+      function toEnglishDigits(str) {
+        if (!str) return "";
+        return String(str)
+          .replace(/[٠-٩]/g, (d) => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
+          .replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
+      }
+
+      function formatSalesCode(code) {
+        if (!code) return "S11";
+        const clean = toEnglishDigits(String(code)).trim().toUpperCase();
+        if (!clean) return "S11";
+        if (clean === "COMPANY" || clean === "شركة") return "COMPANY";
+        return clean.startsWith("S") ? clean : "S" + clean;
+      }
+
+      function normalizePhone(raw) {
+        let v = toEnglishDigits(raw || "").trim();
+        const digits = v.replace(/\D/g, "");
+        if (/^200?1[0125]\d{8}$/.test(digits)) {
+          return "0" + digits.replace(/^200?/, "");
+        }
+        if (/^00200?1[0125]\d{8}$/.test(digits)) {
+          return "0" + digits.replace(/^00200?/, "");
+        }
+        if (/^1[0125]\d{8}$/.test(digits)) {
+          return "0" + digits;
+        }
+        return digits || v;
+      }
+
+      function getTodayIsoDate() {
+        const d = new Date();
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const dd = String(d.getDate()).padStart(2, "0");
+        return `${yyyy}-${mm}-${dd}`;
+      }
+
+      function extractIsoDateFromCheckin(c) {
+        if (c.dateIso) return c.dateIso;
+        if (c.createdAtMs) {
+          const d = new Date(c.createdAtMs);
+          return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        }
+        return getTodayIsoDate();
+      }
+
+      function getCheckinsArray() {
+        return Object.values(appState.checkinsMap || {}).filter(Boolean);
+      }
+
+      function getSittingsArray(checkinObj) {
+        if (!checkinObj || !checkinObj.sittings) return [];
+        const raw = Array.isArray(checkinObj.sittings)
+          ? checkinObj.sittings.filter(Boolean)
+          : Object.values(checkinObj.sittings).filter(Boolean);
+        return raw.sort((a, b) => (a.startedAtMs || 0) - (b.startedAtMs || 0));
+      }
+
+      function sortSalesTeam(arr) {
+        return [...arr].sort((a, b) => {
+          const nA = parseInt(String(a.code).replace(/\D/g, ""), 10) || 0;
+          const nB = parseInt(String(b.code).replace(/\D/g, ""), 10) || 0;
+          return nA - nB;
+        });
+      }
+
+      function getActiveExhibition() {
+        if (!appState.exhibitionsMeta[appState.activeExhibitionId]) {
+          const firstKey = Object.keys(appState.exhibitionsMeta)[0];
+          if (firstKey) appState.activeExhibitionId = firstKey;
+        }
+        return (
+          appState.exhibitionsMeta[appState.activeExhibitionId] || {
+            id: "exh_sohag",
+            name: "معرض سوهاج",
+          }
+        );
+      }
+
+      function ensureExhibitionPasswords() {
+        if (!appState.exhibitionPasswords) appState.exhibitionPasswords = {};
+        Object.keys(appState.exhibitionsMeta).forEach((id) => {
+          if (!appState.exhibitionPasswords[id]) {
+            appState.exhibitionPasswords[id] = {
+              receptionPass: "1010",
+              salesPass: "2020",
+            };
+          }
+        });
+      }
+
+      // Calculate Next Sequential Invitation Number for Walk-in Clients (Never uses "#مباشر"!)
+      function getNextWalkinInvitationSeq(exhId) {
+        const exh = appState.exhibitionsMeta[exhId] || getActiveExhibition();
+        let maxSeq = 130;
+
+        appState.invitations.forEach((inv) => {
+          if (
+            inv &&
+            (inv.exhibitionId === exhId || inv.exhibitionName === exh.name)
+          ) {
+            const num = parseInt(toEnglishDigits(String(inv.seqNumber)), 10);
+            if (!isNaN(num) && num > maxSeq) maxSeq = num;
+          }
+        });
+
+        getCheckinsArray().forEach((chk) => {
+          if (
+            chk &&
+            (chk.exhibitionId === exhId || chk.exhibitionName === exh.name)
+          ) {
+            const num = parseInt(toEnglishDigits(String(chk.seqNumber)), 10);
+            if (!isNaN(num) && num > maxSeq) maxSeq = num;
+          }
+        });
+
+        return maxSeq + 1;
+      }
+
+      // Build Crystal-Clear Commission & Origin Explanations for Admin Table & Excel
+      function buildClearCommissionBreakdown(c) {
+        const isWalkin =
+          c.isWalkinGenerated ||
+          !c.originalSalesCode ||
+          c.originalSalesCode === "-" ||
+          String(c.seqNumber) === "مباشر";
+
+        let originText = "";
+        if (!isWalkin) {
+          originText = `عميل بدعوة مسبقة رقم (#${c.seqNumber}) — أصدر الدعوة: ${c.originalSalesName || "-"} (${c.originalSalesCode || "-"})`;
+        } else {
+          originText = `عميل بدون دعوة مسبقة (أُصدر له كود دعوة جديد #${c.seqNumber} بالريسبشن)`;
+        }
+
+        let firstHalfHolder = "";
+        let firstHalfReason = "";
+
+        if (c.firstSplitCode === "COMPANY") {
+          firstHalfHolder = "🏢 عميل شركة مباشر (بدون سيلز متابعة)";
+          firstHalfReason =
+            "العميل حضر للمعرض بدون دعوة مسبقة وليس من طرف عميل آخر";
+        } else if (
+          c.companionOfName ||
+          (c.firstSplitType && c.firstSplitType.includes("جاي"))
+        ) {
+          const hostClientLabel =
+            c.companionOfName ||
+            c.firstSplitType.replace("جاي مع العميل الحاضر:", "").trim();
+          firstHalfHolder = `${c.firstSplitName} (${c.firstSplitCode})`;
+          firstHalfReason = `لأن العميل (${c.clientName}) جاي مرافق من طرف العميل الحاضر (${hostClientLabel}) المتابع مع السيلز (${c.firstSplitName} - ${c.firstSplitCode})`;
+        } else if (c.firstSplitType === "صاحب الدعوة") {
+          firstHalfHolder = `${c.firstSplitName} (${c.firstSplitCode})`;
+          firstHalfReason = `هو السيلز صاحب الدعوة الأصلية رقم (#${c.seqNumber})`;
+        } else {
+          firstHalfHolder = `${c.firstSplitName} (${c.firstSplitCode})`;
+          firstHalfReason = `العميل ذكر بالريسبشن أنه متابع مع (${c.firstSplitName} - ${c.firstSplitCode}) (صاحب الدعوة الأصلية: ${c.originalSalesName || "-"} ${c.originalSalesCode || "-"})`;
+        }
+
+        return {
+          originText,
+          firstHalfHolder,
+          firstHalfReason,
+        };
+      }
+
+      /* ==================================================== */
+      /* SESSION PERSISTENCE (SURVIVES BROWSER CLOSE/RELOAD)  */
+      /* ==================================================== */
+      function saveActiveModeToLocal() {
+        try {
+          localStorage.setItem(
+            ACTIVE_MODE_SESSION_KEY,
+            JSON.stringify({
+              mode: currentMode,
+              exhibitionId: appState.activeExhibitionId,
+            }),
+          );
+        } catch (e) {}
+      }
+
+      function saveActiveSalesDraftToLocal() {
+        try {
+          if (!salesActiveCheckinId) {
+            localStorage.removeItem(ACTIVE_SALES_DRAFT_KEY);
+            return;
+          }
+          const notes =
+            document.getElementById("salesSittingNotes")?.value || "";
+          const closer = getCurrentCloserObj();
+          localStorage.setItem(
+            ACTIVE_SALES_DRAFT_KEY,
+            JSON.stringify({
+              checkinId: salesActiveCheckinId,
+              exhibitionId: appState.activeExhibitionId,
+              closerCode: closer.code,
+              outcome: salesChosenOutcome,
+              notes: notes,
+            }),
+          );
+        } catch (e) {}
+      }
+
+      function restoreSavedModeAndSession() {
+        try {
+          const savedModeRaw = localStorage.getItem(ACTIVE_MODE_SESSION_KEY);
+          if (savedModeRaw) {
+            const parsed = JSON.parse(savedModeRaw);
+            if (
+              parsed.exhibitionId &&
+              appState.exhibitionsMeta[parsed.exhibitionId]
+            ) {
+              appState.activeExhibitionId = parsed.exhibitionId;
+            }
+            if (
+              parsed.mode === "RECEPTION" ||
+              parsed.mode === "SALES" ||
+              parsed.mode === "ADMIN"
+            ) {
+              activateMode(parsed.mode, false);
+            }
+          }
+        } catch (e) {}
+      }
+
+      function restoreSalesSittingAfterSync() {
+        if (currentMode !== "SALES") return;
+        const closer = getCurrentCloserObj();
+        const exh = getActiveExhibition();
+
+        try {
+          // 1. Check saved local draft first
+          const draftRaw = localStorage.getItem(ACTIVE_SALES_DRAFT_KEY);
+          if (draftRaw) {
+            const draft = JSON.parse(draftRaw);
+            if (
+              draft.checkinId &&
+              appState.checkinsMap[draft.checkinId] &&
+              draft.exhibitionId === exh.id
+            ) {
+              salesActiveCheckinId = draft.checkinId;
+              salesChosenOutcome = draft.outcome || "";
+              const chk = appState.checkinsMap[salesActiveCheckinId];
+              document.getElementById("salesClientSearchInput").value =
+                `${chk.clientName} (#${chk.seqNumber})`;
+              document.getElementById("salesSittingNotes").value =
+                draft.notes || "";
+              highlightSelectedOutcomeButton(salesChosenOutcome);
+              renderSalesActiveClientView();
+              return;
+            }
+          }
+
+          // 2. Fallback: Check cloud checkinsMap if this sales rep has an active "🟢 قاعد مع العميل حالياً" session!
+          if (closer && closer.code) {
+            const activeCloudClient = getCheckinsArray().find((c) => {
+              if (c.exhibitionId !== exh.id && c.exhibitionName !== exh.name)
+                return false;
+              return getSittingsArray(c).some(
+                (s) =>
+                  formatSalesCode(s.salesCode) === closer.code &&
+                  s.status === "🟢 قاعد مع العميل حالياً",
+              );
+            });
+
+            if (activeCloudClient) {
+              salesActiveCheckinId = activeCloudClient.id;
+              const mySit = getSittingsArray(activeCloudClient).find(
+                (s) => formatSalesCode(s.salesCode) === closer.code,
+              );
+              document.getElementById("salesClientSearchInput").value =
+                `${activeCloudClient.clientName} (#${activeCloudClient.seqNumber})`;
+              document.getElementById("salesSittingNotes").value =
+                mySit?.notes || "";
+              saveActiveSalesDraftToLocal();
+              renderSalesActiveClientView();
+            }
+          }
+        } catch (e) {
+          console.warn("Restore session warning:", e);
+        }
+      }
+
+      function highlightSelectedOutcomeButton(outcomeStr) {
+        document
+          .querySelectorAll("#salesOutcomeGrid .option-card-btn")
+          .forEach((btn) => {
+            if (outcomeStr && btn.getAttribute("data-outcome") === outcomeStr) {
+              btn.classList.add("active-gold");
+            } else {
+              btn.classList.remove("active-gold");
+            }
+          });
+      }
+
+      /* ==================================================== */
+      /* LOCAL STORAGE & LOW-BANDWIDTH FIREBASE SYNC          */
+      /* ==================================================== */
+      function loadLocalState() {
+        try {
+          localStorage.removeItem("BALMETR_VIP_PRO_V4");
+          const raw =
+            localStorage.getItem(LOCAL_STORAGE_KEY) ||
+            localStorage.getItem("BALMETR_VIP_PRO_V6_FIT") ||
+            localStorage.getItem("BALMETR_VIP_PRO_V5_CLEAN");
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed.firebaseUrl) appState.firebaseUrl = parsed.firebaseUrl;
+            if (parsed.activeExhibitionId)
+              appState.activeExhibitionId = parsed.activeExhibitionId;
+            if (
+              parsed.exhibitionsMeta &&
+              Object.keys(parsed.exhibitionsMeta).length > 0
+            )
+              appState.exhibitionsMeta = parsed.exhibitionsMeta;
+            if (parsed.exhibitionPasswords)
+              appState.exhibitionPasswords = parsed.exhibitionPasswords;
+            if (parsed.salesTeam) appState.salesTeam = parsed.salesTeam;
+            if (parsed.invitations) appState.invitations = parsed.invitations;
+            if (parsed.checkinsMap) appState.checkinsMap = parsed.checkinsMap;
+          }
+        } catch (e) {
+          console.warn("Local load warning:", e);
+        }
+        ensureExhibitionPasswords();
+      }
+
+      function saveLocalState() {
+        try {
+          localStorage.setItem(
+            LOCAL_STORAGE_KEY,
+            JSON.stringify({
+              firebaseUrl: appState.firebaseUrl,
+              activeExhibitionId: appState.activeExhibitionId,
+              exhibitionsMeta: appState.exhibitionsMeta,
+              exhibitionPasswords: appState.exhibitionPasswords,
+              salesTeam: appState.salesTeam,
+              invitations: appState.invitations,
+              checkinsMap: appState.checkinsMap,
+            }),
+          );
+        } catch (e) {
+          console.warn("Local save warning:", e);
+        }
+      }
+
+      function cleanBaseUrl() {
+        return (appState.firebaseUrl || DEFAULT_FIREBASE_URL)
+          .trim()
+          .replace(/\/+$/, "");
+      }
+
+      function setSyncBadge(online, text) {
+        const el = document.getElementById("syncStatusBadge");
+        if (!el) return;
+        el.className = online ? "sync-badge" : "sync-badge offline";
+        el.textContent = text;
+      }
+
+      async function syncExactExhibitionsWithoutImages(
+        cachedMetaFromRecDb = {},
+      ) {
+        const base = cleanBaseUrl();
+        try {
+          const shallowRes = await fetch(
+            `${base}/balmeter_vip_system/exhibitions.json?shallow=true`,
+          );
+          if (!shallowRes.ok) return;
+          const shallowKeysObj = await shallowRes.json();
+          if (!shallowKeysObj || typeof shallowKeysObj !== "object") return;
+
+          const realExhIds = Object.keys(shallowKeysObj);
+          if (realExhIds.length === 0) return;
+
+          const cleanMeta = {};
+          await Promise.all(
+            realExhIds.map(async (exhId) => {
+              const knownName =
+                appState.exhibitionsMeta[exhId]?.name ||
+                cachedMetaFromRecDb[exhId]?.name;
+              if (knownName) {
+                cleanMeta[exhId] = { id: exhId, name: knownName };
+              } else {
+                const nameRes = await fetch(
+                  `${base}/balmeter_vip_system/exhibitions/${exhId}/name.json`,
+                );
+                const fetchedName = nameRes.ok ? await nameRes.json() : null;
+                cleanMeta[exhId] = {
+                  id: exhId,
+                  name: fetchedName || exhId,
+                };
+              }
+            }),
+          );
+
+          const nameToRealId = {};
+          Object.values(cleanMeta).forEach((ex) => {
+            nameToRealId[ex.name.trim()] = ex.id;
+          });
+
+          let migratedAnyCheckin = false;
+          Object.values(appState.checkinsMap).forEach((chk) => {
+            if (chk && !cleanMeta[chk.exhibitionId]) {
+              const targetRealId =
+                nameToRealId[(chk.exhibitionName || "").trim()];
+              if (targetRealId) {
+                chk.exhibitionId = targetRealId;
+                chk.exhibitionName = cleanMeta[targetRealId].name;
+                migratedAnyCheckin = true;
+              }
+            }
+          });
+
+          appState.exhibitionsMeta = cleanMeta;
+          if (!appState.exhibitionsMeta[appState.activeExhibitionId]) {
+            appState.activeExhibitionId = Object.keys(cleanMeta)[0];
+          }
+
+          const prevMetaKeys = Object.keys(cachedMetaFromRecDb || {});
+          const needsCloudMetaCleanup =
+            prevMetaKeys.length !== realExhIds.length ||
+            prevMetaKeys.some((k) => !cleanMeta[k]);
+
+          if (needsCloudMetaCleanup) {
+            await fetch(
+              `${base}/balmeter_vip_reception_db/exhibitionsMeta.json`,
+              {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(cleanMeta),
+              },
+            );
+          }
+
+          if (migratedAnyCheckin) {
+            await fetch(`${base}/balmeter_vip_reception_db/checkins.json`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(appState.checkinsMap),
+            });
+          }
+        } catch (e) {
+          console.warn("Exact exhibition sync warning:", e);
+        }
+      }
+
+      async function initialSmartSync(showAlert = false) {
+        const base = cleanBaseUrl();
+        isSyncing = true;
+        try {
+          const [salesRes, invRes, sysTsRes, recDbRes] = await Promise.all([
+            fetch(`${base}/balmeter_vip_system/salesTeam.json`),
+            fetch(`${base}/balmeter_vip_system/invitations.json`),
+            fetch(`${base}/balmeter_vip_system/lastUpdated.json`),
+            fetch(`${base}/balmeter_vip_reception_db.json`),
+          ]);
+
+          const salesData = salesRes.ok ? await salesRes.json() : null;
+          const invData = invRes.ok ? await invRes.json() : null;
+          const sysTs = sysTsRes.ok ? Number(await sysTsRes.json()) || 0 : 0;
+          const recDb = recDbRes.ok ? await recDbRes.json() : null;
+
+          appState.lastInvitationsCloudTs = sysTs;
+
+          if (Array.isArray(salesData) && salesData.length > 0) {
+            appState.salesTeam = salesData.map((s) => ({
+              code: formatSalesCode(s.code),
+              name: s.name,
+            }));
+          }
+
+          if (invData) {
+            const invArr = Array.isArray(invData)
+              ? invData.filter(Boolean)
+              : Object.values(invData).filter(Boolean);
+            appState.invitations = invArr.map((i) => ({
+              ...i,
+              salesCode: formatSalesCode(i.salesCode),
+            }));
+          }
+
+          if (recDb) {
+            if (recDb.exhibitionPasswords) {
+              appState.exhibitionPasswords = {
+                ...appState.exhibitionPasswords,
+                ...recDb.exhibitionPasswords,
+              };
+            }
+            if (recDb.checkins) {
+              const map = {};
+              if (Array.isArray(recDb.checkins)) {
+                recDb.checkins.filter(Boolean).forEach((c) => (map[c.id] = c));
+              } else {
+                Object.values(recDb.checkins)
+                  .filter(Boolean)
+                  .forEach((c) => (map[c.id] = c));
+              }
+              appState.checkinsMap = map;
+            }
+            if (recDb.lastUpdated) {
+              appState.lastReceptionCloudTs = Number(recDb.lastUpdated) || 0;
+            }
+          }
+
+          await syncExactExhibitionsWithoutImages(recDb?.exhibitionsMeta || {});
+
+          ensureExhibitionPasswords();
+          saveLocalState();
+          renderAllUI();
+          setSyncBadge(true, "🟢 متصل لايف");
+          if (showAlert) alert("تم تحديث البيانات ومزامنة المعارض بنجاح ✅");
+        } catch (e) {
+          console.warn("Initial sync warning:", e);
+          setSyncBadge(false, "🟠 وضع محلي");
+        } finally {
+          isSyncing = false;
+        }
+      }
+
+      async function checkHeartbeatAndSync() {
+        const base = cleanBaseUrl();
+        try {
+          const [recTsRes, sysTsRes] = await Promise.all([
+            fetch(`${base}/balmeter_vip_reception_db/lastUpdated.json`),
+            fetch(`${base}/balmeter_vip_system/lastUpdated.json`),
+          ]);
+
+          const recCloudTs = recTsRes.ok
+            ? Number(await recTsRes.json()) || 0
+            : 0;
+          const sysCloudTs = sysTsRes.ok
+            ? Number(await sysTsRes.json()) || 0
+            : 0;
+
+          let changed = false;
+
+          if (recCloudTs > appState.lastReceptionCloudTs) {
+            const chkRes = await fetch(
+              `${base}/balmeter_vip_reception_db/checkins.json`,
+            );
+            if (chkRes.ok) {
+              const chkData = await chkRes.json();
+              const map = {};
+              if (chkData) {
+                Object.values(chkData)
+                  .filter(Boolean)
+                  .forEach((c) => (map[c.id] = c));
+              }
+              appState.checkinsMap = map;
+              appState.lastReceptionCloudTs = recCloudTs;
+              changed = true;
+            }
+          }
+
+          if (sysCloudTs > appState.lastInvitationsCloudTs) {
+            const [invRes, salesRes] = await Promise.all([
+              fetch(`${base}/balmeter_vip_system/invitations.json`),
+              fetch(`${base}/balmeter_vip_system/salesTeam.json`),
+            ]);
+            if (invRes.ok) {
+              const invData = await invRes.json();
+              if (invData) {
+                appState.invitations = (
+                  Array.isArray(invData) ? invData : Object.values(invData)
+                )
+                  .filter(Boolean)
+                  .map((i) => ({
+                    ...i,
+                    salesCode: formatSalesCode(i.salesCode),
+                  }));
+              }
+            }
+            if (salesRes.ok) {
+              const salesData = await salesRes.json();
+              if (Array.isArray(salesData) && salesData.length > 0) {
+                appState.salesTeam = salesData.map((s) => ({
+                  code: formatSalesCode(s.code),
+                  name: s.name,
+                }));
+              }
+            }
+            await syncExactExhibitionsWithoutImages(appState.exhibitionsMeta);
+            appState.lastInvitationsCloudTs = sysCloudTs;
+            changed = true;
+          }
+
+          if (changed) {
+            saveLocalState();
+            renderAllUI();
+          }
+          setSyncBadge(true, "🟢 متصل لايف");
+        } catch (e) {
+          setSyncBadge(false, "🟠 وضع محلي");
+        }
+      }
+
+      async function manualFullSync() {
+        await initialSmartSync(true);
+      }
+
+      async function pushSingleCheckinToCloud(
+        checkinObj,
+        updateNextSeq = null,
+      ) {
+        const base = cleanBaseUrl();
+        const now = Date.now();
+        appState.checkinsMap[checkinObj.id] = checkinObj;
+        appState.lastReceptionCloudTs = now;
+        saveLocalState();
+
+        try {
+          const promises = [
+            fetch(
+              `${base}/balmeter_vip_reception_db/checkins/${checkinObj.id}.json`,
+              {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(checkinObj),
+              },
+            ),
+            fetch(`${base}/balmeter_vip_reception_db/lastUpdated.json`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(now),
+            }),
+          ];
+
+          // If a new invitation code was generated for a walk-in client, advance nextSeq in main system (10 bytes!)
+          if (updateNextSeq && checkinObj.exhibitionId) {
+            promises.push(
+              fetch(
+                `${base}/balmeter_vip_system/exhibitions/${checkinObj.exhibitionId}/nextSeq.json`,
+                {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(updateNextSeq),
+                },
+              ),
+            );
+          }
+
+          await Promise.all(promises);
+          setSyncBadge(true, "🟢 متصل لايف");
+        } catch (e) {
+          console.error("Granular checkin push error:", e);
+          setSyncBadge(false, "🟠 محفوظ محلياً");
+        }
+      }
+
+      async function pushSingleSittingToCloud(checkinId, sittingObj) {
+        const base = cleanBaseUrl();
+        const now = Date.now();
+        const sCode = formatSalesCode(sittingObj.salesCode);
+
+        const chk = appState.checkinsMap[checkinId];
+        if (chk) {
+          if (!chk.sittings || Array.isArray(chk.sittings)) {
+            const objMap = {};
+            getSittingsArray(chk).forEach(
+              (s) => (objMap[formatSalesCode(s.salesCode)] = s),
+            );
+            chk.sittings = objMap;
+          }
+          chk.sittings[sCode] = sittingObj;
+        }
+        appState.lastReceptionCloudTs = now;
+        saveLocalState();
+
+        try {
+          await Promise.all([
+            fetch(
+              `${base}/balmeter_vip_reception_db/checkins/${checkinId}/sittings/${sCode}.json`,
+              {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(sittingObj),
+              },
+            ),
+            fetch(`${base}/balmeter_vip_reception_db/lastUpdated.json`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(now),
+            }),
+          ]);
+          setSyncBadge(true, "🟢 متصل لايف");
+        } catch (e) {
+          console.error("Granular sitting push error:", e);
+          setSyncBadge(false, "🟠 محفوظ محلياً");
+        }
+      }
+
+      /* ==================================================== */
+      /* EXHIBITION DRAWER & MODE NAVIGATION                  */
+      /* ==================================================== */
+      function toggleExhibitionListDrawer(forceState) {
+        if (typeof forceState === "boolean") {
+          isExhDrawerOpen = forceState;
+        } else {
+          isExhDrawerOpen = !isExhDrawerOpen;
+        }
+        const pills = document.getElementById("exhibitionPills");
+        const btn = document.getElementById("exhDrawerToggleBtn");
+        if (pills) {
+          pills.style.display = isExhDrawerOpen ? "flex" : "none";
+        }
+        if (btn) {
+          btn.textContent = isExhDrawerOpen
+            ? "إخفاء المعارض ▴"
+            : "تغيير المعرض ▾";
+        }
+      }
+
+      function openPasswordModal(targetMode) {
+        pendingTargetMode = targetMode;
+        const exh = getActiveExhibition();
+        const modal = document.getElementById("passwordModal");
+        const title = document.getElementById("modalTitle");
+        const sub = document.getElementById("modalSubtitle");
+        const input = document.getElementById("modalPasswordInput");
+
+        input.value = "";
+        if (targetMode === "RECEPTION") {
+          title.textContent = `🛎️ دخول ريسبشن — ${exh.name}`;
+          sub.textContent = "أدخل باسورد الريسبشن الخاص بهذا المعرض:";
+        } else if (targetMode === "SALES") {
+          title.textContent = `💼 دخول سيلز القعدة — ${exh.name}`;
+          sub.textContent = "أدخل باسورد سيلز المبيعات الخاص بهذا المعرض:";
+        } else if (targetMode === "ADMIN") {
+          title.textContent = "👑 دخول الإدارة الشاملة (اللابتوب)";
+          sub.textContent = "أدخل باسورد المدير العام:";
+        }
+
+        modal.style.display = "flex";
+        setTimeout(() => input.focus(), 80);
+      }
+
+      function closePasswordModal() {
+        document.getElementById("passwordModal").style.display = "none";
+        pendingTargetMode = null;
+      }
+
+      function verifyModePassword() {
+        const entered = (
+          document.getElementById("modalPasswordInput").value || ""
+        ).trim();
+        const exh = getActiveExhibition();
+        ensureExhibitionPasswords();
+        const passObj = appState.exhibitionPasswords[exh.id] || {
+          receptionPass: "1010",
+          salesPass: "2020",
+        };
+        const isMaster = entered === MASTER_PASS_1 || entered === MASTER_PASS_2;
+
+        if (pendingTargetMode === "RECEPTION") {
+          if (entered === passObj.receptionPass || isMaster) {
+            activateMode("RECEPTION", true);
+            closePasswordModal();
+          } else {
+            alert("❌ باسورد الريسبشن لهذا المعرض غير صحيح!");
+          }
+        } else if (pendingTargetMode === "SALES") {
+          if (entered === passObj.salesPass || isMaster) {
+            activateMode("SALES", true);
+            closePasswordModal();
+            restoreSalesSittingAfterSync();
+          } else {
+            alert("❌ باسورد سيلز المعرض غير صحيح!");
+          }
+        } else if (pendingTargetMode === "ADMIN") {
+          if (isMaster) {
+            activateMode("ADMIN", true);
+            closePasswordModal();
+          } else {
+            alert("❌ باسورد الإدارة الشاملة غير صحيح!");
+          }
+        }
+      }
+
+      function activateMode(mode, saveSession = true) {
+        currentMode = mode;
+        if (saveSession) saveActiveModeToLocal();
+
+        document.getElementById("landingScreen").style.display =
+          mode === "LANDING" ? "block" : "none";
+        document.getElementById("receptionScreen").style.display =
+          mode === "RECEPTION" ? "block" : "none";
+        document.getElementById("salesScreen").style.display =
+          mode === "SALES" ? "block" : "none";
+        document.getElementById("adminScreen").style.display =
+          mode === "ADMIN" ? "block" : "none";
+
+        const switchBtn = document.getElementById("switchModeBtn");
+        const modeBadge = document.getElementById("activeModeBadge");
+        const exhSection = document.getElementById("exhibitionBarSection");
+
+        if (mode === "LANDING") {
+          switchBtn.style.display = "none";
+          modeBadge.style.display = "none";
+          exhSection.className = "exhibition-bar mobile-container";
+          toggleExhibitionListDrawer(true);
+        } else {
+          switchBtn.style.display = "inline-flex";
+          modeBadge.style.display = "inline-flex";
+          if (mode === "RECEPTION") {
+            modeBadge.textContent = "🛎️ الريسبشن";
+            exhSection.className = "exhibition-bar mobile-container";
+            toggleExhibitionListDrawer(false);
+          }
+          if (mode === "SALES") {
+            modeBadge.textContent = "💼 سيلز القعدة";
+            exhSection.className = "exhibition-bar mobile-container";
+            toggleExhibitionListDrawer(false);
+          }
+          if (mode === "ADMIN") {
+            modeBadge.textContent = "👑 الإدارة الشاملة";
+            exhSection.className = "exhibition-bar";
+            toggleExhibitionListDrawer(false);
+            populateAdminFilterDropdowns();
+            const exFilter = document.getElementById("excelExhFilter");
+            if (exFilter) exFilter.value = appState.activeExhibitionId;
+          }
+        }
+
+        renderAllUI();
+      }
+
+      function logoutAndReturnToLanding() {
+        localStorage.removeItem(ACTIVE_MODE_SESSION_KEY);
+        activateMode("LANDING", false);
+      }
+
+      function renderAllUI() {
+        const exh = getActiveExhibition();
+        if (!exh) return;
+
+        document.getElementById("currentExhHeaderName").textContent = exh.name;
+        document.getElementById("landingExhName").textContent = exh.name;
+        document
+          .querySelectorAll(".active-exh-label")
+          .forEach((el) => (el.textContent = exh.name));
+
+        // Render Full-Width Stacked Exhibition Pills
+        const pillsWrap = document.getElementById("exhibitionPills");
+        pillsWrap.innerHTML = "";
+        Object.values(appState.exhibitionsMeta).forEach((ex) => {
+          const btn = document.createElement("button");
+          btn.className = "exh-pill" + (ex.id === exh.id ? " active" : "");
+          btn.innerHTML = `<span>📍 ${ex.name}</span> ${ex.id === exh.id ? "<span>✅</span>" : ""}`;
+          btn.onclick = () => {
+            if (currentMode === "RECEPTION" || currentMode === "SALES") {
+              if (
+                !confirm(
+                  `الانتقال إلى (${ex.name}) يتطلب إدخال باسورد المعرض الجديد. متابعة؟`,
+                )
+              )
+                return;
+              appState.activeExhibitionId = ex.id;
+              saveLocalState();
+              logoutAndReturnToLanding();
+              return;
+            }
+            appState.activeExhibitionId = ex.id;
+            saveLocalState();
+            saveActiveModeToLocal();
+            if (currentMode === "ADMIN") {
+              const exFilter = document.getElementById("excelExhFilter");
+              if (exFilter) exFilter.value = ex.id;
+              toggleExhibitionListDrawer(false);
+            }
+            renderAllUI();
+          };
+          pillsWrap.appendChild(btn);
+        });
+
+        populateReceptionSalesSelect();
+        populateCloserSelfSelect();
+
+        if (currentMode === "SALES" && salesActiveCheckinId) {
+          renderSalesActiveClientView();
+        }
+        if (currentMode === "ADMIN") {
+          renderAdminDashboard();
+        }
+      }
+
+      /* ==================================================== */
+      /* 1. RECEPTION WIZARD (STRICT SEPARATION + AUTO CODE)  */
+      /* ==================================================== */
+      function goToReceptionStep(stepNum) {
+        if (stepNum === 2 && !recStep1Completed) {
+          alert("⚠️ أكمل الخطوة 1 (اختيار أو كتابة بيانات العميل) أولاً!");
+          return;
+        }
+        if (stepNum === 3 && (!recStep1Completed || !recStep2Completed)) {
+          alert("⚠️ أكمل الخطوة 2 (تحديد السيلز المتابع) أولاً!");
+          return;
+        }
+        recCurrentStep = stepNum;
+        updateReceptionAccordionUI();
+      }
+
+      function updateReceptionAccordionUI() {
+        const s1 = document.getElementById("recStep1");
+        const s2 = document.getElementById("recStep2");
+        const s3 = document.getElementById("recStep3");
+
+        s1.className =
+          "step-accordion " +
+          (recCurrentStep === 1
+            ? "active-step"
+            : recStep1Completed
+              ? "done-step"
+              : "");
+
+        s2.className =
+          "step-accordion " +
+          (!recStep1Completed
+            ? "locked-step"
+            : recCurrentStep === 2
+              ? "active-step"
+              : recStep2Completed
+                ? "done-step"
+                : "");
+
+        s3.className =
+          "step-accordion " +
+          (!recStep1Completed || !recStep2Completed
+            ? "locked-step"
+            : recCurrentStep === 3
+              ? "active-step"
+              : "");
+      }
+
+      // Configure Step 2 options strictly based on whether client HAS an invitation or NOT
+      function configureStep2OptionsForClientType() {
+        const invitedGroup = document.getElementById("recInvitedOptionsGroup");
+        const walkinGroup = document.getElementById("recWalkinOptionsGroup");
+
+        if (recSelectedInv) {
+          // Client HAS an invitation -> ONLY show Original Owner OR Custom Sales Rep!
+          invitedGroup.style.display = "block";
+          walkinGroup.style.display = "none";
+          setReceptionFirstSplit("DEFAULT");
+        } else {
+          // Client has NO invitation -> ONLY show Company Client OR Companion of Attended Client!
+          invitedGroup.style.display = "none";
+          walkinGroup.style.display = "block";
+          setReceptionFirstSplit("COMPANY");
+        }
+      }
+
+      function populateReceptionSalesSelect() {
+        const select = document.getElementById("recCustomSalesSelect");
+        if (!select) return;
+        const search = (
+          document.getElementById("recSalesSearchInput")?.value || ""
+        )
+          .trim()
+          .toLowerCase();
+        const prev = select.value;
+
+        const sorted = sortSalesTeam(appState.salesTeam).filter(
+          (s) =>
+            s.name.toLowerCase().includes(search) ||
+            s.code.toLowerCase().includes(search),
+        );
+
+        select.innerHTML = "";
+        sorted.forEach((s) => {
+          const opt = document.createElement("option");
+          opt.value = s.code;
+          opt.textContent = `${s.name} (كود: ${s.code})`;
+          select.appendChild(opt);
+        });
+        if (prev && sorted.some((s) => s.code === prev)) select.value = prev;
+      }
+
+      function findExistingReceptionDuplicate(exhId, seqNumber, rawPhone) {
+        const normPhone = normalizePhone(rawPhone);
+        const exh = appState.exhibitionsMeta[exhId] || getActiveExhibition();
+        const allCheckins = getCheckinsArray().filter(
+          (c) =>
+            c.exhibitionId === exhId ||
+            (c.exhibitionName && c.exhibitionName.trim() === exh.name.trim()),
+        );
+
+        return (
+          allCheckins.find((c) => {
+            const sameCode =
+              seqNumber &&
+              seqNumber !== "مباشر" &&
+              String(c.seqNumber) === String(seqNumber);
+            const samePhone =
+              normPhone &&
+              normPhone.length >= 10 &&
+              normalizePhone(c.clientPhone) === normPhone;
+            return sameCode || samePhone;
+          }) || null
+        );
+      }
+
+      function showReceptionDuplicateLock(dupCheckin) {
+        const errBox = document.getElementById("recDuplicateErrorBox");
+        const submitBtn = document.getElementById("recSubmitBtn");
+        const step1NextBtn = document.getElementById("recStep1NextBtn");
+
+        if (dupCheckin) {
+          errBox.style.display = "block";
+          errBox.innerHTML = `
+            ⛔ مرفوض: هذا العميل مسجل دخوله بالفعل في المعرض!<br>
+            👤 <strong>${dupCheckin.clientName}</strong> (كود: #${dupCheckin.seqNumber}) — 📱 <span dir="ltr">${dupCheckin.clientPhone}</span><br>
+            🔹 المتابع: <strong>${dupCheckin.firstSplitName}</strong><br>
+            <span style="font-size:0.76rem; color:#fca5a5;">لا يسمح النظام بإدخال نفس العميل أو الكود أو الرقم مرتين.</span>
+          `;
+          submitBtn.disabled = true;
+          submitBtn.style.opacity = "0.4";
+          if (step1NextBtn) step1NextBtn.disabled = true;
+          return true;
+        } else {
+          errBox.style.display = "none";
+          submitBtn.disabled = false;
+          submitBtn.style.opacity = "1";
+          if (step1NextBtn) step1NextBtn.disabled = false;
+          return false;
+        }
+      }
+
+      function handleReceptionLookup() {
+        const raw = toEnglishDigits(
+          document.getElementById("recLookupInput").value || "",
+        )
+          .replace(/^#/, "")
+          .trim();
+        const matchesEl = document.getElementById("recMatchesDropdown");
+        const foundBox = document.getElementById("recFoundTicketBox");
+        const manualBox = document.getElementById("recManualClientBox");
+
+        if (!raw) {
+          matchesEl.style.display = "none";
+          foundBox.style.display = "none";
+          manualBox.style.display = "none";
+          recSelectedInv = null;
+          recIsWalkin = false;
+          recStep1Completed = false;
+          document.getElementById("recStep1Badge").style.display = "none";
+          showReceptionDuplicateLock(null);
+          updateReceptionAccordionUI();
+          return;
+        }
+
+        const exh = getActiveExhibition();
+        const normPhone = normalizePhone(raw);
+        const rawLower = raw.toLowerCase();
+
+        // Check duplicate immediately
+        const exactDup = findExistingReceptionDuplicate(exh.id, raw, raw);
+        showReceptionDuplicateLock(exactDup);
+
+        // Search in invitations
+        const matches = appState.invitations.filter(
+          (i) =>
+            i &&
+            (i.exhibitionId === exh.id || i.exhibitionName === exh.name) &&
+            (String(i.seqNumber).toLowerCase().includes(rawLower) ||
+              (normPhone.length >= 3 &&
+                normalizePhone(i.clientPhone).includes(normPhone)) ||
+              (i.clientName || "").toLowerCase().includes(rawLower) ||
+              (i.salesName || "").toLowerCase().includes(rawLower)),
+        );
+
+        const exactInv = matches.find((i) => String(i.seqNumber) === raw);
+        if (exactInv) {
+          selectReceptionInvitation(exactInv, false);
+          matchesEl.style.display = "none";
+          return;
+        }
+
+        if (matches.length > 0) {
+          matchesEl.style.display = "flex";
+          matchesEl.innerHTML = "";
+          matches.slice(0, 7).forEach((inv) => {
+            const item = document.createElement("div");
+            item.className = "search-match-item";
+            item.innerHTML = `
+              <div>
+                <strong style="color:var(--gold);">#${inv.seqNumber}</strong>
+                <strong style="margin-right:5px;">${inv.clientName}</strong>
+                <div dir="ltr" style="font-size:0.75rem; color:var(--primary); text-align:right;">${inv.clientPhone}</div>
+              </div>
+              <span class="badge-code">${inv.salesName} (${inv.salesCode})</span>
+            `;
+            item.onclick = () => {
+              selectReceptionInvitation(inv, true);
+              matchesEl.style.display = "none";
+            };
+            matchesEl.appendChild(item);
+          });
+        } else {
+          // Client has NO invitation -> Open Walk-in Generator Box
+          matchesEl.style.display = "none";
+          openWalkinGeneratorBox(raw);
+        }
+      }
+
+      function openWalkinGeneratorBox(prefillRaw = "") {
+        const exh = getActiveExhibition();
+        recSelectedInv = null;
+        recIsWalkin = true;
+        recAssignedWalkinSeq = getNextWalkinInvitationSeq(exh.id);
+
+        document.getElementById("recFoundTicketBox").style.display = "none";
+        document.getElementById("recMatchesDropdown").style.display = "none";
+        document.getElementById("recManualClientBox").style.display = "block";
+        document.getElementById("recWalkinGeneratedCodeBadge").textContent =
+          `سيُصدر له كود دعوة جديد: #${recAssignedWalkinSeq}`;
+
+        if (prefillRaw) {
+          if (/^\d+$/.test(prefillRaw) && prefillRaw.length >= 10) {
+            document.getElementById("recManualPhone").value = prefillRaw;
+          } else if (!/^\d+$/.test(prefillRaw)) {
+            document.getElementById("recManualName").value = prefillRaw;
+          }
+        }
+        configureStep2OptionsForClientType();
+        checkReceptionDuplicateWalkin();
+      }
+
+      function selectReceptionInvitation(inv, autoAdvanceStep = true) {
+        recSelectedInv = inv;
+        recIsWalkin = false;
+        recAssignedWalkinSeq = null;
+        document.getElementById("recManualClientBox").style.display = "none";
+
+        const exh = getActiveExhibition();
+        const dup = findExistingReceptionDuplicate(
+          exh.id,
+          inv.seqNumber,
+          inv.clientPhone,
+        );
+        const isLocked = showReceptionDuplicateLock(dup);
+
+        const foundBox = document.getElementById("recFoundTicketBox");
+        foundBox.style.display = "block";
+        foundBox.innerHTML = `
+          <div style="font-weight:900; color:var(--primary); margin-bottom:4px;">
+            🎫 دعوة رقم: <span style="color:var(--gold);">#${inv.seqNumber}</span> — <strong style="color:#fff;">${inv.clientName}</strong>
+          </div>
+          <div style="margin-bottom:8px;">
+            📱 <strong dir="ltr" style="color:var(--primary);">${inv.clientPhone}</strong> | 🏅 صاحب الدعوة: <span class="badge-code">${inv.salesName} (${inv.salesCode})</span>
+          </div>
+          ${
+            !isLocked
+              ? `<button type="button" class="btn btn-primary btn-block" style="padding:9px;" onclick="confirmReceptionStep1()">التالي: تحديد السيلز المتابع ⬅️</button>`
+              : ""
+          }
+        `;
+
+        document.getElementById("recSplitBtnDefault").textContent =
+          `🏅 السيلز صاحب الدعوة الأصلي: ${inv.salesName} (${inv.salesCode})`;
+        configureStep2OptionsForClientType();
+
+        if (!isLocked && autoAdvanceStep) {
+          confirmReceptionStep1();
+        }
+      }
+
+      function checkReceptionDuplicateWalkin() {
+        const exh = getActiveExhibition();
+        const phone = document.getElementById("recManualPhone").value || "";
+        const dup = findExistingReceptionDuplicate(exh.id, null, phone);
+        showReceptionDuplicateLock(dup);
+      }
+
+      function enableManualWalkinClient() {
+        openWalkinGeneratorBox("");
+        document.getElementById("recManualName").focus();
+      }
+
+      function confirmReceptionStep1() {
+        const exh = getActiveExhibition();
+        if (recSelectedInv) {
+          const dup = findExistingReceptionDuplicate(
+            exh.id,
+            recSelectedInv.seqNumber,
+            recSelectedInv.clientPhone,
+          );
+          if (showReceptionDuplicateLock(dup)) return;
+
+          recStep1Completed = true;
+          const b1 = document.getElementById("recStep1Badge");
+          b1.style.display = "inline-block";
+          b1.textContent = `#${recSelectedInv.seqNumber} ${recSelectedInv.clientName}`;
+        } else {
+          const name = (
+            document.getElementById("recManualName").value || ""
+          ).trim();
+          const phone = normalizePhone(
+            document.getElementById("recManualPhone").value || "",
+          );
+          if (!name) {
+            alert("⚠️ اكتب اسم العميل الثلاثي أولاً!");
+            document.getElementById("recManualName").focus();
+            return;
+          }
+          if (!phone || phone.length < 10) {
+            alert("⚠️ أدخل رقم موبايل العميل بشكل صحيح (11 رقم)!");
+            document.getElementById("recManualPhone").focus();
+            return;
+          }
+          const dup = findExistingReceptionDuplicate(exh.id, null, phone);
+          if (showReceptionDuplicateLock(dup)) return;
+
+          if (!recAssignedWalkinSeq) {
+            recAssignedWalkinSeq = getNextWalkinInvitationSeq(exh.id);
+          }
+
+          recStep1Completed = true;
+          const b1 = document.getElementById("recStep1Badge");
+          b1.style.display = "inline-block";
+          b1.textContent = `#${recAssignedWalkinSeq} ${name}`;
+        }
+
+        configureStep2OptionsForClientType();
+        recCurrentStep = 2;
+        updateStep2SummaryBadge();
+        updateReceptionAccordionUI();
+      }
+
+      function setReceptionFirstSplit(mode) {
+        recFirstSplitMode = mode;
+
+        // Invited buttons
+        document.getElementById("recSplitBtnDefault").className =
+          "option-card-btn" + (mode === "DEFAULT" ? " active" : "");
+        document.getElementById("recSplitBtnCustom").className =
+          "option-card-btn" + (mode === "CUSTOM" ? " active" : "");
+
+        // Walk-in buttons
+        document.getElementById("recSplitBtnCompany").className =
+          "option-card-btn" + (mode === "COMPANY" ? " active" : "");
+        document.getElementById("recSplitBtnCompanion").className =
+          "option-card-btn" + (mode === "COMPANION" ? " active-gold" : "");
+
+        document.getElementById("recCustomSalesBox").style.display =
+          mode === "CUSTOM" ? "block" : "none";
+        document.getElementById("recCompanionBox").style.display =
+          mode === "COMPANION" ? "block" : "none";
+
+        updateStep2SummaryBadge();
+      }
+
+      function handleCompanionClientSearch() {
+        const raw = toEnglishDigits(
+          document.getElementById("recCompanionSearchInput").value || "",
+        )
+          .replace(/^#/, "")
+          .trim();
+        const listEl = document.getElementById("recCompanionMatchesList");
+
+        if (!raw) {
+          listEl.style.display = "none";
+          return;
+        }
+
+        const exh = getActiveExhibition();
+        const normPhone = normalizePhone(raw);
+        const rawLower = raw.toLowerCase();
+
+        // 1. Clients who have ALREADY checked in at Reception
+        const attendedMatches = getCheckinsArray().filter(
+          (c) =>
+            (c.exhibitionId === exh.id || c.exhibitionName === exh.name) &&
+            (String(c.seqNumber).toLowerCase().includes(rawLower) ||
+              (normPhone.length >= 3 &&
+                normalizePhone(c.clientPhone).includes(normPhone)) ||
+              (c.clientName || "").toLowerCase().includes(rawLower)),
+        );
+
+        // 2. Clients who have invitations but have NOT entered the exhibition yet
+        const notAttendedInvitations = appState.invitations.filter(
+          (i) =>
+            i &&
+            (i.exhibitionId === exh.id || i.exhibitionName === exh.name) &&
+            !attendedMatches.some(
+              (c) => String(c.seqNumber) === String(i.seqNumber),
+            ) &&
+            (String(i.seqNumber).toLowerCase().includes(rawLower) ||
+              (normPhone.length >= 3 &&
+                normalizePhone(i.clientPhone).includes(normPhone)) ||
+              (i.clientName || "").toLowerCase().includes(rawLower)),
+        );
+
+        listEl.style.display = "flex";
+        listEl.innerHTML = "";
+
+        if (
+          attendedMatches.length === 0 &&
+          notAttendedInvitations.length === 0
+        ) {
+          listEl.innerHTML = `<div style="padding:10px; text-align:center; color:var(--gold); font-size:0.8rem; font-weight:800;">⚠️ لا يوجد عميل حاضر بالمعرض بهذا الاسم أو الكود.</div>`;
+          return;
+        }
+
+        attendedMatches.slice(0, 6).forEach((chk) => {
+          const item = document.createElement("div");
+          item.className = "search-match-item";
+          item.innerHTML = `
+            <div>
+              <strong style="color:var(--gold);">#${chk.seqNumber}</strong>
+              <strong style="margin-right:5px;">${chk.clientName}</strong>
+              <div style="font-size:0.75rem; color:var(--primary);">المتابع: ${chk.firstSplitName} (${chk.firstSplitCode})</div>
+            </div>
+            <span class="badge-success">✅ دخل المعرض</span>
+          `;
+          item.onclick = () => {
+            recCompanionHostCheckin = chk;
+            listEl.style.display = "none";
+            document.getElementById("recCompanionSearchInput").value =
+              `${chk.clientName} (#${chk.seqNumber})`;
+            const box = document.getElementById("recSelectedCompanionBox");
+            box.style.display = "block";
+            box.innerHTML = `
+              ✅ <strong>العميل الأصلي حاضر بالمعرض:</strong> ${chk.clientName} (#${chk.seqNumber})<br>
+              🏅 <strong>النص الأول (50%) سيُحسب للسيلز:</strong> <span class="badge-code">${chk.firstSplitName} (${chk.firstSplitCode})</span>
+            `;
+            updateStep2SummaryBadge();
+          };
+          listEl.appendChild(item);
+        });
+
+        notAttendedInvitations.slice(0, 4).forEach((inv) => {
+          const item = document.createElement("div");
+          item.className = "search-match-item";
+          item.style.borderColor = "var(--danger)";
+          item.innerHTML = `
+            <div>
+              <strong style="color:#f87171;">#${inv.seqNumber} - ${inv.clientName}</strong>
+              <div style="font-size:0.74rem; color:#fca5a5;">⛔ لم يدخل المعرض حتى الآن!</div>
+            </div>
+            <span style="font-size:0.74rem; color:#f87171; font-weight:800;">غير مسجل حضور</span>
+          `;
+          item.onclick = () => {
+            recCompanionHostCheckin = null;
+            listEl.style.display = "none";
+            alert(
+              `⚠️ العميل (${inv.clientName} - #${inv.seqNumber}) لم يدخل المعرض بعد!\nلازم العميل الأصلي يكون دخل المعرض فعلياً، وإلا يُسجل المرافق كـ (عميل شركة).`,
+            );
+            setReceptionFirstSplit("COMPANY");
+          };
+          listEl.appendChild(item);
+        });
+      }
+
+      function updateStep2SummaryBadge() {
+        const b2 = document.getElementById("recStep2Badge");
+        if (!b2) return;
+        b2.style.display = "inline-block";
+
+        if (recFirstSplitMode === "DEFAULT" && recSelectedInv) {
+          b2.textContent = `${recSelectedInv.salesName} (دعوة)`;
+        } else if (recFirstSplitMode === "CUSTOM") {
+          const code = formatSalesCode(
+            document.getElementById("recCustomSalesSelect")?.value || "",
+          );
+          const sObj = appState.salesTeam.find(
+            (s) => formatSalesCode(s.code) === code,
+          );
+          b2.textContent = sObj ? `${sObj.name} (${code})` : code;
+        } else if (recFirstSplitMode === "COMPANION") {
+          if (recCompanionHostCheckin) {
+            b2.textContent = `${recCompanionHostCheckin.firstSplitName} (طرف #${recCompanionHostCheckin.seqNumber})`;
+          } else {
+            b2.textContent = "اختر العميل الحاضر";
+          }
+        } else {
+          b2.textContent = "عميل شركة";
+        }
+      }
+
+      function confirmReceptionStep2() {
+        if (recFirstSplitMode === "COMPANION" && !recCompanionHostCheckin) {
+          alert(
+            "⚠️ اختر العميل الحاضر بالمعرض الذي جاء من طرفه، أو اختر (عميل شركة)!",
+          );
+          return;
+        }
+        recStep2Completed = true;
+        updateStep2SummaryBadge();
+        recCurrentStep = 3;
+        updateReceptionAccordionUI();
+      }
+
+      function toggleSurveyChip(el, group, val) {
+        const arr = recSurvey[group];
+        const idx = arr.indexOf(val);
+        if (idx >= 0) {
+          arr.splice(idx, 1);
+          el.classList.remove("selected");
+        } else {
+          arr.push(val);
+          el.classList.add("selected");
+        }
+
+        if (group === "area") {
+          document.getElementById("otherAreaWrap").style.display = arr.includes(
+            "أخرى",
+          )
+            ? "block"
+            : "none";
+        } else if (group === "type") {
+          document.getElementById("otherTypeWrap").style.display = arr.includes(
+            "أخرى",
+          )
+            ? "block"
+            : "none";
+        } else if (group === "sys") {
+          document.getElementById("otherSysWrap").style.display = arr.includes(
+            "أخرى",
+          )
+            ? "block"
+            : "none";
+        }
+      }
+
+      function resetReceptionForm() {
+        document.getElementById("recLookupInput").value = "";
+        document.getElementById("recManualName").value = "";
+        document.getElementById("recManualPhone").value = "";
+        document.getElementById("recNotesInput").value = "";
+        document.getElementById("recCompanionSearchInput").value = "";
+        document.getElementById("otherAreaInput").value = "";
+        document.getElementById("otherTypeInput").value = "";
+        document.getElementById("otherSysInput").value = "";
+
+        document.getElementById("otherAreaWrap").style.display = "none";
+        document.getElementById("otherTypeWrap").style.display = "none";
+        document.getElementById("otherSysWrap").style.display = "none";
+        document.getElementById("recFoundTicketBox").style.display = "none";
+        document.getElementById("recManualClientBox").style.display = "none";
+        document.getElementById("recMatchesDropdown").style.display = "none";
+        document.getElementById("recCompanionMatchesList").style.display =
+          "none";
+        document.getElementById("recSelectedCompanionBox").style.display =
+          "none";
+        document.getElementById("recStep1Badge").style.display = "none";
+        document.getElementById("recStep2Badge").style.display = "none";
+
+        recSelectedInv = null;
+        recIsWalkin = false;
+        recAssignedWalkinSeq = null;
+        recCompanionHostCheckin = null;
+        recStep1Completed = false;
+        recStep2Completed = false;
+        recCurrentStep = 1;
+        recSurvey = { area: [], type: [], sys: [] };
+
+        document
+          .querySelectorAll(".touch-chip")
+          .forEach((c) => c.classList.remove("selected"));
+
+        showReceptionDuplicateLock(null);
+        updateReceptionAccordionUI();
+      }
+
+      async function submitReceptionCheckin() {
+        const exh = getActiveExhibition();
+        let clientName = "";
+        let clientPhone = "";
+        let seqNumber = "";
+        let origCode = "-";
+        let origName = "-";
+        let isWalkinGenerated = false;
+        let nextSeqToAdvance = null;
+
+        if (recSelectedInv) {
+          clientName = recSelectedInv.clientName;
+          clientPhone = normalizePhone(recSelectedInv.clientPhone);
+          seqNumber = recSelectedInv.seqNumber;
+          origCode = formatSalesCode(recSelectedInv.salesCode);
+          origName = recSelectedInv.salesName;
+          isWalkinGenerated = false;
+        } else {
+          clientName = (
+            document.getElementById("recManualName").value || ""
+          ).trim();
+          clientPhone = normalizePhone(
+            document.getElementById("recManualPhone").value || "",
+          );
+          if (!clientName || !clientPhone || clientPhone.length < 10) {
+            alert("⚠️ يرجى التأكد من اسم العميل ورقم الموبايل في الخطوة 1!");
+            goToReceptionStep(1);
+            return;
+          }
+          seqNumber =
+            recAssignedWalkinSeq || getNextWalkinInvitationSeq(exh.id);
+          isWalkinGenerated = true;
+          nextSeqToAdvance = Number(seqNumber) + 1;
+        }
+
+        // Strict Anti-Duplicate Check
+        const dup = findExistingReceptionDuplicate(
+          exh.id,
+          seqNumber,
+          clientPhone,
+        );
+        if (dup) {
+          showReceptionDuplicateLock(dup);
+          alert(
+            `⛔ مرفوض: هذا العميل (${dup.clientName} - #${dup.seqNumber}) مسجل دخول بالفعل!`,
+          );
+          return;
+        }
+
+        // Determine 1st Half Split (50%)
+        let firstCode = "COMPANY";
+        let firstName = "عميل شركة";
+        let firstType = "عميل شركة";
+
+        if (recSelectedInv) {
+          if (recFirstSplitMode === "DEFAULT") {
+            firstCode = origCode;
+            firstName = origName;
+            firstType = "صاحب الدعوة";
+          } else {
+            firstCode = formatSalesCode(
+              document.getElementById("recCustomSalesSelect").value,
+            );
+            const sObj = appState.salesTeam.find(
+              (s) => formatSalesCode(s.code) === firstCode,
+            );
+            firstName = sObj ? sObj.name : firstCode;
+            firstType = "العميل فاكر اسمه";
+          }
+        } else {
+          // Walk-in client (No prior invitation)
+          if (recFirstSplitMode === "COMPANION" && recCompanionHostCheckin) {
+            firstCode = formatSalesCode(recCompanionHostCheckin.firstSplitCode);
+            firstName = recCompanionHostCheckin.firstSplitName;
+            firstType = `جاي مع العميل الحاضر: ${recCompanionHostCheckin.clientName} (#${recCompanionHostCheckin.seqNumber})`;
+          } else {
+            firstCode = "COMPANY";
+            firstName = "عميل شركة";
+            firstType = "عميل شركة";
+          }
+        }
+
+        // Build Survey Strings
+        const areas = [...recSurvey.area];
+        const otherArea = (
+          document.getElementById("otherAreaInput").value || ""
+        ).trim();
+        if (otherArea && areas.includes("أخرى")) {
+          areas[areas.indexOf("أخرى")] = `أخرى (${otherArea})`;
+        }
+
+        const types = [...recSurvey.type];
+        const otherType = (
+          document.getElementById("otherTypeInput").value || ""
+        ).trim();
+        if (otherType && types.includes("أخرى")) {
+          types[types.indexOf("أخرى")] = `أخرى (${otherType})`;
+        }
+
+        const systems = [...recSurvey.sys];
+        const otherSys = (
+          document.getElementById("otherSysInput").value || ""
+        ).trim();
+        if (otherSys && systems.includes("أخرى")) {
+          systems[systems.indexOf("أخرى")] = `أخرى (${otherSys})`;
+        }
+
+        const recNotes = (
+          document.getElementById("recNotesInput").value || ""
+        ).trim();
+
+        const checkinId =
+          "chk_" +
+          Date.now() +
+          "_" +
+          Math.random().toString(36).substring(2, 6);
+
+        const newCheckin = {
+          id: checkinId,
+          exhibitionId: exh.id,
+          exhibitionName: exh.name,
+          seqNumber: seqNumber,
+          isWalkinGenerated: isWalkinGenerated,
+          clientName: clientName,
+          clientPhone: clientPhone,
+          originalSalesCode: origCode,
+          originalSalesName: origName,
+          firstSplitCode: firstCode,
+          firstSplitName: firstName,
+          firstSplitType: firstType,
+          companionOfName:
+            !recSelectedInv &&
+            recFirstSplitMode === "COMPANION" &&
+            recCompanionHostCheckin
+              ? `${recCompanionHostCheckin.clientName} (#${recCompanionHostCheckin.seqNumber})`
+              : "",
+          interestedArea: areas.join(" ، ") || "غير محدد",
+          investmentType: types.join(" ، ") || "غير محدد",
+          preferredSystem: systems.join(" ، ") || "غير محدد",
+          receptionNotes: recNotes,
+          dateIso: getTodayIsoDate(),
+          attendedAt: new Date().toLocaleTimeString("ar-EG"),
+          createdAtMs: Date.now(),
+          sittings: {},
+        };
+
+        const btn = document.getElementById("recSubmitBtn");
+        btn.disabled = true;
+        btn.textContent = "⏳ جاري الحفظ...";
+
+        await pushSingleCheckinToCloud(newCheckin, nextSeqToAdvance);
+
+        btn.disabled = false;
+        btn.textContent = "✅ تسجيل دخول العميل وحفظ الكارت";
+        resetReceptionForm();
+        alert(
+          `✅ تم تسجيل دخول العميل (${clientName}) بكود دعوة (#${seqNumber}) بنجاح!\nالنص الأول (50%): ${firstName}`,
+        );
+      }
+
+      /* ==================================================== */
+      /* 2. SALES CLOSER MODE (PERSISTENT SESSION ON PHONE)   */
+      /* ==================================================== */
+      function toggleCloserIdentityDrawer() {
+        const drawer = document.getElementById("closerIdentityDrawer");
+        if (!drawer) return;
+        drawer.style.display =
+          drawer.style.display === "none" ? "block" : "none";
+      }
+
+      function populateCloserSelfSelect() {
+        const select = document.getElementById("closerSelfSelect");
+        if (!select) return;
+        const search = (
+          document.getElementById("closerSelfSearch")?.value || ""
+        )
+          .trim()
+          .toLowerCase();
+        const saved = formatSalesCode(
+          localStorage.getItem("BALMETR_CLOSER_CODE") || "",
+        );
+        const curr = select.value;
+
+        const sorted = sortSalesTeam(appState.salesTeam).filter(
+          (s) =>
+            s.name.toLowerCase().includes(search) ||
+            s.code.toLowerCase().includes(search),
+        );
+
+        select.innerHTML = "";
+        sorted.forEach((s) => {
+          const opt = document.createElement("option");
+          opt.value = s.code;
+          opt.textContent = `${s.name} (كود: ${s.code})`;
+          select.appendChild(opt);
+        });
+
+        if (curr && sorted.some((s) => s.code === curr)) select.value = curr;
+        else if (saved && sorted.some((s) => s.code === saved))
+          select.value = saved;
+
+        updateCloserHeaderBadge();
+      }
+
+      function updateCloserHeaderBadge() {
+        const badge = document.getElementById("closerActiveNameBadge");
+        if (!badge) return;
+        const c = getCurrentCloserObj();
+        badge.textContent = `${c.name} (${c.code})`;
+      }
+
+      function onCloserIdentityChange() {
+        const val = document.getElementById("closerSelfSelect").value;
+        if (val) {
+          localStorage.setItem("BALMETR_CLOSER_CODE", formatSalesCode(val));
+        }
+        updateCloserHeaderBadge();
+        document.getElementById("closerIdentityDrawer").style.display = "none";
+        if (salesActiveCheckinId) {
+          triggerAutoSittingNow(salesActiveCheckinId);
+          saveActiveSalesDraftToLocal();
+        } else {
+          restoreSalesSittingAfterSync();
+        }
+      }
+
+      function getCurrentCloserObj() {
+        const sel = document.getElementById("closerSelfSelect");
+        const code = formatSalesCode(sel?.value || "");
+        return (
+          appState.salesTeam.find((s) => formatSalesCode(s.code) === code) || {
+            code: code,
+            name: code,
+          }
+        );
+      }
+
+      function handleSalesSearchInput() {
+        const raw = toEnglishDigits(
+          document.getElementById("salesClientSearchInput").value || "",
+        )
+          .replace(/^#/, "")
+          .trim();
+        const listEl = document.getElementById("salesMatchesList");
+
+        if (!raw) {
+          listEl.style.display = "none";
+          return;
+        }
+
+        const exh = getActiveExhibition();
+        const normPhone = normalizePhone(raw);
+        const rawLower = raw.toLowerCase();
+
+        const checkins = getCheckinsArray().filter(
+          (c) =>
+            (c.exhibitionId === exh.id || c.exhibitionName === exh.name) &&
+            (String(c.seqNumber).toLowerCase().includes(rawLower) ||
+              (normPhone.length >= 3 &&
+                normalizePhone(c.clientPhone).includes(normPhone)) ||
+              (c.clientName || "").toLowerCase().includes(rawLower) ||
+              (c.firstSplitName || "").toLowerCase().includes(rawLower)),
+        );
+
+        listEl.style.display = "flex";
+        listEl.innerHTML = "";
+
+        if (checkins.length === 0) {
+          listEl.innerHTML = `<div style="padding:10px; text-align:center; color:var(--gold); font-weight:800; font-size:0.82rem;">⚠️ لا يوجد عميل مسجل بالريسبشن بهذا البحث (${raw}).</div>`;
+          return;
+        }
+
+        checkins.slice(0, 10).forEach((c) => {
+          const sittings = getSittingsArray(c);
+          const item = document.createElement("div");
+          item.className = "search-match-item";
+          item.innerHTML = `
+            <div>
+              <strong style="color:var(--gold); font-size:0.92rem;">#${c.seqNumber}</strong>
+              <strong style="margin-right:5px; font-size:0.92rem;">${c.clientName}</strong>
+              <div style="font-size:0.74rem; color:var(--text-muted); margin-top:2px;">
+                📱 <span dir="ltr">${c.clientPhone}</span> | 🔹 متابع: ${c.firstSplitName} | 👥 قعدات: ${sittings.length}
+              </div>
+            </div>
+            <span class="btn btn-success" style="padding:6px 10px; font-size:0.76rem;">ابدأ القعدة 👈</span>
+          `;
+          item.onclick = () => {
+            openClientForSalesSitting(c.id);
+          };
+          listEl.appendChild(item);
+        });
+      }
+
+      async function openClientForSalesSitting(checkinId) {
+        salesActiveCheckinId = checkinId;
+        salesChosenOutcome = "";
+        highlightSelectedOutcomeButton("");
+        document.getElementById("salesMatchesList").style.display = "none";
+
+        const chk = appState.checkinsMap[checkinId];
+        if (!chk) return;
+
+        document.getElementById("salesClientSearchInput").value =
+          `${chk.clientName} (#${chk.seqNumber})`;
+
+        const closer = getCurrentCloserObj();
+        const existingSit = getSittingsArray(chk).find(
+          (s) => formatSalesCode(s.salesCode) === closer.code,
+        );
+
+        document.getElementById("salesSittingNotes").value =
+          existingSit?.notes || "";
+
+        saveActiveSalesDraftToLocal();
+        await triggerAutoSittingNow(checkinId);
+        renderSalesActiveClientView();
+      }
+
+      async function triggerAutoSittingNow(checkinId) {
+        const chk = appState.checkinsMap[checkinId];
+        if (!chk) return;
+        const closer = getCurrentCloserObj();
+        if (!closer || !closer.code) return;
+
+        const existingSit = getSittingsArray(chk).find(
+          (s) => formatSalesCode(s.salesCode) === closer.code,
+        );
+
+        const nowTime = new Date().toLocaleTimeString("ar-EG");
+        const sittingPayload = {
+          salesCode: closer.code,
+          salesName: closer.name,
+          status: "🟢 قاعد مع العميل حالياً",
+          notes:
+            document.getElementById("salesSittingNotes")?.value ||
+            existingSit?.notes ||
+            "",
+          startedAt: existingSit?.startedAt || nowTime,
+          startedAtMs: existingSit?.startedAtMs || Date.now(),
+          updatedAt: nowTime,
+        };
+
+        await pushSingleSittingToCloud(checkinId, sittingPayload);
+      }
+
+      function renderSalesActiveClientView() {
+        const workspace = document.getElementById("salesActiveClientWorkspace");
+        const chk = appState.checkinsMap[salesActiveCheckinId];
+        if (!chk) {
+          workspace.style.display = "none";
+          return;
+        }
+
+        workspace.style.display = "block";
+        const closer = getCurrentCloserObj();
+        const commInfo = buildClearCommissionBreakdown(chk);
+
+        document.getElementById("salesSittingNowBanner").innerHTML = `
+          🟢 جلستك مفتوحة ومحفوظة تلقائياً: <strong>(${closer.name} - ${closer.code})</strong> قاعد مع العميل <strong>(${chk.clientName} #${chk.seqNumber})</strong>
+        `;
+
+        document.getElementById("salesClientProfileCard").innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px; padding-bottom:6px; border-bottom:1px dashed var(--border-light);">
+            <div>
+              <strong style="color:var(--gold); font-size:0.96rem;">#${chk.seqNumber}</strong>
+              <strong style="font-size:0.96rem; margin-right:5px; color:#fff;">${chk.clientName}</strong>
+            </div>
+            <span dir="ltr" style="color:var(--primary); font-weight:800; font-size:0.84rem;">📱 ${chk.clientPhone}</span>
+          </div>
+          <div style="font-size:0.81rem; line-height:1.65;">
+            <div>🎫 <strong>أصل العميل:</strong> <span style="color:#cbd5e1;">${commInfo.originText}</span></div>
+            <div>🔹 <strong>النص الأول (50%):</strong> <span class="badge-code">${commInfo.firstHalfHolder}</span></div>
+            <div>📍 <strong>مهتم بمنطقة:</strong> <span style="color:#fff; font-weight:800;">${chk.interestedArea || "غير محدد"}</span></div>
+            <div>🏢 <strong>نوع الاستثمار:</strong> <span style="color:#fff; font-weight:800;">${chk.investmentType || "غير محدد"}</span></div>
+            <div>⚙️ <strong>النظام المفضل:</strong> <span style="color:#fff; font-weight:800;">${chk.preferredSystem || "غير محدد"}</span></div>
+            ${chk.receptionNotes ? `<div>📝 <strong>ملاحظة الريسبشن:</strong> <span style="color:var(--gold);">${chk.receptionNotes}</span></div>` : ""}
+          </div>
+        `;
+
+        const prevContainer = document.getElementById(
+          "salesPreviousOpinionsList",
+        );
+        const allSits = getSittingsArray(chk);
+        if (allSits.length === 0) {
+          prevContainer.innerHTML = `<div style="font-size:0.8rem; color:var(--text-muted);">لا توجد قعدات سابقة — أنت أول سيلز يقعد مع العميل.</div>`;
+        } else {
+          prevContainer.innerHTML = allSits
+            .map((s, idx) => {
+              const isLive = s.status === "🟢 قاعد مع العميل حالياً";
+              return `
+                <div class="history-sitting-card ${isLive ? "live-now" : ""}">
+                  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
+                    <strong style="color:#fff; font-size:0.83rem;">${idx + 1}. 💼 ${s.salesName} (${s.salesCode})</strong>
+                    <span class="${isLive ? "badge-live" : "badge-gold"}">${s.status}</span>
+                  </div>
+                  <div style="font-size:0.81rem; color:#e2e8f0; margin-top:4px; font-weight:700;">
+                    💬 الرأي / الملاحظة: <span style="color:${s.notes ? "#fde68a" : "var(--text-muted)"};">${s.notes || "جاري القعدة الآن..."}</span>
+                  </div>
+                  <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">
+                    🕒 بداية: ${s.startedAt || "-"} ${s.endedAt ? `| انتهاء: ${s.endedAt}` : ""}
+                  </div>
+                </div>
+              `;
+            })
+            .join("");
+        }
+      }
+
+      function selectSalesOutcome(statusText, btnEl) {
+        salesChosenOutcome = statusText;
+        highlightSelectedOutcomeButton(statusText);
+        saveActiveSalesDraftToLocal();
+      }
+
+      function clearActiveSalesSessionAndReset() {
+        salesActiveCheckinId = null;
+        salesChosenOutcome = "";
+        localStorage.removeItem(ACTIVE_SALES_DRAFT_KEY);
+        document.getElementById("salesClientSearchInput").value = "";
+        document.getElementById("salesSittingNotes").value = "";
+        document.getElementById("salesMatchesList").style.display = "none";
+        document.getElementById("salesActiveClientWorkspace").style.display =
+          "none";
+      }
+
+      async function submitSalesFinalOutcome() {
+        if (
+          !salesActiveCheckinId ||
+          !appState.checkinsMap[salesActiveCheckinId]
+        ) {
+          alert("⚠️ ابحث عن العميل واختره أولاً!");
+          return;
+        }
+
+        if (!salesChosenOutcome) {
+          alert(
+            "⚠️ إجباري: يجب اختيار القرار النهائي للقعدة من الـ 6 اختيارات قبل الحفظ!",
+          );
+          return;
+        }
+
+        const opinionNotes = (
+          document.getElementById("salesSittingNotes").value || ""
+        ).trim();
+        if (!opinionNotes || opinionNotes.length < 3) {
+          alert(
+            "⚠️ إجباري: لازم تكتب رأيك أو السبب أو تفاصيل القعدة في خانة الملاحظات عشان تظهر للإدارة ولزمايلك اللي بعدك!",
+          );
+          document.getElementById("salesSittingNotes").focus();
+          return;
+        }
+
+        const closer = getCurrentCloserObj();
+        const chk = appState.checkinsMap[salesActiveCheckinId];
+        const existingSit = getSittingsArray(chk).find(
+          (s) => formatSalesCode(s.salesCode) === closer.code,
+        );
+
+        const nowTime = new Date().toLocaleTimeString("ar-EG");
+        const finalSitting = {
+          salesCode: closer.code,
+          salesName: closer.name,
+          status: salesChosenOutcome,
+          notes: opinionNotes,
+          startedAt: existingSit?.startedAt || nowTime,
+          startedAtMs: existingSit?.startedAtMs || Date.now(),
+          endedAt: nowTime,
+          updatedAt: nowTime,
+        };
+
+        const btn = document.getElementById("salesSaveFinalBtn");
+        btn.disabled = true;
+        btn.textContent = "⏳ جاري الحفظ...";
+
+        await pushSingleSittingToCloud(salesActiveCheckinId, finalSitting);
+
+        btn.disabled = false;
+        btn.textContent = "✅ إنهاء القعدة وحفظ قراري ورأيي";
+        alert(
+          `✅ تم تسجيل قرارك (${salesChosenOutcome}) ورأيك على العميل (${chk.clientName}) بنجاح!`,
+        );
+        clearActiveSalesSessionAndReset();
+      }
+
+      /* ==================================================== */
+      /* 3. MASTER ADMIN MODE (CRYSTAL-CLEAR COMMISSION UI)   */
+      /* ==================================================== */
+      function switchAdminTab(tabId, btnEl) {
+        document
+          .querySelectorAll(".adm-subtab")
+          .forEach((el) => (el.style.display = "none"));
+        document
+          .querySelectorAll(".admin-tab-btn")
+          .forEach((el) => el.classList.remove("active"));
+        document.getElementById(tabId).style.display = "block";
+        if (btnEl) btnEl.classList.add("active");
+      }
+
+      function getAllEffectiveSalesReps() {
+        const map = new Map();
+        sortSalesTeam(appState.salesTeam).forEach((s) => {
+          map.set(formatSalesCode(s.code), {
+            code: formatSalesCode(s.code),
+            name: s.name,
+          });
+        });
+
+        appState.invitations.forEach((i) => {
+          if (i && i.salesCode) {
+            const c = formatSalesCode(i.salesCode);
+            if (!map.has(c)) map.set(c, { code: c, name: i.salesName || c });
+          }
+        });
+
+        getCheckinsArray().forEach((chk) => {
+          if (chk.firstSplitCode && chk.firstSplitCode !== "COMPANY") {
+            const c = formatSalesCode(chk.firstSplitCode);
+            if (!map.has(c))
+              map.set(c, { code: c, name: chk.firstSplitName || c });
+          }
+          getSittingsArray(chk).forEach((sit) => {
+            if (sit.salesCode) {
+              const c = formatSalesCode(sit.salesCode);
+              if (!map.has(c))
+                map.set(c, { code: c, name: sit.salesName || c });
+            }
+          });
+        });
+
+        return [
+          ...Array.from(map.values()),
+          { code: "COMPANY", name: "🏢 عميل شركة مباشر" },
+        ];
+      }
+
+      function populateAdminFilterDropdowns() {
+        const exhSel = document.getElementById("excelExhFilter");
+        const dateSel = document.getElementById("excelDateFilter");
+        const salesSel = document.getElementById("excelSalesFilter");
+        if (!exhSel || !dateSel || !salesSel) return;
+
+        const prevExh = exhSel.value || appState.activeExhibitionId;
+        const prevDate = dateSel.value || "ALL";
+        const prevSales = salesSel.value || "ALL";
+
+        exhSel.innerHTML = `<option value="ALL">🌍 كل المعارض مجمعة</option>`;
+        Object.values(appState.exhibitionsMeta).forEach((ex) => {
+          const opt = document.createElement("option");
+          opt.value = ex.id;
+          opt.textContent = `📍 ${ex.name}`;
+          exhSel.appendChild(opt);
+        });
+        exhSel.value =
+          prevExh === "ALL" || appState.exhibitionsMeta[prevExh]
+            ? prevExh
+            : appState.activeExhibitionId;
+
+        const datesSet = new Set([getTodayIsoDate()]);
+        getCheckinsArray().forEach((c) => {
+          datesSet.add(extractIsoDateFromCheckin(c));
+        });
+        const sortedDates = Array.from(datesSet).sort().reverse();
+
+        dateSel.innerHTML = `<option value="ALL">📅 كل الأيام والتواريخ</option>`;
+        sortedDates.forEach((d) => {
+          const opt = document.createElement("option");
+          opt.value = d;
+          opt.textContent = `📅 يوم: ${d}`;
+          dateSel.appendChild(opt);
+        });
+        if (sortedDates.includes(prevDate) || prevDate === "ALL") {
+          dateSel.value = prevDate;
+        }
+
+        salesSel.innerHTML = `<option value="ALL">👥 المجمع لكل السيلز (الجميع)</option>`;
+        getAllEffectiveSalesReps().forEach((rep) => {
+          const opt = document.createElement("option");
+          opt.value = rep.code;
+          opt.textContent = `👤 ${rep.name} (${rep.code === "COMPANY" ? "شركة" : rep.code})`;
+          salesSel.appendChild(opt);
+        });
+        salesSel.value = prevSales;
+      }
+
+      function onAdminFilterChange() {
+        const exVal = document.getElementById("excelExhFilter").value;
+        if (exVal && exVal !== "ALL" && appState.exhibitionsMeta[exVal]) {
+          appState.activeExhibitionId = exVal;
+          saveLocalState();
+        }
+        renderAllUI();
+      }
+
+      function matchesExhibitionScope(item, exhFilter) {
+        if (exhFilter === "ALL") return true;
+        const targetExh = appState.exhibitionsMeta[exhFilter];
+        if (!targetExh) return item.exhibitionId === exhFilter;
+        return (
+          item.exhibitionId === targetExh.id ||
+          (item.exhibitionName &&
+            item.exhibitionName.trim() === targetExh.name.trim())
+        );
+      }
+
+      function getAdminFilteredCheckins() {
+        const exhFilter =
+          document.getElementById("excelExhFilter")?.value ||
+          appState.activeExhibitionId;
+        const dateFilter =
+          document.getElementById("excelDateFilter")?.value || "ALL";
+        const salesFilter =
+          document.getElementById("excelSalesFilter")?.value || "ALL";
+        const statusFilter =
+          document.getElementById("admStatusFilter")?.value || "ALL";
+        const search = toEnglishDigits(
+          document.getElementById("admRadarSearch")?.value || "",
+        )
+          .trim()
+          .toLowerCase();
+
+        return getCheckinsArray()
+          .filter((c) => matchesExhibitionScope(c, exhFilter))
+          .filter(
+            (c) =>
+              dateFilter === "ALL" ||
+              extractIsoDateFromCheckin(c) === dateFilter,
+          )
+          .filter((c) => {
+            if (salesFilter === "ALL") return true;
+            const isFirst = formatSalesCode(c.firstSplitCode) === salesFilter;
+            const isOriginal =
+              formatSalesCode(c.originalSalesCode) === salesFilter;
+            const isSecond = getSittingsArray(c).some(
+              (s) => formatSalesCode(s.salesCode) === salesFilter,
+            );
+            return isFirst || isOriginal || isSecond;
+          })
+          .filter((c) => {
+            if (statusFilter === "ALL") return true;
+            const sits = getSittingsArray(c);
+            if (statusFilter === "NO_SITTING") return sits.length === 0;
+            if (statusFilter === "LIVE_NOW")
+              return sits.some((s) => s.status === "🟢 قاعد مع العميل حالياً");
+            return sits.some((s) => s.status === statusFilter);
+          })
+          .filter((c) => {
+            if (!search) return true;
+            const sitsStr = getSittingsArray(c)
+              .map((s) => `${s.salesName} ${s.salesCode} ${s.notes || ""}`)
+              .join(" ")
+              .toLowerCase();
+            return (
+              (c.clientName || "").toLowerCase().includes(search) ||
+              String(c.seqNumber).toLowerCase().includes(search) ||
+              String(c.clientPhone).includes(search) ||
+              (c.firstSplitName || "").toLowerCase().includes(search) ||
+              (c.firstSplitType || "").toLowerCase().includes(search) ||
+              sitsStr.includes(search)
+            );
+          })
+          .sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
+      }
+
+      function renderAdminDashboard() {
+        populateAdminFilterDropdowns();
+
+        const exhFilter =
+          document.getElementById("excelExhFilter")?.value ||
+          appState.activeExhibitionId;
+        const dateFilter =
+          document.getElementById("excelDateFilter")?.value || "ALL";
+
+        const scopeInvs = appState.invitations.filter(
+          (i) => i && matchesExhibitionScope(i, exhFilter),
+        );
+        const scopeCheckins = getCheckinsArray().filter(
+          (c) =>
+            matchesExhibitionScope(c, exhFilter) &&
+            (dateFilter === "ALL" ||
+              extractIsoDateFromCheckin(c) === dateFilter),
+        );
+
+        let sittingNow = 0;
+        let completedSittings = 0;
+        let deals = 0;
+        let followups = 0;
+
+        scopeCheckins.forEach((c) => {
+          getSittingsArray(c).forEach((s) => {
+            if (s.status === "🟢 قاعد مع العميل حالياً") {
+              sittingNow++;
+            } else {
+              completedSittings++;
+            }
+            if (s.status === "💰 اشترى (تعاقد)" || s.status === "💳 دفع حجز") {
+              deals++;
+            }
+            if (
+              s.status === "🔥 مهتم وعاوز متابعة" ||
+              s.status === "🏢 مهتم بمشروع آخر" ||
+              s.status === "📅 تواصل لاحقاً"
+            ) {
+              followups++;
+            }
+          });
+        });
+
+        document.getElementById("admKpiInvitations").textContent =
+          scopeInvs.length;
+        document.getElementById("admKpiAttended").textContent =
+          scopeCheckins.length;
+        document.getElementById("admKpiSittingNow").textContent = sittingNow;
+        document.getElementById("admKpiTotalSittings").textContent =
+          completedSittings;
+        document.getElementById("admKpiDeals").textContent = deals;
+        document.getElementById("admKpiFollowups").textContent = followups;
+
+        renderAdminRadarTable();
+        renderAdminSalesStatsTable(scopeInvs, scopeCheckins);
+        renderAdminSettingsTab();
+      }
+
+      function renderAdminRadarTable() {
+        const tbody = document.getElementById("admRadarTbody");
+        if (!tbody) return;
+        const list = getAdminFilteredCheckins();
+        document.getElementById("admRadarCount").textContent = list.length;
+
+        tbody.innerHTML = "";
+        if (list.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--text-muted);">لا توجد سجلات مطابقة للفلاتر المحددة.</td></tr>`;
+          return;
+        }
+
+        list.forEach((c) => {
+          const sits = getSittingsArray(c);
+          const commInfo = buildClearCommissionBreakdown(c);
+
+          const sittingsHTML =
+            sits.length > 0
+              ? sits
+                  .map((s, idx) => {
+                    const isLive = s.status === "🟢 قاعد مع العميل حالياً";
+                    return `
+                      <div class="history-sitting-card ${isLive ? "live-now" : ""}" style="margin-bottom:6px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
+                          <strong>${idx + 1}. 💼 يستحقه السيلز: ${s.salesName} (${s.salesCode})</strong>
+                          <span class="${isLive ? "badge-live" : "badge-gold"}">${s.status}</span>
+                        </div>
+                        <div style="font-size:0.82rem; color:#fde68a; margin-top:4px; font-weight:700;">
+                          💬 الرأي / الملاحظة: ${s.notes || "جاري الجلسة الآن..."}
+                        </div>
+                        <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">
+                          🕒 بدأ: ${s.startedAt || "-"} ${s.endedAt ? `| انتهى: ${s.endedAt}` : ""}
+                        </div>
+                      </div>
+                    `;
+                  })
+                  .join("")
+              : `<span style="color:var(--gold); font-weight:800; font-size:0.8rem;">⏳ في الانتظار (لم يقعد معه سيلز بعد)</span>`;
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>
+              <strong style="color:var(--gold); font-size:0.98rem;">#${c.seqNumber}</strong>
+              <div style="font-size:0.74rem; color:var(--text-muted); margin-top:2px;">📅 ${extractIsoDateFromCheckin(c)}</div>
+              <div style="font-size:0.74rem; color:var(--text-muted);">🕒 ${c.attendedAt || ""}</div>
+              <div style="font-size:0.72rem; color:var(--primary); font-weight:800;">${c.exhibitionName || ""}</div>
+            </td>
+            <td>
+              <div style="font-weight:900; font-size:0.94rem; color:#fff;">${c.clientName}</div>
+              <div dir="ltr" style="text-align:right; color:var(--primary); font-weight:800; font-size:0.84rem;">${c.clientPhone}</div>
+            </td>
+            <td style="min-width:280px;">
+              <div class="comm-detail-box">
+                <div style="margin-bottom:4px;">
+                  🎫 <strong>أصل العميل:</strong> <span style="color:#e2e8f0;">${commInfo.originText}</span>
+                </div>
+                <div style="margin-bottom:4px;">
+                  💰 <strong>النص الأول (50% المتابعة):</strong>
+                  <span class="badge-code">${commInfo.firstHalfHolder}</span>
+                </div>
+                <div style="font-size:0.76rem; color:var(--gold); font-weight:700;">
+                  📌 <strong>السبب:</strong> ${commInfo.firstHalfReason}
+                </div>
+              </div>
+            </td>
+            <td style="font-size:0.79rem; line-height:1.6;">
+              <div>📍 <strong>المنطقة:</strong> ${c.interestedArea || "-"}</div>
+              <div>🏢 <strong>الاستثمار:</strong> ${c.investmentType || "-"}</div>
+              <div>⚙️ <strong>النظام:</strong> ${c.preferredSystem || "-"}</div>
+              ${c.receptionNotes ? `<div style="color:var(--gold);">📝 <strong>ملاحظة:</strong> ${c.receptionNotes}</div>` : ""}
+            </td>
+            <td style="min-width:280px;">${sittingsHTML}</td>
+            <td>
+              <button class="btn btn-danger" style="padding:5px 10px; font-size:0.75rem;" onclick="adminDeleteCheckin('${c.id}')">🗑️ حذف</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function renderAdminSalesStatsTable(scopeInvs, scopeCheckins) {
+        const tbody = document.getElementById("admSalesStatsTbody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+
+        const allReps = getAllEffectiveSalesReps();
+        allReps.forEach((rep) => {
+          const code = rep.code;
+          const invCount =
+            code === "COMPANY"
+              ? "-"
+              : scopeInvs.filter((i) => formatSalesCode(i.salesCode) === code)
+                  .length;
+
+          const firstCount = scopeCheckins.filter(
+            (c) => formatSalesCode(c.firstSplitCode) === code,
+          ).length;
+
+          let secondCount = 0;
+          let liveNowCount = 0;
+          let dealsCount = 0;
+          let followCount = 0;
+
+          scopeCheckins.forEach((c) => {
+            const mySit = getSittingsArray(c).find(
+              (s) => formatSalesCode(s.salesCode) === code,
+            );
+            if (mySit) {
+              secondCount++;
+              if (mySit.status === "🟢 قاعد مع العميل حالياً") liveNowCount++;
+              if (
+                mySit.status === "💰 اشترى (تعاقد)" ||
+                mySit.status === "💳 دفع حجز"
+              )
+                dealsCount++;
+              if (
+                mySit.status === "🔥 مهتم وعاوز متابعة" ||
+                mySit.status === "🏢 مهتم بمشروع آخر" ||
+                mySit.status === "📅 تواصل لاحقاً"
+              )
+                followCount++;
+            }
+          });
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td><span class="badge-code">${code === "COMPANY" ? "شركة" : code}</span></td>
+            <td style="font-weight:900;">${rep.name}</td>
+            <td>${invCount}</td>
+            <td><span class="badge-code">${firstCount} عميل</span></td>
+            <td><span class="badge-gold">${secondCount} قعدة</span></td>
+            <td>${liveNowCount > 0 ? `<span class="badge-live">🟢 ${liveNowCount} الآن</span>` : "0"}</td>
+            <td><span class="badge-success">${dealsCount}</span></td>
+            <td style="color:var(--purple); font-weight:800;">${followCount}</td>
+            <td>
+              <button class="btn btn-primary" style="padding:5px 10px; font-size:0.76rem;" onclick="exportSpecificSalesRepExcel('${code}')">
+                📊 شيت ${rep.name} (${firstCount + secondCount})
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      async function adminDeleteCheckin(checkinId) {
+        if (!confirm("هل أنت متأكد من حذف هذا السجل نهائياً؟")) return;
+        const base = cleanBaseUrl();
+        const now = Date.now();
+        delete appState.checkinsMap[checkinId];
+        appState.lastReceptionCloudTs = now;
+        saveLocalState();
+        renderAllUI();
+
+        try {
+          await Promise.all([
+            fetch(
+              `${base}/balmeter_vip_reception_db/checkins/${checkinId}.json`,
+              { method: "DELETE" },
+            ),
+            fetch(`${base}/balmeter_vip_reception_db/lastUpdated.json`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(now),
+            }),
+          ]);
+        } catch (e) {}
+      }
+
+      function renderAdminSettingsTab() {
+        const container = document.getElementById("admPasswordsList");
+        if (!container) return;
+        ensureExhibitionPasswords();
+        container.innerHTML = "";
+
+        Object.values(appState.exhibitionsMeta).forEach((ex) => {
+          const p = appState.exhibitionPasswords[ex.id] || {
+            receptionPass: "1010",
+            salesPass: "2020",
+          };
+          const div = document.createElement("div");
+          div.style.cssText =
+            "background:var(--bg-input); border:1px solid var(--border-light); border-radius:10px; padding:10px; margin-bottom:10px;";
+          div.innerHTML = `
+            <div style="font-weight:900; color:var(--primary); margin-bottom:6px;">📍 ${ex.name}</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div>
+                <label class="form-label" style="font-size:0.75rem;">باسورد الريسبشن:</label>
+                <input type="text" class="form-control adm-rec-pass" data-id="${ex.id}" value="${p.receptionPass}" dir="ltr" style="padding:8px 10px;" />
+              </div>
+              <div>
+                <label class="form-label" style="font-size:0.75rem;">باسورد السيلز:</label>
+                <input type="text" class="form-control adm-sales-pass" data-id="${ex.id}" value="${p.salesPass}" dir="ltr" style="padding:8px 10px;" />
+              </div>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+
+        document.getElementById("admFirebaseUrlInput").value =
+          appState.firebaseUrl;
+      }
+
+      async function saveAdminPasswords() {
+        document.querySelectorAll(".adm-rec-pass").forEach((inp) => {
+          const id = inp.getAttribute("data-id");
+          if (!appState.exhibitionPasswords[id])
+            appState.exhibitionPasswords[id] = {};
+          appState.exhibitionPasswords[id].receptionPass =
+            inp.value.trim() || "1010";
+        });
+        document.querySelectorAll(".adm-sales-pass").forEach((inp) => {
+          const id = inp.getAttribute("data-id");
+          if (!appState.exhibitionPasswords[id])
+            appState.exhibitionPasswords[id] = {};
+          appState.exhibitionPasswords[id].salesPass =
+            inp.value.trim() || "2020";
+        });
+
+        saveLocalState();
+        const base = cleanBaseUrl();
+        await fetch(
+          `${base}/balmeter_vip_reception_db/exhibitionPasswords.json`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(appState.exhibitionPasswords),
+          },
+        );
+        alert("✅ تم حفظ باسوردات جميع المعارض في السحابة بنجاح!");
+      }
+
+      async function adminAddExhibition() {
+        const name = (
+          document.getElementById("admNewExhName").value || ""
+        ).trim();
+        if (!name) return alert("اكتب اسم المعرض أولاً!");
+        const id = "exh_" + Date.now();
+        appState.exhibitionsMeta[id] = { id, name };
+        appState.exhibitionPasswords[id] = {
+          receptionPass: "1010",
+          salesPass: "2020",
+        };
+        document.getElementById("admNewExhName").value = "";
+        saveLocalState();
+
+        const base = cleanBaseUrl();
+        await Promise.all([
+          fetch(
+            `${base}/balmeter_vip_reception_db/exhibitionsMeta/${id}.json`,
+            {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ id, name }),
+            },
+          ),
+          fetch(`${base}/balmeter_vip_system/exhibitions/${id}.json`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id, name, nextSeq: 131 }),
+          }),
+        ]);
+        renderAllUI();
+        alert(`✅ تم إضافة (${name}) بنجاح!`);
+      }
+
+      async function saveFirebaseUrlSetting() {
+        const val = (
+          document.getElementById("admFirebaseUrlInput").value || ""
+        ).trim();
+        if (!val) return;
+        appState.firebaseUrl = val;
+        saveLocalState();
+        await initialSmartSync(true);
+      }
+
+      /* ==================================================== */
+      /* EXCEL (CSV) EXPORT ENGINE (CLEAR COMMISSION COLUMNS) */
+      /* ==================================================== */
+      function csvEscape(val) {
+        if (val === null || val === undefined) return '""';
+        const str = String(val).replace(/"/g, '""');
+        return `"${str}"`;
+      }
+
+      function downloadCSVFile(csvContent, fileName) {
+        const blob = new Blob(["\uFEFF" + csvContent], {
+          type: "text/csv;charset=utf-8;",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+
+      function exportSpecificSalesRepExcel(salesCode) {
+        document.getElementById("excelSalesFilter").value = salesCode;
+        exportFilteredMasterExcel();
+      }
+
+      function exportFilteredMasterExcel() {
+        const list = getAdminFilteredCheckins();
+        if (list.length === 0) {
+          alert("⚠️ لا توجد بيانات مطابقة للفلاتر المحددة حالياً لتصديرها!");
+          return;
+        }
+
+        const exhFilter = document.getElementById("excelExhFilter").value;
+        const dateFilter = document.getElementById("excelDateFilter").value;
+        const salesFilter = document.getElementById("excelSalesFilter").value;
+
+        let maxSittings = 1;
+        list.forEach((c) => {
+          const len = getSittingsArray(c).length;
+          if (len > maxSittings) maxSittings = len;
+        });
+
+        const headers = [
+          "التاريخ",
+          "وقت الدخول",
+          "المعرض",
+          "كود العميل (رقم الدعوة)",
+          "اسم العميل",
+          "رقم تليفون العميل",
+          "أصل العميل والدعوة",
+          "مستحق النص الأول من الكومشن (50% المتابعة)",
+          "سبب استحقاق النص الأول بالتفصيل",
+          ...(salesFilter !== "ALL" ? ["دور هذا السيلز مع العميل"] : []),
+          "مهتم بمنطقة (كارت العميل)",
+          "نوع الاستثمار",
+          "النظام المفضل",
+          "ملاحظات الريسبشن",
+          "عدد السيلز الذين قعدوا معه",
+          "ملخص النص الثاني (50% القعدات والآراء مجمع)",
+        ];
+
+        for (let i = 1; i <= maxSittings; i++) {
+          headers.push(`سيلز قعدة (${i}) - الاسم والكود`);
+          headers.push(`سيلز قعدة (${i}) - القرار والوضع`);
+          headers.push(`سيلز قعدة (${i}) - الرأي والملاحظة الكاملة`);
+          headers.push(`سيلز قعدة (${i}) - التوقيت`);
+        }
+
+        let csv = headers.map(csvEscape).join(",") + "\n";
+
+        list.forEach((c) => {
+          const sits = getSittingsArray(c);
+          const commInfo = buildClearCommissionBreakdown(c);
+
+          const combinedSummary =
+            sits.length > 0
+              ? sits
+                  .map(
+                    (s, idx) =>
+                      `[${idx + 1}] ${s.salesName} (${s.salesCode}) -> ${s.status} | الرأي: ${s.notes || "بدون ملاحظة"}`,
+                  )
+                  .join("  ///  ")
+              : "لم يقعد معه سيلز بعد";
+
+          let roleForSelectedSales = "";
+          if (salesFilter !== "ALL") {
+            const isFirst = formatSalesCode(c.firstSplitCode) === salesFilter;
+            const isSit = sits.some(
+              (s) => formatSalesCode(s.salesCode) === salesFilter,
+            );
+            if (isFirst && isSit)
+              roleForSelectedSales =
+                "كومشن كامل 100% (متابع نص أول + قعدة نص ثاني)";
+            else if (isFirst)
+              roleForSelectedSales = "نص أول 50% (متابعة / دعوة / مرافق)";
+            else if (isSit) roleForSelectedSales = "نص ثاني 50% (قعدة بالمعرض)";
+            else roleForSelectedSales = "صاحب الدعوة الأصلية فقط";
+          }
+
+          const row = [
+            extractIsoDateFromCheckin(c),
+            c.attendedAt || "",
+            c.exhibitionName || "",
+            c.seqNumber,
+            c.clientName,
+            c.clientPhone,
+            commInfo.originText,
+            commInfo.firstHalfHolder,
+            commInfo.firstHalfReason,
+            ...(salesFilter !== "ALL" ? [roleForSelectedSales] : []),
+            c.interestedArea || "",
+            c.investmentType || "",
+            c.preferredSystem || "",
+            c.receptionNotes || "",
+            sits.length,
+            combinedSummary,
+          ];
+
+          for (let i = 0; i < maxSittings; i++) {
+            const s = sits[i];
+            if (s) {
+              row.push(`${s.salesName} (${s.salesCode})`);
+              row.push(s.status || "");
+              row.push(s.notes || "");
+              row.push(
+                `${s.startedAt || ""} ${s.endedAt ? "إلى " + s.endedAt : ""}`.trim(),
+              );
+            } else {
+              row.push("", "", "", "");
+            }
+          }
+
+          csv += row.map(csvEscape).join(",") + "\n";
+        });
+
+        const exhNamePart =
+          exhFilter === "ALL"
+            ? "كل_المعارض"
+            : appState.exhibitionsMeta[exhFilter]?.name || exhFilter;
+        const datePart = dateFilter === "ALL" ? "كل_الأيام" : dateFilter;
+        const salesPart =
+          salesFilter === "ALL" ? "كل_السيلز" : `السيلز_${salesFilter}`;
+
+        downloadCSVFile(
+          csv,
+          `شيت_B.almeter_${exhNamePart}_${datePart}_${salesPart}.csv`,
+        );
+      }
+
+      function exportSalesTeamSummaryExcel() {
+        const exhFilter = document.getElementById("excelExhFilter").value;
+        const dateFilter = document.getElementById("excelDateFilter").value;
+
+        const scopeInvs = appState.invitations.filter(
+          (i) => i && matchesExhibitionScope(i, exhFilter),
+        );
+        const scopeCheckins = getCheckinsArray().filter(
+          (c) =>
+            matchesExhibitionScope(c, exhFilter) &&
+            (dateFilter === "ALL" ||
+              extractIsoDateFromCheckin(c) === dateFilter),
+        );
+
+        const headers = [
+          "كود السيلز",
+          "اسم السيلز",
+          "إجمالي الدعوات المصدرة",
+          "عملاء حضروا له (نص أول 50%)",
+          "عملاء قعد معهم بالمعرض (نص ثاني 50%)",
+          "اشترى (تعاقد)",
+          "دفع حجز",
+          "مهتم وعاوز متابعة",
+          "مهتم بمشروع آخر",
+          "تواصل لاحقاً",
+          "لم يتم (استفسار فقط)",
+        ];
+
+        let csv = headers.map(csvEscape).join(",") + "\n";
+
+        getAllEffectiveSalesReps().forEach((rep) => {
+          const code = rep.code;
+          const invCount =
+            code === "COMPANY"
+              ? 0
+              : scopeInvs.filter((i) => formatSalesCode(i.salesCode) === code)
+                  .length;
+          const firstCount = scopeCheckins.filter(
+            (c) => formatSalesCode(c.firstSplitCode) === code,
+          ).length;
+
+          let sitCount = 0,
+            bought = 0,
+            reserved = 0,
+            interested = 0,
+            otherProj = 0,
+            later = 0,
+            noDeal = 0;
+
+          scopeCheckins.forEach((c) => {
+            const mySit = getSittingsArray(c).find(
+              (s) => formatSalesCode(s.salesCode) === code,
+            );
+            if (mySit) {
+              sitCount++;
+              if (mySit.status === "💰 اشترى (تعاقد)") bought++;
+              else if (mySit.status === "💳 دفع حجز") reserved++;
+              else if (mySit.status === "🔥 مهتم وعاوز متابعة") interested++;
+              else if (mySit.status === "🏢 مهتم بمشروع آخر") otherProj++;
+              else if (mySit.status === "📅 تواصل لاحقاً") later++;
+              else if (mySit.status === "❌ لم يتم (استفسار فقط)") noDeal++;
+            }
+          });
+
+          const row = [
+            code,
+            rep.name,
+            invCount,
+            firstCount,
+            sitCount,
+            bought,
+            reserved,
+            interested,
+            otherProj,
+            later,
+            noDeal,
+          ];
+          csv += row.map(csvEscape).join(",") + "\n";
+        });
+
+        const datePart = dateFilter === "ALL" ? "كل_الأيام" : dateFilter;
+        downloadCSVFile(csv, `ملخص_إنجاز_السيلز_${datePart}.csv`);
+      }
+
+      function copyAdminWhatsAppReport() {
+        const list = getAdminFilteredCheckins();
+        if (list.length === 0) {
+          alert("لا توجد سجلات لنسخها!");
+          return;
+        }
+
+        let text = `👑 *تقرير رادار الإدارة وتقسيمة الكومشن - B.almeter VIP*\n`;
+        text += `إجمالي العملاء في التقرير: *${list.length}* عميل\n`;
+        text += `----------------------------------\n`;
+
+        list.forEach((c) => {
+          const sits = getSittingsArray(c);
+          const commInfo = buildClearCommissionBreakdown(c);
+          const sitsText =
+            sits.length > 0
+              ? sits
+                  .map(
+                    (s) =>
+                      `${s.salesName} (${s.salesCode}): ${s.status} [الرأي: ${s.notes || "-"}]`,
+                  )
+                  .join(" + ")
+              : "لم يقعد معه سيلز بعد";
+
+          text += `🎫 #${c.seqNumber} | *${c.clientName}* (${c.clientPhone})\n`;
+          text += `📌 الأصل: ${commInfo.originText}\n`;
+          text += `💰 نص أول (50%): ${commInfo.firstHalfHolder} — (${commInfo.firstHalfReason})\n`;
+          text += `💼 نص ثاني (50% القعدة): ${sitsText}\n\n`;
+        });
+
+        navigator.clipboard.writeText(text).then(() => {
+          alert("✅ تم نسخ التقرير المفصل للواتساب بنجاح!");
+        });
+      }
+    </script>
+  </body>
+</html>
