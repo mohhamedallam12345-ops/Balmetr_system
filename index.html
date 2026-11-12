@@ -469,7 +469,7 @@
         resize: vertical;
       }
 
-      /* Touch Chips for Client Card */
+      /* Touch Chips */
       .survey-section {
         background: var(--bg-input);
         border: 1px solid var(--border-light);
@@ -632,7 +632,6 @@
         background: rgba(16, 185, 129, 0.1);
       }
 
-      /* Commission Detail Box inside Admin Table */
       .comm-detail-box {
         background: rgba(9, 14, 26, 0.75);
         border: 1px solid var(--border-light);
@@ -700,16 +699,11 @@
       }
 
       @keyframes pulseGlow {
-        0%,
-        100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0.65;
-        }
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.65; }
       }
 
-      /* Admin Desktop Layout & 5-Page Navigation */
+      /* Admin Layout */
       .kpi-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
@@ -740,7 +734,7 @@
 
       .admin-tabs {
         display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        grid-template-columns: repeat(6, minmax(0, 1fr));
         gap: 8px;
         margin-bottom: 14px;
       }
@@ -774,7 +768,6 @@
         box-shadow: 0 4px 14px rgba(245, 158, 11, 0.18);
       }
 
-      /* Global Scope Bar in Admin */
       .admin-global-scope-bar {
         background: var(--bg-card);
         border: 1.5px solid var(--border-light);
@@ -787,7 +780,6 @@
         align-items: end;
       }
 
-      /* Dedicated Excel Center Cards */
       .excel-types-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -846,8 +838,7 @@
         min-width: 900px;
       }
 
-      th,
-      td {
+      th, td {
         padding: 10px 12px;
         text-align: right;
         border-bottom: 1px solid var(--border);
@@ -866,7 +857,6 @@
         background: rgba(255, 255, 255, 0.02);
       }
 
-      /* Pagination Bar */
       .pagination-bar {
         display: flex;
         align-items: center;
@@ -901,7 +891,6 @@
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.65);
       }
 
-      /* Footer */
       .dev-footer {
         text-align: center;
         padding: 14px 10px 20px;
@@ -924,10 +913,22 @@
         text-decoration: none;
       }
 
-      @media (max-width: 900px) {
-        .admin-tabs {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
+      @media (max-width: 1100px) {
+        .admin-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      }
+
+      /* ========================================================= */
+      /* PDF PRINT CSS (A4 Landscape)                              */
+      /* ========================================================= */
+      @media print {
+        body { background: #fff !important; margin: 0; padding: 0; color: #000 !important; }
+        .app-container, .modal-overlay { display: none !important; }
+        #printReportContainer { display: block !important; width: 100%; background: #fff; color: #000; direction: rtl; }
+        @page { size: A4 landscape; margin: 10mm; }
+        .print-page-break { page-break-after: always; }
+        table { width: 100%; border-collapse: collapse; direction: rtl; border: 1px solid #000 !important; margin-top: 10px; }
+        th, td { border: 1px solid #000 !important; padding: 6px !important; font-size: 13px !important; text-align: right !important; color: #000 !important; background: transparent !important; white-space: normal !important; }
+        th { background-color: #e2e8f0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; font-weight: bold !important; }
       }
     </style>
   </head>
@@ -1035,8 +1036,7 @@
             <div class="mode-card-info">
               <h3 style="color: var(--gold)">👑 3. دخول الإدارة الشاملة</h3>
               <p>
-                5 صفحات متكاملة: الرادار الحي (مع تعديل البيانات)، كشف الغائبين،
-                مركز شيتات الإكسيل، والنسخ الاحتياطي.
+                6 صفحات متكاملة: الرادار الحي، الغائبين، شيتات الإكسيل، إحصائيات السيلز، المبيعات والحجوزات، والنسخ الاحتياطي.
               </p>
             </div>
             <div class="mode-card-arrow" style="color: var(--gold)">🔑</div>
@@ -1244,7 +1244,7 @@
                 </div>
               </div>
 
-              <!-- Sub-Box 1: Custom Sales Rep Search (Shows ALL sales reps even if hidden from sitting) -->
+              <!-- Sub-Box 1: Custom Sales Rep Search -->
               <div
                 id="recCustomSalesBox"
                 style="
@@ -1488,7 +1488,7 @@
       <!-- 2. SALES CLOSER MODE (CLOUD-ONLY + FILTERED REPS)    -->
       <!-- ==================================================== -->
       <section id="salesScreen" class="mobile-container" style="display: none">
-        <!-- Collapsible Sales Rep Identity Card (Shows ONLY Non-Hidden Sales Reps!) -->
+        <!-- Collapsible Sales Rep Identity Card -->
         <div
           class="card"
           style="
@@ -1686,9 +1686,22 @@
               </div>
             </div>
 
-            <!-- Mandatory Opinion / Reason -->
+            <!-- Conditional Deal Inputs (Project Name & Area Size) -->
+            <div id="salesDealExtraBox" style="display:none; background:var(--bg-input); border:1.5px solid var(--gold); border-radius:10px; padding:10px; margin-bottom:12px;">
+              <div style="font-size:0.84rem; font-weight:900; color:var(--gold); margin-bottom:8px;">💰 بيانات التعاقد أو الحجز المطلوبة:</div>
+              <div class="form-group" style="margin-bottom:8px;">
+                <label class="form-label">اسم المشروع *:</label>
+                <input type="text" id="salesProjectNameInput" class="form-control" placeholder="اسم المشروع (مثال: Podia Tower)..." oninput="saveActiveSalesDraftToLocal()" />
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">المساحة / الوحدة *:</label>
+                <input type="text" id="salesAreaSizeInput" class="form-control" placeholder="المساحة أو رقم الوحدة (مثال: 120 متر تجاري)..." oninput="saveActiveSalesDraftToLocal()" />
+              </div>
+            </div>
+
+            <!-- Mandatory or Optional Opinion / Reason -->
             <div class="form-group">
-              <label class="form-label" style="color: #f87171"
+              <label id="salesNotesLabel" class="form-label" style="color: #f87171"
                 >2. اكتب رأيك / السبب / تفاصيل القعدة * (إجباري):</label
               >
               <textarea
@@ -1712,10 +1725,10 @@
       </section>
 
       <!-- ==================================================== -->
-      <!-- 3. MASTER ADMIN MODE (5 ORGANIZED PAGES & EXCEL HUB) -->
+      <!-- 3. MASTER ADMIN MODE (6 ORGANIZED PAGES)             -->
       <!-- ==================================================== -->
       <section id="adminScreen" style="display: none">
-        <!-- Top Global Scope Bar (Exhibition & Date & Sales) -->
+        <!-- Top Global Scope Bar -->
         <div class="admin-global-scope-bar">
           <div>
             <label
@@ -1758,7 +1771,7 @@
           </div>
         </div>
 
-        <!-- Live Radar KPIs (7 Cards including Not Attended!) -->
+        <!-- Live Radar KPIs -->
         <div class="kpi-grid">
           <div class="kpi-card">
             <div class="label">إجمالي دعوات المعرض</div>
@@ -1788,7 +1801,7 @@
             </div>
           </div>
           <div class="kpi-card">
-            <div class="label">🟢 قاعدين مع السيلز الآن</div>
+            <div class="label">🟢 قاعد مع السيلز الآن</div>
             <div class="val" id="admKpiSittingNow" style="color: #34d399">
               0
             </div>
@@ -1817,7 +1830,7 @@
           </div>
         </div>
 
-        <!-- 5 Dedicated Admin Pages Navigation -->
+        <!-- 6 Dedicated Admin Pages Navigation -->
         <div class="admin-tabs">
           <button
             class="admin-tab-btn active"
@@ -1825,7 +1838,7 @@
             onclick="switchAdminTab('admTabRadar', this)"
           >
             <span class="tab-icon">📡</span>
-            <span>1. الرادار الحي (الحاضرين)</span>
+            <span>1. الرادار الحي</span>
           </button>
           <button
             class="admin-tab-btn"
@@ -1833,7 +1846,7 @@
             onclick="switchAdminTab('admTabNotAttended', this)"
           >
             <span class="tab-icon">📵</span>
-            <span>2. عملاء لم يحضروا (الغائبين)</span>
+            <span>2. الغائبين</span>
           </button>
           <button
             class="admin-tab-btn"
@@ -1841,7 +1854,7 @@
             onclick="switchAdminTab('admTabExcelCenter', this)"
           >
             <span class="tab-icon">📥</span>
-            <span>3. مركز شيتات الإكسيل</span>
+            <span>3. مركز الشيتات</span>
           </button>
           <button
             class="admin-tab-btn"
@@ -1853,22 +1866,30 @@
           </button>
           <button
             class="admin-tab-btn"
+            data-tab="admTabSalesDeals"
+            onclick="switchAdminTab('admTabSalesDeals', this)"
+          >
+            <span class="tab-icon">💰</span>
+            <span>5. المبيعات والحجوزات</span>
+          </button>
+          <button
+            class="admin-tab-btn"
             data-tab="admTabSettings"
-            onclick="switchAdminTab('admTabSettings', this)"
+            onclick="promptAdminSettingsPassword(this)"
           >
             <span class="tab-icon">🔑</span>
-            <span>5. الباسوردات والنسخ الاحتياطي</span>
+            <span>6. الباسوردات والنسخ</span>
           </button>
         </div>
 
         <!-- ============================================================== -->
-        <!-- PAGE 1: LIVE RADAR TABLE (ATTENDED CLIENTS & EDIT & SITTINGS)  -->
+        <!-- PAGE 1: LIVE RADAR TABLE                                       -->
         <!-- ============================================================== -->
         <div id="admTabRadar" class="adm-subtab">
           <div class="card">
             <div class="card-header">
               <div class="card-title">
-                📡 رادار الحاضرين وتفصيل الكومشن والآراء لحظة بلحظة (<span
+                📡 رادار الحاضرين وتفصيل الكومشن والآراء (<span
                   id="admRadarCount"
                   >0</span
                 >
@@ -1879,49 +1900,45 @@
                   type="text"
                   id="admRadarSearch"
                   class="form-control"
-                  placeholder="🔍 بحث بالعميل، الكود، الرقم، السيلز، أو الرأي..."
-                  style="width: 240px; padding: 7px 12px; font-size: 0.82rem"
-                  oninput="
-                    admRadarPage = 1;
-                    renderAdminRadarTable();
-                  "
+                  placeholder="🔍 بحث بالعميل، الكود، الرقم، السيلز..."
+                  style="width: 220px; padding: 7px 12px; font-size: 0.82rem"
+                  oninput="admRadarPage = 1; renderAdminRadarTable();"
                 />
                 <select
                   id="admStatusFilter"
                   class="form-control"
-                  style="width: 180px; padding: 7px 10px; font-size: 0.82rem"
-                  onchange="
-                    admRadarPage = 1;
-                    renderAdminRadarTable();
-                  "
+                  style="width: 170px; padding: 7px 10px; font-size: 0.82rem"
+                  onchange="admRadarPage = 1; renderAdminRadarTable();"
                 >
                   <option value="ALL">كل الحالات</option>
-                  <option value="LIVE_NOW">🟢 قاعد مع السيلز الآن</option>
-                  <option value="NO_SITTING">⏳ لم يقعد معه سيلز بعد</option>
+                  <option value="LIVE_NOW">🟢 قاعد حالياً</option>
+                  <option value="NO_SITTING">⏳ في الانتظار</option>
                   <option value="💰 اشترى (تعاقد)">💰 اشترى (تعاقد)</option>
                   <option value="💳 دفع حجز">💳 دفع حجز</option>
-                  <option value="🔥 مهتم وعاوز متابعة">
-                    🔥 مهتم وعاوز متابعة
-                  </option>
-                  <option value="🏢 مهتم بمشروع آخر">🏢 مهتم بمشروع آخر</option>
+                  <option value="🔥 مهتم وعاوز متابعة">🔥 مهتم ومتابعة</option>
+                  <option value="🏢 مهتم بمشروع آخر">🏢 مشروع آخر</option>
                   <option value="📅 تواصل لاحقاً">📅 تواصل لاحقاً</option>
-                  <option value="❌ لم يتم (استفسار فقط)">
-                    ❌ لم يتم (استفسار فقط)
-                  </option>
                 </select>
                 <button
                   class="btn btn-success"
                   style="padding: 7px 12px; font-size: 0.8rem"
                   onclick="copyAdminWhatsAppReport()"
                 >
-                  🟢 نسخ واتساب للحاضرين
+                  🟢 واتساب
                 </button>
                 <button
                   class="btn btn-primary"
                   style="padding: 7px 12px; font-size: 0.8rem"
                   onclick="exportFilteredMasterExcel()"
                 >
-                  📥 تحميل شيت الحاضرين
+                  📥 إكسيل
+                </button>
+                <button
+                  class="btn btn-gold"
+                  style="padding: 7px 12px; font-size: 0.8rem"
+                  onclick="printPdfReport('ATTENDED')"
+                >
+                  🖨️ PDF بالعرض
                 </button>
               </div>
             </div>
@@ -1932,10 +1949,10 @@
                   <tr>
                     <th>كود العميل والوقت</th>
                     <th>بيانات العميل</th>
-                    <th>تفصيل أصل العميل والنص الأول (50% المتابعة)</th>
+                    <th>تفصيل أصل العميل والنص الأول (50%)</th>
                     <th>كارت العميل (الاهتمامات)</th>
-                    <th>النص الثاني (50% القعدة والبيع) + الرأي الكامل</th>
-                    <th>إجراءات (تعديل / حذف)</th>
+                    <th>النص الثاني (50% القعدة والبيع) + الرأي</th>
+                    <th>إجراءات</th>
                   </tr>
                 </thead>
                 <tbody id="admRadarTbody"></tbody>
@@ -1974,63 +1991,49 @@
         </div>
 
         <!-- ============================================================== -->
-        <!-- PAGE 2: NOT ATTENDED CLIENTS (ABSENT INVITATIONS FOR FOLLOWUP) -->
+        <!-- PAGE 2: NOT ATTENDED CLIENTS                                   -->
         <!-- ============================================================== -->
         <div id="admTabNotAttended" class="adm-subtab" style="display: none">
           <div class="card">
             <div class="card-header">
               <div class="card-title" style="color: #f87171">
-                📵 كشف العملاء الذين لم يحضروا المعرض حتى الآن (<span
+                📵 كشف العملاء الذين لم يحضروا المعرض (<span
                   id="admAbsentCount"
                   >0</span
                 >
-                عميل غائب)
+                غائب)
               </div>
               <div style="display: flex; gap: 8px; flex-wrap: wrap">
                 <input
                   type="text"
                   id="admAbsentSearch"
                   class="form-control"
-                  placeholder="🔍 ابحث بالاسم أو الرقم أو الكود أو السيلز..."
-                  style="width: 240px; padding: 7px 12px; font-size: 0.82rem"
-                  oninput="
-                    admAbsentPage = 1;
-                    renderAdminNotAttendedTable();
-                  "
+                  placeholder="🔍 بحث بالاسم أو الرقم أو الكود..."
+                  style="width: 220px; padding: 7px 12px; font-size: 0.82rem"
+                  oninput="admAbsentPage = 1; renderAdminNotAttendedTable();"
                 />
                 <button
                   class="btn btn-success"
                   style="padding: 7px 12px; font-size: 0.8rem"
                   onclick="copyNotAttendedWhatsAppReport()"
                 >
-                  🟢 نسخ كشف الغائبين واتساب (للاتصال بهم)
+                  🟢 واتساب
                 </button>
                 <button
                   class="btn btn-primary"
                   style="padding: 7px 12px; font-size: 0.8rem"
                   onclick="exportNotAttendedExcel()"
                 >
-                  📥 تحميل شيت إكسيل الغائبين بالكامل
+                  📥 إكسيل
+                </button>
+                <button
+                  class="btn btn-gold"
+                  style="padding: 7px 12px; font-size: 0.8rem"
+                  onclick="printPdfReport('ABSENT')"
+                >
+                  🖨️ PDF بالعرض
                 </button>
               </div>
-            </div>
-
-            <div
-              style="
-                background: rgba(239, 68, 68, 0.1);
-                border: 1px solid rgba(239, 68, 68, 0.35);
-                color: #fecaca;
-                padding: 10px 12px;
-                border-radius: 10px;
-                margin-bottom: 12px;
-                font-size: 0.82rem;
-                font-weight: 800;
-              "
-            >
-              💡 هذه القائمة تعرض تلقائياً كل عميل تم إصدار دعوة له في المعرض
-              ولم يسجل دخوله في الريسبشن حتى هذه اللحظة. يمكنك اختيار
-              <strong>سيلز محدد</strong> من الفلتر العلوي أو عرض
-              <strong>الكل مجمع</strong>.
             </div>
 
             <div class="table-responsive">
@@ -2042,8 +2045,8 @@
                     <th>اسم العميل</th>
                     <th>رقم تليفون العميل (اضغط للاتصال)</th>
                     <th>السيلز صاحب الدعوة</th>
-                    <th>تاريخ ووقت إصدار الدعوة</th>
-                    <th>حالة الحضور بالمعرض</th>
+                    <th>تاريخ الإصدار</th>
+                    <th>الحالة</th>
                   </tr>
                 </thead>
                 <tbody id="admAbsentTbody"></tbody>
@@ -2088,15 +2091,14 @@
           <div class="card">
             <div class="card-header">
               <div class="card-title" style="color: var(--gold)">
-                📥 مركز تحميل شيتات الإكسيل الموحد (اختر نوع الشيت ونطاق
-                التصدير)
+                📥 مركز تحميل الشيتات الموحد (إكسيل + PDF بالعرض)
               </div>
             </div>
 
             <label
               class="form-label"
               style="color: var(--primary); font-size: 0.9rem"
-              >1️⃣ أولاً: اختر نوع شيت الإكسيل الذي تريده بالضبط:</label
+              >1️⃣ أولاً: اختر نوع الشيت أو التقرير المطلوب:</label
             >
             <div class="excel-types-grid">
               <div
@@ -2105,15 +2107,11 @@
                 onclick="selectExcelCenterType('ABSENT')"
               >
                 <div class="type-title">
-                  <span>📵 1. شيت اللي محضروش المعرض (الغائبين)</span>
-                  <span class="badge-danger" id="excelBadgeCount_ABSENT"
-                    >0</span
-                  >
+                  <span>📵 1. شيت الغائبين (لم يحضروا)</span>
+                  <span class="badge-danger" id="excelBadgeCount_ABSENT">0</span>
                 </div>
                 <div class="type-desc">
-                  يخرج كشف العملاء الذين صدرت لهم دعوات ولم يسجلوا دخول
-                  بالريسبشن نهائياً (الأكواد + الأسماء + التليفونات + السيلز)
-                  للرن عليهم.
+                  كشف العملاء الذين صدرت لهم دعوات ولم يسجلوا دخول بالريسبشن للاتصال بهم.
                 </div>
               </div>
 
@@ -2123,15 +2121,25 @@
                 onclick="selectExcelCenterType('ATTENDED')"
               >
                 <div class="type-title">
-                  <span>✅ 2. شيت الحاضرين وتفاصيل القعدات والكومشن</span>
-                  <span class="badge-success" id="excelBadgeCount_ATTENDED"
-                    >0</span
-                  >
+                  <span>✅ 2. شيت الحاضرين والكومشن</span>
+                  <span class="badge-success" id="excelBadgeCount_ATTENDED">0</span>
                 </div>
                 <div class="type-desc">
-                  يخرج كل العملاء الذين حضروا بالريسبشن، تقسيمة النص الأول
-                  (50%)، كارت اهتمامات العميل، والنص الثاني (50% القعدات وآراء
-                  السيلز).
+                  شامل الحاضرين، النص الأول 50%، الاهتمامات، والنص الثاني 50% وقعدات السيلز.
+                </div>
+              </div>
+
+              <div
+                id="excelCard_DEALS"
+                class="excel-type-card"
+                onclick="selectExcelCenterType('DEALS')"
+              >
+                <div class="type-title">
+                  <span>💰 3. شيت المبيعات والحجوزات فقط</span>
+                  <span class="badge-gold" id="excelBadgeCount_DEALS">0</span>
+                </div>
+                <div class="type-desc">
+                  عرض من اشتروا أو حجزوا مع اسم المشروع، المساحة، وتقسيمة الكومشن.
                 </div>
               </div>
 
@@ -2141,14 +2149,11 @@
                 onclick="selectExcelCenterType('ALL_INVITATIONS')"
               >
                 <div class="type-title">
-                  <span>📋 3. شيت شامل كل الدعوات (حضر / لم يحضر)</span>
-                  <span class="badge-code" id="excelBadgeCount_ALL_INVITATIONS"
-                    >0</span
-                  >
+                  <span>📋 4. شيت شامل الدعوات (حضر / غاب)</span>
+                  <span class="badge-code" id="excelBadgeCount_ALL_INVITATIONS">0</span>
                 </div>
                 <div class="type-desc">
-                  يخرج جميع الدعوات المصدرة للمعرض وموضح أمام كل عميل حالته: (✅
-                  حضر المعرض + وقت حضوره) أو (❌ لم يحضر).
+                  جميع الدعوات المصدرة وموضح أمام كل عميل حالة حضوره بالمعرض.
                 </div>
               </div>
 
@@ -2158,14 +2163,11 @@
                 onclick="selectExcelCenterType('SALES_SUMMARY')"
               >
                 <div class="type-title">
-                  <span>📈 4. شيت ملخص أرقام وإنجاز السيلز</span>
-                  <span class="badge-gold" id="excelBadgeCount_SALES_SUMMARY"
-                    >0</span
-                  >
+                  <span>📈 5. شيت ملخص إنجاز السيلز</span>
+                  <span class="badge-gold" id="excelBadgeCount_SALES_SUMMARY">0</span>
                 </div>
                 <div class="type-desc">
-                  يخرج جدول مجمع لكل السيلز: عدد الدعوات، كم عميل حضر منها، كم
-                  عميل غاب، عدد عملاء النص الأول، عدد القعدات، والمبيعات.
+                  جدول مجمع لكل السيلز: الدعوات، الحضور، الغياب، وقعدات البيع.
                 </div>
               </div>
             </div>
@@ -2182,8 +2184,7 @@
               <label
                 class="form-label"
                 style="color: var(--gold); font-size: 0.88rem"
-                >2️⃣ ثانياً: هل تريد الشيت مجمع لكل السيلز أم لسيلز محدد
-                لوحده؟</label
+                >2️⃣ ثانياً: النطاق (لكل السيلز أم لسيلز محدد؟)</label
               >
               <div
                 style="
@@ -2199,7 +2200,7 @@
                   class="btn btn-gold"
                   onclick="setExcelCenterSalesScope('ALL')"
                 >
-                  🌐 الكل مجمع مع بعض في شيت واحد
+                  🌐 الكل مجمع (جميع السيلز)
                 </button>
                 <select
                   id="excelCenterSalesSelect"
@@ -2227,25 +2228,33 @@
             <div
               style="
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
                 gap: 10px;
               "
             >
               <button
                 type="button"
                 class="btn btn-primary btn-block"
-                style="font-size: 0.96rem; padding: 14px"
+                style="font-size: 0.92rem; padding: 12px"
                 onclick="downloadSelectedExcelFromCenter()"
               >
-                📥 تحميل شيت الإكسيل المختار الآن (CSV)
+                📥 تحميل إكسيل (CSV)
+              </button>
+              <button
+                type="button"
+                class="btn btn-gold btn-block"
+                style="font-size: 0.92rem; padding: 12px"
+                onclick="printPdfReport(selectedExcelCenterType)"
+              >
+                🖨️ طباعة PDF بالعرض (A4)
               </button>
               <button
                 type="button"
                 class="btn btn-success btn-block"
-                style="font-size: 0.96rem; padding: 14px"
+                style="font-size: 0.92rem; padding: 12px"
                 onclick="copySelectedReportWhatsAppFromCenter()"
               >
-                🟢 نسخ التقرير المختار كرسالة واتساب
+                🟢 نسخ واتساب
               </button>
             </div>
           </div>
@@ -2258,16 +2267,24 @@
           <div class="card">
             <div class="card-header">
               <div class="card-title">
-                📊 جدول إنجاز السيلز الشامل (الدعوات + الحضور + الغياب + القعدات
-                + شيتات فردية)
+                📊 جدول إنجاز السيلز الشامل (الدعوات + الحضور + الغياب + القعدات)
               </div>
-              <button
-                class="btn btn-gold"
-                style="padding: 7px 12px; font-size: 0.8rem"
-                onclick="exportSalesTeamSummaryExcel()"
-              >
-                📥 تحميل هذا الجدول إكسيل
-              </button>
+              <div style="display: flex; gap: 8px;">
+                <button
+                  class="btn btn-gold"
+                  style="padding: 7px 12px; font-size: 0.8rem"
+                  onclick="exportSalesTeamSummaryExcel()"
+                >
+                  📥 إكسيل
+                </button>
+                <button
+                  class="btn btn-primary"
+                  style="padding: 7px 12px; font-size: 0.8rem"
+                  onclick="printPdfReport('SALES_SUMMARY')"
+                >
+                  🖨️ PDF بالعرض
+                </button>
+              </div>
             </div>
             <div class="table-responsive">
               <table>
@@ -2275,16 +2292,16 @@
                   <tr>
                     <th>الكود</th>
                     <th>اسم السيلز</th>
-                    <th>حالته في القعدة</th>
-                    <th>الدعوات المصدرة</th>
-                    <th>✅ حضر من دعواته</th>
-                    <th style="color: #f87171">📵 لم يحضروا (غائبين)</th>
-                    <th>حضر له (نص أول 50%)</th>
-                    <th>قعد معهم (نص ثاني 50%)</th>
-                    <th>🟢 قاعد حالياً</th>
-                    <th>💰 اشترى / حجز</th>
-                    <th>🔥 مهتم / متابعة</th>
-                    <th>تحميل شيت السيلز الفردي</th>
+                    <th>حالته بالقعدة</th>
+                    <th>الدعوات</th>
+                    <th>✅ حضر</th>
+                    <th style="color: #f87171">📵 غائب</th>
+                    <th>نص أول (50%)</th>
+                    <th>قعدات (50%)</th>
+                    <th>🟢 حالياً</th>
+                    <th>💰 اشترى/حجز</th>
+                    <th>🔥 متابعة</th>
+                    <th>شيتات فردية</th>
                   </tr>
                 </thead>
                 <tbody id="admSalesStatsTbody"></tbody>
@@ -2294,7 +2311,68 @@
         </div>
 
         <!-- ============================================================== -->
-        <!-- PAGE 5: PASSWORDS, CLOUD SETTINGS & FULL JSON BACKUP/RESTORE   -->
+        <!-- PAGE 5: NEW SALES DEALS & BOOKINGS (50% / 50%)                 -->
+        <!-- ============================================================== -->
+        <div id="admTabSalesDeals" class="adm-subtab" style="display: none">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title" style="color: var(--success)">
+                💰 صفحة المبيعات والحجوزات (التعاقدات ودفعات الحجز) (<span id="admDealsCount">0</span> عميل)
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <input
+                  type="text"
+                  id="admDealsSearch"
+                  class="form-control"
+                  placeholder="🔍 بحث بالمشروع، العميل، أو السيلز..."
+                  style="width: 220px; padding: 7px 12px; font-size: 0.82rem"
+                  oninput="renderAdminDealsTable()"
+                />
+                <button
+                  class="btn btn-success"
+                  style="padding: 7px 12px; font-size: 0.8rem"
+                  onclick="copyDealsWhatsAppReport()"
+                >
+                  🟢 واتساب المبيعات
+                </button>
+                <button
+                  class="btn btn-primary"
+                  style="padding: 7px 12px; font-size: 0.8rem"
+                  onclick="exportDealsExcel()"
+                >
+                  📥 إكسيل
+                </button>
+                <button
+                  class="btn btn-gold"
+                  style="padding: 7px 12px; font-size: 0.8rem"
+                  onclick="printPdfReport('DEALS')"
+                >
+                  🖨️ PDF بالعرض
+                </button>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>كود العميل والوقت</th>
+                    <th>بيانات العميل والتليفون</th>
+                    <th>القرار النهائي</th>
+                    <th>اسم المشروع</th>
+                    <th>المساحة / الوحدة</th>
+                    <th>مستحق النص الأول (50% المتابعة)</th>
+                    <th>سيلز القعدة والبيع (النص الثاني 50%)</th>
+                    <th>رأي السيلز وتفاصيل القعدة</th>
+                  </tr>
+                </thead>
+                <tbody id="admDealsTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- PAGE 6: PASSWORDS & BACKUP (PROTECTED WITH M-A-L-L-A-M)        -->
         <!-- ============================================================== -->
         <div id="admTabSettings" class="adm-subtab" style="display: none">
           <div
@@ -2388,8 +2466,7 @@
                   margin-bottom: 10px;
                 "
               >
-                يمكنك تحميل نسخة احتياطية كاملة لكل سجلات الحضور والقعدات وآراء
-                السيلز والباسوردات على جهازك، أو استعادتها للسحابة في أي وقت.
+                يمكنك تحميل نسخة احتياطية كاملة لكل سجلات الحضور والقعدات على جهازك، أو استعادتها للسحابة في أي وقت.
               </p>
               <button
                 type="button"
@@ -2470,7 +2547,44 @@
       </div>
     </div>
 
-    <!-- Admin Edit Checkin Modal (تعديل بيانات العميل أو السيلز المتابع بدون مسح قعداته) -->
+    <!-- Admin Settings Unlock Modal (Protected by M-A-L-L-A-M) -->
+    <div id="settingsPasswordModal" class="modal-overlay">
+      <div class="modal-box" style="max-width: 370px">
+        <h3 style="color: var(--gold); margin-bottom: 6px">
+          🔑 تأمين الإدارة (الباسوردات والنسخ)
+        </h3>
+        <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 14px;">
+          أدخل باسورد الإدارة الخاص (M-A-L-L-A-M) لفتح هذه الصفحة الحساسة:
+        </p>
+        <input
+          type="password"
+          id="settingsPasswordInput"
+          class="form-control"
+          placeholder="اكتب الباسورد M-A-L-L-A-M..."
+          dir="ltr"
+          style="margin-bottom: 14px; text-align: center; font-size: 18px"
+          onkeydown="if (event.key === 'Enter') verifySettingsPassword();"
+        />
+        <div style="display: flex; gap: 8px">
+          <button
+            class="btn btn-gold"
+            style="flex: 1"
+            onclick="verifySettingsPassword()"
+          >
+            فتح ✅
+          </button>
+          <button
+            class="btn btn-outline"
+            style="flex: 1"
+            onclick="document.getElementById('settingsPasswordModal').style.display='none'"
+          >
+            إلغاء
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Edit Checkin Modal -->
     <div id="editCheckinModal" class="modal-overlay">
       <div class="modal-box">
         <h3 style="color: var(--primary); margin-bottom: 10px">
@@ -2538,16 +2652,19 @@
       </div>
     </div>
 
+    <!-- Hidden Print Container for Clean A4 Landscape PDF Generation -->
+    <div id="printReportContainer" style="display: none;"></div>
+
     <script>
       const DEFAULT_FIREBASE_URL =
         "https://balmetr-vip-default-rtdb.firebaseio.com";
       const MASTER_PASS_1 = "2242006,mo";
       const MASTER_PASS_2 = "mo,2242006";
-      const ACTIVE_MODE_SESSION_KEY = "BALMETR_ACTIVE_MODE_SESSION_V10";
-      const ACTIVE_SALES_DRAFT_KEY = "BALMETR_ACTIVE_SALES_DRAFT_V10";
-      const SAVED_FIREBASE_URL_KEY = "BALMETR_CLOUD_URL_V10";
+      const SETTINGS_ADMIN_PASS = "M-A-L-L-A-M";
+      const ACTIVE_MODE_SESSION_KEY = "BALMETR_ACTIVE_MODE_SESSION_V11";
+      const ACTIVE_SALES_DRAFT_KEY = "BALMETR_ACTIVE_SALES_DRAFT_V11";
+      const SAVED_FIREBASE_URL_KEY = "BALMETR_CLOUD_URL_V11";
 
-      // مسح أي كاش ثقيل قديم على الموبايلات أو اللابتوب لضمان السرعة القصوى (Cloud-Only)
       const OBSOLETE_CACHE_KEYS = [
         "BALMETR_VIP_PRO_V8_FINAL",
         "BALMETR_VIP_PRO_V7_FINAL",
@@ -2586,11 +2703,10 @@
         lastInvitationsCloudTs: 0,
       };
 
-      // فهرس سريع في الرامات للبحث اللحظي في 0 ثانية
       let invitationsByExhMap = new Map();
-
-      let currentMode = "LANDING"; // LANDING | RECEPTION | SALES | ADMIN
+      let currentMode = "LANDING";
       let pendingTargetMode = null;
+      let isSettingsUnlocked = false;
       let isSyncing = false;
       let isSubmittingCheckin = false;
       let isSubmittingSitting = false;
@@ -2603,20 +2719,16 @@
       let recSelectedInv = null;
       let recIsWalkin = false;
       let recAssignedWalkinSeq = null;
-      let recFirstSplitMode = "DEFAULT"; // DEFAULT | CUSTOM | COMPANY | COMPANION
+      let recFirstSplitMode = "DEFAULT";
       let recCompanionHostCheckin = null;
-      let recSurvey = {
-        area: [],
-        type: [],
-        sys: [],
-      };
+      let recSurvey = { area: [], type: [], sys: [] };
 
       // Sales Closer State
       let salesActiveCheckinId = null;
       let salesChosenOutcome = "";
 
       // Admin Pagination & Excel Center State
-      let selectedExcelCenterType = "ABSENT"; // ABSENT | ATTENDED | ALL_INVITATIONS | SALES_SUMMARY
+      let selectedExcelCenterType = "ABSENT";
       let admRadarPage = 1;
       let admAbsentPage = 1;
       const ADMIN_PAGE_SIZE = 40;
@@ -2629,7 +2741,6 @@
         await syncFromCloudByRole(false);
         restoreSalesSittingAfterSync();
 
-        // نبضة فحص خفيفة جداً على السحابة كل 12 ثانية
         setInterval(() => {
           if (
             !isSyncing &&
@@ -2641,7 +2752,6 @@
           }
         }, 12000);
 
-        // سحب فوري من السحابة بمجرد إضاءة شاشة الموبايل
         document.addEventListener("visibilitychange", () => {
           if (!document.hidden && !isSyncing) {
             checkHeartbeatAndSync();
@@ -2649,14 +2759,9 @@
         });
       });
 
-      /* ==================================================== */
-      /* CLOUD-ONLY MEMORY & NETWORK RETRY ENGINE             */
-      /* ==================================================== */
       function purgeObsoleteLocalCache() {
         OBSOLETE_CACHE_KEYS.forEach((k) => {
-          try {
-            localStorage.removeItem(k);
-          } catch (e) {}
+          try { localStorage.removeItem(k); } catch (e) {}
         });
         try {
           const savedUrl = localStorage.getItem(SAVED_FIREBASE_URL_KEY);
@@ -2664,7 +2769,6 @@
         } catch (e) {}
       }
 
-      // دالة اتصال ذكية بالسحابة تعيد المحاولة تلقائياً 3 مرات إذا رمشت شبكة القاعة
       async function fetchWithRetry(url, options = {}, retries = 3) {
         const fetchOpts = { cache: "no-store", ...options };
         for (let attempt = 1; attempt <= retries; attempt++) {
@@ -2691,9 +2795,6 @@
         });
       }
 
-      /* ==================================================== */
-      /* HELPERS & NORMALIZATION                              */
-      /* ==================================================== */
       function toEnglishDigits(str) {
         if (!str) return "";
         return String(str)
@@ -2889,9 +2990,6 @@
         };
       }
 
-      /* ==================================================== */
-      /* TINY SESSION PERSISTENCE (~50 BYTES ONLY)            */
-      /* ==================================================== */
       function saveActiveModeToLocal() {
         try {
           localStorage.setItem(
@@ -2912,6 +3010,8 @@
           }
           const notes =
             document.getElementById("salesSittingNotes")?.value || "";
+          const proj = document.getElementById("salesProjectNameInput")?.value || "";
+          const areaSize = document.getElementById("salesAreaSizeInput")?.value || "";
           const closer = getCurrentCloserObj();
           localStorage.setItem(
             ACTIVE_SALES_DRAFT_KEY,
@@ -2921,6 +3021,8 @@
               closerCode: closer.code,
               outcome: salesChosenOutcome,
               notes: notes,
+              projectName: proj,
+              areaSize: areaSize,
             }),
           );
         } catch (e) {}
@@ -2966,7 +3068,13 @@
                 `${chk.clientName} (#${chk.seqNumber})`;
               document.getElementById("salesSittingNotes").value =
                 draft.notes || "";
+              const projInp = document.getElementById("salesProjectNameInput");
+              const areaInp = document.getElementById("salesAreaSizeInput");
+              if (projInp) projInp.value = draft.projectName || "";
+              if (areaInp) areaInp.value = draft.areaSize || "";
+
               highlightSelectedOutcomeButton(salesChosenOutcome);
+              selectSalesOutcome(salesChosenOutcome, null);
               renderSalesActiveClientView();
               return;
             }
@@ -2992,13 +3100,16 @@
                 `${activeCloudClient.clientName} (#${activeCloudClient.seqNumber})`;
               document.getElementById("salesSittingNotes").value =
                 mySit?.notes || "";
+              const projInp = document.getElementById("salesProjectNameInput");
+              const areaInp = document.getElementById("salesAreaSizeInput");
+              if (projInp) projInp.value = mySit?.projectName || "";
+              if (areaInp) areaInp.value = mySit?.areaSize || "";
+
               saveActiveSalesDraftToLocal();
               renderSalesActiveClientView();
             }
           }
-        } catch (e) {
-          console.warn("Restore session warning:", e);
-        }
+        } catch (e) {}
       }
 
       function highlightSelectedOutcomeButton(outcomeStr) {
@@ -3013,9 +3124,6 @@
           });
       }
 
-      /* ==================================================== */
-      /* 100% CLOUD-ONLY SYNC ENGINE (ROLE-OPTIMIZED)         */
-      /* ==================================================== */
       function cleanBaseUrl(urlOverride) {
         const raw = urlOverride || appState.firebaseUrl || DEFAULT_FIREBASE_URL;
         const cleaned = raw.trim().replace(/\/+$/, "");
@@ -3043,7 +3151,6 @@
       async function syncExactExhibitionsFromCloud(cachedMetaFromRecDb = {}) {
         const base = cleanBaseUrl();
         try {
-          // أولاً: قراءة ملف exhibitionsMeta الخفيف من سيستم الدعوات V10 (سريع جداً)
           const sysMetaRes = await fetchWithRetry(
             `${base}/balmeter_vip_system/exhibitionsMeta.json`,
             {},
@@ -3076,7 +3183,6 @@
             }
           }
 
-          // بديل احتياطي: قراءة المفاتيح السطحية بدون صور
           const shallowRes = await fetchWithRetry(
             `${base}/balmeter_vip_system/exhibitions.json?shallow=true`,
             {},
@@ -3117,12 +3223,9 @@
           if (!appState.exhibitionsMeta[appState.activeExhibitionId]) {
             appState.activeExhibitionId = Object.keys(cleanMeta)[0];
           }
-        } catch (e) {
-          console.warn("Exhibition meta sync warning:", e);
-        }
+        } catch (e) {}
       }
 
-      // سحب الدعاوي من السحابة فقط عند الحاجة (في الريسبشن أو الإدارة فقط، ولا تُسحب في شاشة سيلز القعدة!)
       async function ensureCloudInvitationsLoaded(forceRefresh = false) {
         if (currentMode === "SALES" || currentMode === "LANDING") return true;
         if (appState.invitationsLoadedInMemory && !forceRefresh) return true;
@@ -3170,9 +3273,7 @@
             rebuildInvitationsMemoryIndex();
             return true;
           }
-        } catch (e) {
-          console.warn("Invitations cloud fetch warning:", e);
-        }
+        } catch (e) {}
         return false;
       }
 
@@ -3231,7 +3332,6 @@
 
           await syncExactExhibitionsFromCloud(recDb?.exhibitionsMeta || {});
 
-          // سحب الدعاوي فقط لو المستخدم داخل في وضع الريسبشن أو الإدارة
           if (currentMode === "RECEPTION" || currentMode === "ADMIN") {
             await ensureCloudInvitationsLoaded(true);
           }
@@ -3243,10 +3343,9 @@
             alert("✅ تم تحديث جميع البيانات لايف من السحابة بنجاح!");
           return true;
         } catch (e) {
-          console.warn("Cloud sync error:", e);
           setSyncBadge(false, "🔴 السحابة غير متصلة");
           if (showAlert) {
-            alert("❌ تعذر الاتصال بالسحابة! يرجى التأكد من اتصال الإنترنت.");
+            alert("❌ تعذر الاتصال بالسحابة! يرجى التأكد من الإنترنت.");
           }
           return false;
         } finally {
@@ -3342,7 +3441,6 @@
         await syncFromCloudByRole(true);
       }
 
-      // حفظ صارم على السحابة لبيانات العميل في الريسبشن (لا يقبل إلا بتأكيد السحابة 100%)
       async function pushSingleCheckinToCloudStrict(
         checkinObj,
         updateNextSeq = null,
@@ -3408,13 +3506,11 @@
           setSyncBadge(true, "🟢 متصل بالسحابة لايف");
           return true;
         } catch (e) {
-          console.error("Strict checkin push error:", e);
           setSyncBadge(false, "🔴 فشل الحفظ بالسحابة");
           return false;
         }
       }
 
-      // حفظ صارم لقعدة السيلز على السحابة
       async function pushSingleSittingToCloudStrict(checkinId, sittingObj) {
         const base = cleanBaseUrl();
         const now = Date.now();
@@ -3456,15 +3552,11 @@
           setSyncBadge(true, "🟢 متصل بالسحابة لايف");
           return true;
         } catch (e) {
-          console.error("Strict sitting push error:", e);
           setSyncBadge(false, "🔴 فشل الحفظ بالسحابة");
           return false;
         }
       }
 
-      /* ==================================================== */
-      /* EXHIBITION DRAWER & MODE NAVIGATION                  */
-      /* ==================================================== */
       function toggleExhibitionListDrawer(forceState) {
         if (typeof forceState === "boolean") {
           isExhDrawerOpen = forceState;
@@ -3546,6 +3638,28 @@
           } else {
             alert("❌ باسورد الإدارة الشاملة غير صحيح!");
           }
+        }
+      }
+
+      function promptAdminSettingsPassword(btnEl) {
+        if (isSettingsUnlocked) {
+          switchAdminTab('admTabSettings', btnEl);
+          return;
+        }
+        document.getElementById("settingsPasswordInput").value = "";
+        document.getElementById("settingsPasswordModal").style.display = "flex";
+        setTimeout(() => document.getElementById("settingsPasswordInput").focus(), 80);
+      }
+
+      function verifySettingsPassword() {
+        const val = (document.getElementById("settingsPasswordInput").value || "").trim();
+        if (val === SETTINGS_ADMIN_PASS || val === MASTER_PASS_1 || val === MASTER_PASS_2) {
+          isSettingsUnlocked = true;
+          document.getElementById("settingsPasswordModal").style.display = "none";
+          const settingsBtn = document.querySelector('.admin-tab-btn[data-tab="admTabSettings"]') || document.querySelectorAll('.admin-tab-btn')[5];
+          switchAdminTab('admTabSettings', settingsBtn);
+        } else {
+          alert("❌ باسورد قسم النسخ الاحتياطي والباسوردات غير صحيح! (الكلمة المطلوبة: M-A-L-L-A-M)");
         }
       }
 
@@ -3657,9 +3771,7 @@
         }
       }
 
-      /* ==================================================== */
-      /* 1. RECEPTION WIZARD (ALL SALES REPS REMAIN VISIBLE)  */
-      /* ==================================================== */
+      // Reception Wizard
       function goToReceptionStep(stepNum) {
         if (stepNum === 2 && !recStep1Completed) {
           alert("⚠️ أكمل الخطوة 1 (اختيار أو كتابة بيانات العميل) أولاً!");
@@ -3780,8 +3892,7 @@
           errBox.innerHTML = `
             ⛔ مرفوض: هذا العميل مسجل دخوله بالفعل في المعرض!<br>
             👤 <strong>${dupCheckin.clientName}</strong> (كود: #${dupCheckin.seqNumber}) — 📱 <span dir="ltr">${dupCheckin.clientPhone}</span><br>
-            🔹 المتابع: <strong>${dupCheckin.firstSplitName}</strong><br>
-            <span style="font-size:0.76rem; color:#fca5a5;">لا يسمح النظام بإدخال نفس العميل أو الكود أو الرقم مرتين.</span>
+            🔹 المتابع: <strong>${dupCheckin.firstSplitName}</strong>
           `;
           submitBtn.disabled = true;
           if (step1NextBtn) step1NextBtn.disabled = true;
@@ -4047,25 +4158,10 @@
               (c.clientName || "").toLowerCase().includes(rawLower)),
         );
 
-        const exhInvs = getActiveExhibitionInvitationsFast(exh);
-        const notAttendedInvitations = exhInvs.filter(
-          (i) =>
-            !attendedMatches.some(
-              (c) => String(c.seqNumber) === String(i.seqNumber),
-            ) &&
-            (String(i.seqNumber).toLowerCase().includes(rawLower) ||
-              (normPhone.length >= 3 &&
-                normalizePhone(i.clientPhone).includes(normPhone)) ||
-              (i.clientName || "").toLowerCase().includes(rawLower)),
-        );
-
         listEl.style.display = "flex";
         listEl.innerHTML = "";
 
-        if (
-          attendedMatches.length === 0 &&
-          notAttendedInvitations.length === 0
-        ) {
+        if (attendedMatches.length === 0) {
           listEl.innerHTML = `<div style="padding:10px; text-align:center; color:var(--gold); font-size:0.8rem; font-weight:800;">⚠️ لا يوجد عميل حاضر بالمعرض بهذا الاسم أو الكود.</div>`;
           return;
         }
@@ -4093,28 +4189,6 @@
               🏅 <strong>النص الأول (50%) سيُحسب للسيلز:</strong> <span class="badge-code">${chk.firstSplitName} (${chk.firstSplitCode})</span>
             `;
             updateStep2SummaryBadge();
-          };
-          listEl.appendChild(item);
-        });
-
-        notAttendedInvitations.slice(0, 4).forEach((inv) => {
-          const item = document.createElement("div");
-          item.className = "search-match-item";
-          item.style.borderColor = "var(--danger)";
-          item.innerHTML = `
-            <div>
-              <strong style="color:#f87171;">#${inv.seqNumber} - ${inv.clientName}</strong>
-              <div style="font-size:0.74rem; color:#fca5a5;">⛔ لم يدخل المعرض حتى الآن!</div>
-            </div>
-            <span style="font-size:0.74rem; color:#f87171; font-weight:800;">غير مسجل حضور</span>
-          `;
-          item.onclick = () => {
-            recCompanionHostCheckin = null;
-            listEl.style.display = "none";
-            alert(
-              `⚠️ العميل (${inv.clientName} - #${inv.seqNumber}) لم يدخل المعرض بعد!\nلازم العميل الأصلي يكون دخل المعرض فعلياً، وإلا يُسجل المرافق كـ (عميل شركة).`,
-            );
-            setReceptionFirstSplit("COMPANY");
           };
           listEl.appendChild(item);
         });
@@ -4148,9 +4222,7 @@
 
       function confirmReceptionStep2() {
         if (recFirstSplitMode === "COMPANION" && !recCompanionHostCheckin) {
-          alert(
-            "⚠️ اختر العميل الحاضر بالمعرض الذي جاء من طرفه، أو اختر (عميل شركة)!",
-          );
+          alert("⚠️ اختر العميل الحاضر بالمعرض الذي جاء من طرفه، أو اختر (عميل شركة)!");
           return;
         }
         recStep2Completed = true;
@@ -4274,9 +4346,7 @@
         );
         if (dup) {
           showReceptionDuplicateLock(dup);
-          alert(
-            `⛔ مرفوض: هذا العميل (${dup.clientName} - #${dup.seqNumber}) مسجل دخول بالفعل!`,
-          );
+          alert(`⛔ مرفوض: هذا العميل مسجل دخول بالفعل!`);
           return;
         }
 
@@ -4385,15 +4455,11 @@
             nextSeqToAdvance,
           );
           if (!savedOk) {
-            alert(
-              "❌ لم يتم حفظ العميل لأن السحابة غير متصلة حالياً!\nتأكد من الإنترنت واضغط حفظ مرة أخرى لضمان ظهور العميل عند السيلز.",
-            );
+            alert("❌ لم يتم حفظ العميل لأن السحابة غير متصلة حالياً!");
             return;
           }
           resetReceptionForm();
-          alert(
-            `✅ تم تسجيل دخول العميل (${clientName}) بالسحابة بكود (#${seqNumber}) بنجاح!\nالنص الأول (50%): ${firstName}`,
-          );
+          alert(`✅ تم تسجيل دخول العميل (${clientName}) بالسحابة بكود (#${seqNumber}) بنجاح!`);
         } finally {
           isSubmittingCheckin = false;
           btn.disabled = false;
@@ -4401,9 +4467,7 @@
         }
       }
 
-      /* ==================================================== */
-      /* 2. SALES CLOSER MODE (ONLY NON-HIDDEN REPS APPEAR!)  */
-      /* ==================================================== */
+      // Sales Closer Mode
       function toggleCloserIdentityDrawer() {
         const drawer = document.getElementById("closerIdentityDrawer");
         if (!drawer) return;
@@ -4559,6 +4623,10 @@
 
         document.getElementById("salesSittingNotes").value =
           existingSit?.notes || "";
+        const projInp = document.getElementById("salesProjectNameInput");
+        const areaInp = document.getElementById("salesAreaSizeInput");
+        if (projInp) projInp.value = existingSit?.projectName || "";
+        if (areaInp) areaInp.value = existingSit?.areaSize || "";
 
         saveActiveSalesDraftToLocal();
         await triggerAutoSittingNow(checkinId);
@@ -4579,11 +4647,10 @@
         const sittingPayload = {
           salesCode: closer.code,
           salesName: closer.name,
-          status: "🟢 قاعد مع العميل حالياً",
-          notes:
-            document.getElementById("salesSittingNotes")?.value ||
-            existingSit?.notes ||
-            "",
+          status: salesChosenOutcome || existingSit?.status || "🟢 قاعد مع العميل حالياً",
+          notes: document.getElementById("salesSittingNotes")?.value || existingSit?.notes || "",
+          projectName: document.getElementById("salesProjectNameInput")?.value || existingSit?.projectName || "",
+          areaSize: document.getElementById("salesAreaSizeInput")?.value || existingSit?.areaSize || "",
           startedAt: existingSit?.startedAt || nowTime,
           startedAtMs: existingSit?.startedAtMs || Date.now(),
           updatedAt: nowTime,
@@ -4622,7 +4689,6 @@
             <div>📍 <strong>مهتم بمنطقة:</strong> <span style="color:#fff; font-weight:800;">${chk.interestedArea || "غير محدد"}</span></div>
             <div>🏢 <strong>نوع الاستثمار:</strong> <span style="color:#fff; font-weight:800;">${chk.investmentType || "غير محدد"}</span></div>
             <div>⚙️ <strong>النظام المفضل:</strong> <span style="color:#fff; font-weight:800;">${chk.preferredSystem || "غير محدد"}</span></div>
-            ${chk.receptionNotes ? `<div>📝 <strong>ملاحظة الريسبشن:</strong> <span style="color:var(--gold);">${chk.receptionNotes}</span></div>` : ""}
           </div>
         `;
 
@@ -4643,10 +4709,8 @@
                     <span class="${isLive ? "badge-live" : "badge-gold"}">${s.status}</span>
                   </div>
                   <div style="font-size:0.81rem; color:#e2e8f0; margin-top:4px; font-weight:700;">
-                    💬 الرأي / الملاحظة: <span style="color:${s.notes ? "#fde68a" : "var(--text-muted)"};">${s.notes || "جاري القعدة الآن..."}</span>
-                  </div>
-                  <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">
-                    🕒 بداية: ${s.startedAt || "-"} ${s.endedAt ? `| انتهاء: ${s.endedAt}` : ""}
+                    💬 الرأي: <span style="color:${s.notes ? "#fde68a" : "var(--text-muted)"};">${s.notes || "جاري القعدة..."}</span>
+                    ${s.projectName ? `<br>🏢 المشروع: <span style="color:var(--primary);">${s.projectName}</span> | المساحة: <span style="color:var(--gold);">${s.areaSize || "-"}</span>` : ""}
                   </div>
                 </div>
               `;
@@ -4655,9 +4719,21 @@
         }
       }
 
-      function selectSalesOutcome(statusText) {
+      function selectSalesOutcome(statusText, btnEl) {
         salesChosenOutcome = statusText;
         highlightSelectedOutcomeButton(statusText);
+
+        const extraBox = document.getElementById("salesDealExtraBox");
+        const notesLabel = document.getElementById("salesNotesLabel");
+
+        if (statusText === "💰 اشترى (تعاقد)" || statusText === "💳 دفع حجز") {
+          extraBox.style.display = "block";
+          if (notesLabel) notesLabel.innerHTML = `2. اكتب رأيك / السبب / تفاصيل القعدة (اختياري):`;
+        } else {
+          extraBox.style.display = "none";
+          if (notesLabel) notesLabel.innerHTML = `2. اكتب رأيك / السبب / تفاصيل القعدة * (إجباري):`;
+        }
+
         saveActiveSalesDraftToLocal();
       }
 
@@ -4667,6 +4743,9 @@
         localStorage.removeItem(ACTIVE_SALES_DRAFT_KEY);
         document.getElementById("salesClientSearchInput").value = "";
         document.getElementById("salesSittingNotes").value = "";
+        document.getElementById("salesProjectNameInput").value = "";
+        document.getElementById("salesAreaSizeInput").value = "";
+        document.getElementById("salesDealExtraBox").style.display = "none";
         document.getElementById("salesMatchesList").style.display = "none";
         document.getElementById("salesActiveClientWorkspace").style.display =
           "none";
@@ -4683,21 +4762,32 @@
         }
 
         if (!salesChosenOutcome) {
-          alert(
-            "⚠️ إجباري: يجب اختيار القرار النهائي للقعدة من الـ 6 اختيارات قبل الحفظ!",
-          );
+          alert("⚠️ إجباري: يجب اختيار القرار النهائي للقعدة من الـ 6 اختيارات قبل الحفظ!");
           return;
+        }
+
+        let projectName = "";
+        let areaSize = "";
+        if (salesChosenOutcome === "💰 اشترى (تعاقد)" || salesChosenOutcome === "💳 دفع حجز") {
+          projectName = (document.getElementById("salesProjectNameInput").value || "").trim();
+          areaSize = (document.getElementById("salesAreaSizeInput").value || "").trim();
+          if (!projectName || !areaSize) {
+            alert("⚠️ إجباري: نظراً لاختيارك (تعاقد أو حجز)، يجب كتابة (اسم المشروع) و(المساحة / الوحدة) بدقة!");
+            document.getElementById("salesProjectNameInput").focus();
+            return;
+          }
         }
 
         const opinionNotes = (
           document.getElementById("salesSittingNotes").value || ""
         ).trim();
-        if (!opinionNotes || opinionNotes.length < 3) {
-          alert(
-            "⚠️ إجباري: لازم تكتب رأيك أو السبب أو تفاصيل القعدة في خانة الملاحظات عشان تظهر للإدارة ولزمايلك اللي بعدك!",
-          );
-          document.getElementById("salesSittingNotes").focus();
-          return;
+
+        if (salesChosenOutcome !== "💰 اشترى (تعاقد)" && salesChosenOutcome !== "💳 دفع حجز") {
+          if (!opinionNotes || opinionNotes.length < 3) {
+            alert("⚠️ إجباري: لازم تكتب رأيك أو السبب أو تفاصيل القعدة في خانة الملاحظات عشان تظهر للإدارة!");
+            document.getElementById("salesSittingNotes").focus();
+            return;
+          }
         }
 
         const closer = getCurrentCloserObj();
@@ -4712,6 +4802,8 @@
           salesName: closer.name,
           status: salesChosenOutcome,
           notes: opinionNotes,
+          projectName: projectName,
+          areaSize: areaSize,
           startedAt: existingSit?.startedAt || nowTime,
           startedAtMs: existingSit?.startedAtMs || Date.now(),
           endedAt: nowTime,
@@ -4729,14 +4821,10 @@
             finalSitting,
           );
           if (!savedOk) {
-            alert(
-              "❌ تعذر الحفظ في السحابة بسبب ضعف الإنترنت! لم يتم مسح ما كتبته، اضغط حفظ مرة أخرى.",
-            );
+            alert("❌ تعذر الحفظ في السحابة بسبب ضعف الإنترنت!");
             return;
           }
-          alert(
-            `✅ تم تسجيل قرارك (${salesChosenOutcome}) ورأيك على العميل (${chk.clientName}) بالسحابة بنجاح!`,
-          );
+          alert(`✅ تم تسجيل قرارك (${salesChosenOutcome}) ورأيك على العميل (${chk.clientName}) بالسحابة بنجاح!`);
           clearActiveSalesSessionAndReset();
         } finally {
           isSubmittingSitting = false;
@@ -4745,9 +4833,7 @@
         }
       }
 
-      /* ==================================================== */
-      /* 3. MASTER ADMIN MODE (5 PAGES + EDIT + BACKUP)       */
-      /* ==================================================== */
+      // Master Admin Mode
       function switchAdminTab(tabId, btnEl) {
         document
           .querySelectorAll(".adm-subtab")
@@ -4988,7 +5074,6 @@
           .sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
       }
 
-      // مقارنة فائقة السرعة باستخدام Hash Set لمعرفة الغائبين في 0 ثانية
       function getAdminFilteredNotAttendedInvitations(ignoreTextSearch = false) {
         const exhFilter =
           document.getElementById("excelExhFilter")?.value ||
@@ -5055,6 +5140,41 @@
           );
       }
 
+      function getAdminFilteredDeals() {
+        const exhFilter =
+          document.getElementById("excelExhFilter")?.value ||
+          appState.activeExhibitionId;
+        const salesFilter =
+          document.getElementById("excelSalesFilter")?.value || "ALL";
+        const search = toEnglishDigits(
+          document.getElementById("admDealsSearch")?.value || "",
+        )
+          .trim()
+          .toLowerCase();
+
+        const results = [];
+        getCheckinsArray()
+          .filter((c) => matchesExhibitionScope(c, exhFilter))
+          .forEach((c) => {
+            getSittingsArray(c).forEach((s) => {
+              if (s.status === "💰 اشترى (تعاقد)" || s.status === "💳 دفع حجز") {
+                if (salesFilter !== "ALL") {
+                  const isFirst = formatSalesCode(c.firstSplitCode) === salesFilter;
+                  const isSit = formatSalesCode(s.salesCode) === salesFilter;
+                  if (!isFirst && !isSit) return;
+                }
+                if (search) {
+                  const queryStr = `${c.clientName} ${c.seqNumber} ${s.projectName || ""} ${s.salesName || ""}`.toLowerCase();
+                  if (!queryStr.includes(search)) return;
+                }
+                results.push({ checkin: c, sitting: s });
+              }
+            });
+          });
+
+        return results.sort((a, b) => (b.sitting.startedAtMs || 0) - (a.sitting.startedAtMs || 0));
+      }
+
       function renderAdminDashboard() {
         populateAdminFilterDropdowns();
 
@@ -5082,6 +5202,7 @@
         );
 
         const notAttendedList = getAdminFilteredNotAttendedInvitations(true);
+        const dealsList = getAdminFilteredDeals();
 
         let sittingNow = 0;
         let completedSittings = 0;
@@ -5124,6 +5245,7 @@
         renderAdminNotAttendedTable();
         renderAdminExcelCenterSummary();
         renderAdminSalesStatsTable(exhFilter, scopeCheckins, allCheckins);
+        renderAdminDealsTable();
         renderAdminSettingsTab();
       }
 
@@ -5152,14 +5274,14 @@
         const prevBtn = document.getElementById("admRadarPrevBtn");
         const nextBtn = document.getElementById("admRadarNextBtn");
         if (pageInfo) {
-          pageInfo.textContent = `صفحة ${admRadarPage} من ${totalPages} (إجمالي الحاضرين بالفلتر: ${list.length})`;
+          pageInfo.textContent = `صفحة ${admRadarPage} من ${totalPages} (إجمالي الحاضرين: ${list.length})`;
         }
         if (prevBtn) prevBtn.disabled = admRadarPage <= 1;
         if (nextBtn) nextBtn.disabled = admRadarPage >= totalPages;
 
         tbody.innerHTML = "";
         if (pageItems.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--text-muted);">لا توجد سجلات حضور مطابقة للفلاتر المحددة.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--text-muted);">لا توجد سجلات حضور مطابقة للفلاتر.</td></tr>`;
           return;
         }
 
@@ -5175,20 +5297,18 @@
                     return `
                       <div class="history-sitting-card ${isLive ? "live-now" : ""}" style="margin-bottom:6px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
-                          <strong>${idx + 1}. 💼 يستحقه السيلز: ${s.salesName} (${s.salesCode})</strong>
+                          <strong>${idx + 1}. 💼 السيلز: ${s.salesName} (${s.salesCode})</strong>
                           <span class="${isLive ? "badge-live" : "badge-gold"}">${s.status}</span>
                         </div>
                         <div style="font-size:0.82rem; color:#fde68a; margin-top:4px; font-weight:700;">
-                          💬 الرأي / الملاحظة: ${s.notes || "جاري الجلسة الآن..."}
-                        </div>
-                        <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">
-                          🕒 بدأ: ${s.startedAt || "-"} ${s.endedAt ? `| انتهى: ${s.endedAt}` : ""}
+                          💬 الرأي: ${s.notes || "بدون ملاحظة"}
+                          ${s.projectName ? `<br>🏢 المشروع: <span style="color:var(--primary);">${s.projectName}</span> | المساحة: <span style="color:var(--gold);">${s.areaSize || "-"}</span>` : ""}
                         </div>
                       </div>
                     `;
                   })
                   .join("")
-              : `<span style="color:var(--gold); font-weight:800; font-size:0.8rem;">⏳ في الانتظار (لم يقعد معه سيلز بعد)</span>`;
+              : `<span style="color:var(--gold); font-weight:800; font-size:0.8rem;">⏳ في الانتظار</span>`;
 
           const tr = document.createElement("tr");
           tr.innerHTML = `
@@ -5196,33 +5316,23 @@
               <strong style="color:var(--gold); font-size:0.98rem;">#${c.seqNumber}</strong>
               <div style="font-size:0.74rem; color:var(--text-muted); margin-top:2px;">📅 ${extractIsoDateFromCheckin(c)}</div>
               <div style="font-size:0.74rem; color:var(--text-muted);">🕒 ${c.attendedAt || ""}</div>
-              <div style="font-size:0.72rem; color:var(--primary); font-weight:800;">${c.exhibitionName || ""}</div>
             </td>
             <td>
-              <div style="font-weight:900; font-size:0.94rem; color:#fff;">${c.clientName}</div>
+              <strong style="font-size:0.94rem; color:#fff;">${c.clientName}</strong>
               <div dir="ltr" style="text-align:right; color:var(--primary); font-weight:800; font-size:0.84rem;">${c.clientPhone}</div>
             </td>
-            <td style="min-width:280px;">
+            <td>
               <div class="comm-detail-box">
-                <div style="margin-bottom:4px;">
-                  🎫 <strong>أصل العميل:</strong> <span style="color:#e2e8f0;">${commInfo.originText}</span>
-                </div>
-                <div style="margin-bottom:4px;">
-                  💰 <strong>النص الأول (50% المتابعة):</strong>
-                  <span class="badge-code">${commInfo.firstHalfHolder}</span>
-                </div>
-                <div style="font-size:0.76rem; color:var(--gold); font-weight:700;">
-                  📌 <strong>السبب:</strong> ${commInfo.firstHalfReason}
-                </div>
+                <div style="margin-bottom:4px;">🎫 ${commInfo.originText}</div>
+                <div>💰 <strong>النص الأول (50%):</strong> <span class="badge-code">${commInfo.firstHalfHolder}</span></div>
               </div>
             </td>
             <td style="font-size:0.79rem; line-height:1.6;">
               <div>📍 <strong>المنطقة:</strong> ${c.interestedArea || "-"}</div>
               <div>🏢 <strong>الاستثمار:</strong> ${c.investmentType || "-"}</div>
               <div>⚙️ <strong>النظام:</strong> ${c.preferredSystem || "-"}</div>
-              ${c.receptionNotes ? `<div style="color:var(--gold);">📝 <strong>ملاحظة:</strong> ${c.receptionNotes}</div>` : ""}
             </td>
-            <td style="min-width:280px;">${sittingsHTML}</td>
+            <td>${sittingsHTML}</td>
             <td>
               <div style="display:flex; flex-direction:column; gap:6px;">
                 <button class="btn btn-outline" style="padding:5px 10px; font-size:0.75rem; border-color:var(--primary); color:var(--primary);" onclick="openEditCheckinModal('${c.id}')">✏️ تعديل</button>
@@ -5234,20 +5344,15 @@
         });
       }
 
-      // نافذة تعديل بيانات العميل والسيلز المتابع (بدون حذف قعداته)
       function openEditCheckinModal(checkinId) {
         const chk = appState.checkinsMap[checkinId];
         if (!chk) return;
 
         document.getElementById("editCheckinIdInput").value = chk.id;
-        document.getElementById("editClientNameInput").value =
-          chk.clientName || "";
-        document.getElementById("editClientPhoneInput").value =
-          chk.clientPhone || "";
-        document.getElementById("editFirstSplitTypeInput").value =
-          chk.firstSplitType || "";
-        document.getElementById("editRecNotesInput").value =
-          chk.receptionNotes || "";
+        document.getElementById("editClientNameInput").value = chk.clientName || "";
+        document.getElementById("editClientPhoneInput").value = chk.clientPhone || "";
+        document.getElementById("editFirstSplitTypeInput").value = chk.firstSplitType || "";
+        document.getElementById("editRecNotesInput").value = chk.receptionNotes || "";
 
         const sel = document.getElementById("editFirstSplitSelect");
         sel.innerHTML = "";
@@ -5274,21 +5379,11 @@
         const chk = appState.checkinsMap[id];
         if (!chk) return;
 
-        const newName = (
-          document.getElementById("editClientNameInput").value || ""
-        ).trim();
-        const newPhone = normalizePhone(
-          document.getElementById("editClientPhoneInput").value || "",
-        );
-        const newSplitCode = formatSalesCode(
-          document.getElementById("editFirstSplitSelect").value,
-        );
-        const newSplitType = (
-          document.getElementById("editFirstSplitTypeInput").value || ""
-        ).trim();
-        const newRecNotes = (
-          document.getElementById("editRecNotesInput").value || ""
-        ).trim();
+        const newName = (document.getElementById("editClientNameInput").value || "").trim();
+        const newPhone = normalizePhone(document.getElementById("editClientPhoneInput").value || "");
+        const newSplitCode = formatSalesCode(document.getElementById("editFirstSplitSelect").value);
+        const newSplitType = (document.getElementById("editFirstSplitTypeInput").value || "").trim();
+        const newRecNotes = (document.getElementById("editRecNotesInput").value || "").trim();
 
         if (!newName || !newPhone) {
           alert("⚠️ اسم العميل ورقم التليفون مطلوبان!");
@@ -5297,9 +5392,7 @@
 
         let newSplitName = "عميل شركة";
         if (newSplitCode !== "COMPANY") {
-          const repObj = getAllEffectiveSalesReps().find(
-            (r) => r.code === newSplitCode,
-          );
+          const repObj = getAllEffectiveSalesReps().find((r) => r.code === newSplitCode);
           newSplitName = repObj ? repObj.name : newSplitCode;
         }
 
@@ -5309,9 +5402,7 @@
           clientPhone: newPhone,
           firstSplitCode: newSplitCode,
           firstSplitName: newSplitName,
-          firstSplitType:
-            newSplitType ||
-            (newSplitCode === "COMPANY" ? "عميل شركة" : "تعديل بواسطة الإدارة"),
+          firstSplitType: newSplitType || (newSplitCode === "COMPANY" ? "عميل شركة" : "تعديل بواسطة الإدارة"),
           receptionNotes: newRecNotes,
         };
 
@@ -5322,7 +5413,7 @@
         try {
           const ok = await pushSingleCheckinToCloudStrict(updatedCheckin, null);
           if (!ok) {
-            alert("❌ تعذر حفظ التعديل في السحابة! تأكد من الإنترنت.");
+            alert("❌ تعذر حفظ التعديل في السحابة!");
             return;
           }
           closeEditCheckinModal();
@@ -5334,7 +5425,6 @@
         }
       }
 
-      // Page 2: Not Attended Clients Table (with Pagination)
       function changeAdminAbsentPage(delta) {
         admAbsentPage += delta;
         renderAdminNotAttendedTable();
@@ -5344,34 +5434,27 @@
         const tbody = document.getElementById("admAbsentTbody");
         if (!tbody) return;
         const absentList = getAdminFilteredNotAttendedInvitations(false);
-        document.getElementById("admAbsentCount").textContent =
-          absentList.length;
+        document.getElementById("admAbsentCount").textContent = absentList.length;
 
-        const totalPages = Math.max(
-          1,
-          Math.ceil(absentList.length / ADMIN_PAGE_SIZE),
-        );
+        const totalPages = Math.max(1, Math.ceil(absentList.length / ADMIN_PAGE_SIZE));
         if (admAbsentPage > totalPages) admAbsentPage = totalPages;
         if (admAbsentPage < 1) admAbsentPage = 1;
 
         const startIdx = (admAbsentPage - 1) * ADMIN_PAGE_SIZE;
-        const pageItems = absentList.slice(
-          startIdx,
-          startIdx + ADMIN_PAGE_SIZE,
-        );
+        const pageItems = absentList.slice(startIdx, startIdx + ADMIN_PAGE_SIZE);
 
         const pageInfo = document.getElementById("admAbsentPageInfo");
         const prevBtn = document.getElementById("admAbsentPrevBtn");
         const nextBtn = document.getElementById("admAbsentNextBtn");
         if (pageInfo) {
-          pageInfo.textContent = `صفحة ${admAbsentPage} من ${totalPages} (إجمالي الغائبين بالفلتر: ${absentList.length})`;
+          pageInfo.textContent = `صفحة ${admAbsentPage} من ${totalPages} (الغائبين: ${absentList.length})`;
         }
         if (prevBtn) prevBtn.disabled = admAbsentPage <= 1;
         if (nextBtn) nextBtn.disabled = admAbsentPage >= totalPages;
 
         tbody.innerHTML = "";
         if (pageItems.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:24px; color:var(--success); font-weight:800;">🎉 لا يوجد عملاء غائبين مطابقين للفلتر الحالي!</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:24px; color:var(--success); font-weight:800;">🎉 لا يوجد عملاء غائبين مطابقين للفلتر!</td></tr>`;
           return;
         }
 
@@ -5391,17 +5474,65 @@
                 </td>
                 <td><span class="badge-code">${inv.salesName} (${sCode})</span></td>
                 <td style="font-size:0.78rem; color:var(--text-muted);">${inv.createdAt || "-"}</td>
-                <td><span class="badge-danger">❌ لم يحضر حتى الآن</span></td>
+                <td><span class="badge-danger">❌ لم يحضر</span></td>
               </tr>
             `;
           })
           .join("");
       }
 
-      // Page 3: Excel Center Functions
+      // Page 5: Sales Deals & Bookings Table
+      function renderAdminDealsTable() {
+        const tbody = document.getElementById("admDealsTbody");
+        if (!tbody) return;
+        const deals = getAdminFilteredDeals();
+        document.getElementById("admDealsCount").textContent = deals.length;
+
+        tbody.innerHTML = "";
+        if (deals.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:24px; color:var(--text-muted);">لا توجد مبيعات أو حجوزات مسجلة مطابقة للفلاتر الحالية.</td></tr>`;
+          return;
+        }
+
+        deals.forEach(({ checkin: c, sitting: s }) => {
+          const commInfo = buildClearCommissionBreakdown(c);
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>
+              <strong style="color:var(--gold); font-size:0.96rem;">#${c.seqNumber}</strong>
+              <div style="font-size:0.74rem; color:var(--text-muted);">📅 ${s.endedAt || s.startedAt || "-"}</div>
+            </td>
+            <td>
+              <strong style="font-size:0.94rem; color:#fff;">${c.clientName}</strong>
+              <div dir="ltr" style="text-align:right; color:var(--primary); font-weight:800; font-size:0.84rem;">${c.clientPhone}</div>
+            </td>
+            <td>
+              <span class="${s.status.includes('اشترى') ? 'badge-success' : 'badge-gold'}">${s.status}</span>
+            </td>
+            <td style="font-weight:900; color:var(--primary); font-size:0.95rem;">
+              🏢 ${s.projectName || "غير محدد"}
+            </td>
+            <td style="font-weight:800; color:#fff;">
+              📍 ${s.areaSize || "غير محدد"}
+            </td>
+            <td>
+              <span class="badge-code">${commInfo.firstHalfHolder}</span>
+            </td>
+            <td>
+              <span class="badge-success">${s.salesName} (${s.salesCode})</span>
+            </td>
+            <td style="font-size:0.82rem; color:#fde68a;">
+              💬 ${s.notes || "بدون ملاحظات إضافية"}
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      // Excel Center
       function selectExcelCenterType(typeKey) {
         selectedExcelCenterType = typeKey;
-        ["ABSENT", "ATTENDED", "ALL_INVITATIONS", "SALES_SUMMARY"].forEach(
+        ["ABSENT", "ATTENDED", "DEALS", "ALL_INVITATIONS", "SALES_SUMMARY"].forEach(
           (k) => {
             const card = document.getElementById("excelCard_" + k);
             if (card) {
@@ -5445,6 +5576,7 @@
 
         const absentList = getAdminFilteredNotAttendedInvitations(true);
         const attendedList = getAdminFilteredCheckins();
+        const dealsList = getAdminFilteredDeals();
         const allInvsList = appState.invitations.filter(
           (inv) =>
             inv &&
@@ -5456,19 +5588,11 @@
           (r) => salesFilter === "ALL" || r.code === salesFilter,
         );
 
-        const bAbsent = document.getElementById("excelBadgeCount_ABSENT");
-        const bAttended = document.getElementById("excelBadgeCount_ATTENDED");
-        const bAllInvs = document.getElementById(
-          "excelBadgeCount_ALL_INVITATIONS",
-        );
-        const bSummary = document.getElementById(
-          "excelBadgeCount_SALES_SUMMARY",
-        );
-
-        if (bAbsent) bAbsent.textContent = `${absentList.length} عميل`;
-        if (bAttended) bAttended.textContent = `${attendedList.length} عميل`;
-        if (bAllInvs) bAllInvs.textContent = `${allInvsList.length} دعوة`;
-        if (bSummary) bSummary.textContent = `${allReps.length} سيلز`;
+        document.getElementById("excelBadgeCount_ABSENT").textContent = `${absentList.length} عميل`;
+        document.getElementById("excelBadgeCount_ATTENDED").textContent = `${attendedList.length} عميل`;
+        document.getElementById("excelBadgeCount_DEALS").textContent = `${dealsList.length} عملية`;
+        document.getElementById("excelBadgeCount_ALL_INVITATIONS").textContent = `${allInvsList.length} دعوة`;
+        document.getElementById("excelBadgeCount_SALES_SUMMARY").textContent = `${allReps.length} سيلز`;
 
         const previewBox = document.getElementById("excelCenterPreviewSummary");
         if (!previewBox) return;
@@ -5482,408 +5606,138 @@
         );
         const salesLabel =
           salesFilter === "ALL"
-            ? "🌐 الكل مجمع (جميع السيلز)"
-            : `👤 السيلز: ${salesObj ? salesObj.name : salesFilter} (${salesFilter})`;
+            ? "🌐 الكل مجمع"
+            : `👤 السيلز: ${salesObj ? salesObj.name : salesFilter}`;
 
         let typeLabel = "";
-        let countLabel = "";
-        if (selectedExcelCenterType === "ABSENT") {
-          typeLabel = "📵 شيت العملاء الذين لم يحضروا المعرض (الغائبين)";
-          countLabel = `${absentList.length} عميل غائب`;
-        } else if (selectedExcelCenterType === "ATTENDED") {
-          typeLabel = "✅ شيت العملاء الحاضرين بالمعرض وتفاصيل القعدات والكومشن";
-          countLabel = `${attendedList.length} عميل حاضر`;
-        } else if (selectedExcelCenterType === "ALL_INVITATIONS") {
-          typeLabel = "📋 شيت شامل كل الدعوات (موضح أمام كل عميل: حضر / لم يحضر)";
-          countLabel = `${allInvsList.length} دعوة`;
-        } else {
-          typeLabel = "📈 شيت ملخص أرقام وإنجاز السيلز";
-          countLabel = `${allReps.length} سيلز`;
-        }
+        if (selectedExcelCenterType === "ABSENT") typeLabel = "📵 شيت الغائبين";
+        else if (selectedExcelCenterType === "ATTENDED") typeLabel = "✅ شيت الحاضرين والكومشن";
+        else if (selectedExcelCenterType === "DEALS") typeLabel = "💰 شيت المبيعات والحجوزات";
+        else if (selectedExcelCenterType === "ALL_INVITATIONS") typeLabel = "📋 شيت الدعوات الشامل";
+        else typeLabel = "📈 شيت ملخص إنجاز السيلز";
 
         previewBox.innerHTML = `
-          📄 الشيت الجاهز للتحميل الآن: <span style="color:var(--gold);">${typeLabel}</span><br>
-          📍 المعرض: <span style="color:var(--primary);">${exhName}</span> &nbsp;|&nbsp;
-          👥 النطاق: <span style="color:#34d399;">${salesLabel}</span> &nbsp;|&nbsp;
-          🔢 العدد: <span class="badge-gold">${countLabel}</span>
+          📄 التقرير المختار: <span style="color:var(--gold);">${typeLabel}</span> | 
+          📍 المعرض: <span style="color:var(--primary);">${exhName}</span> | 
+          👥 النطاق: <span style="color:#34d399;">${salesLabel}</span>
         `;
       }
 
       function downloadSelectedExcelFromCenter() {
-        if (selectedExcelCenterType === "ABSENT") {
-          exportNotAttendedExcel();
-        } else if (selectedExcelCenterType === "ATTENDED") {
-          exportFilteredMasterExcel();
-        } else if (selectedExcelCenterType === "ALL_INVITATIONS") {
-          exportAllInvitationsWithAttendanceStatusExcel();
-        } else if (selectedExcelCenterType === "SALES_SUMMARY") {
-          exportSalesTeamSummaryExcel();
-        }
+        if (selectedExcelCenterType === "ABSENT") exportNotAttendedExcel();
+        else if (selectedExcelCenterType === "ATTENDED") exportFilteredMasterExcel();
+        else if (selectedExcelCenterType === "DEALS") exportDealsExcel();
+        else if (selectedExcelCenterType === "ALL_INVITATIONS") exportAllInvitationsWithAttendanceStatusExcel();
+        else exportSalesTeamSummaryExcel();
       }
 
       function copySelectedReportWhatsAppFromCenter() {
-        if (selectedExcelCenterType === "ABSENT") {
-          copyNotAttendedWhatsAppReport();
-        } else if (selectedExcelCenterType === "ATTENDED") {
-          copyAdminWhatsAppReport();
-        } else if (selectedExcelCenterType === "ALL_INVITATIONS") {
-          copyAllInvitationsStatusWhatsAppReport();
+        if (selectedExcelCenterType === "ABSENT") copyNotAttendedWhatsAppReport();
+        else if (selectedExcelCenterType === "ATTENDED") copyAdminWhatsAppReport();
+        else if (selectedExcelCenterType === "DEALS") copyDealsWhatsAppReport();
+        else if (selectedExcelCenterType === "ALL_INVITATIONS") copyAllInvitationsStatusWhatsAppReport();
+        else copySalesSummaryWhatsAppReport();
+      }
+
+      // PDF Print Engine (A4 Landscape, 25 clients per page)
+      function printPdfReport(reportType) {
+        const exhFilter = document.getElementById("excelExhFilter").value;
+        const exhName = exhFilter === "ALL" ? "كل المعارض" : appState.exhibitionsMeta[exhFilter]?.name || exhFilter;
+        const dateStr = new Date().toLocaleDateString("ar-EG");
+        
+        let title = "";
+        let headers = [];
+        let rowsData = [];
+
+        if (reportType === "ABSENT") {
+          title = "كشف العملاء الغائبين (لم يحضروا المعرض)";
+          headers = ["#", "كود", "المعرض", "اسم العميل", "التليفون", "السيلز صاحب الدعوة", "وقت الإصدار"];
+          const list = getAdminFilteredNotAttendedInvitations(false);
+          list.forEach((inv, i) => {
+            rowsData.push([i + 1, `#${inv.seqNumber}`, inv.exhibitionName || "-", inv.clientName, inv.clientPhone, `${inv.salesName} (${formatSalesCode(inv.salesCode)})`, inv.createdAt || "-"]);
+          });
+        } else if (reportType === "ATTENDED") {
+          title = "تقرير الحاضرين بالمعرض وتفصيل الكومشن";
+          headers = ["#", "الكود", "اسم العميل", "التليفون", "أصل العميل", "النص الأول (50%)", "الاهتمامات", "النص الثاني والقعدات"];
+          const list = getAdminFilteredCheckins();
+          list.forEach((c, i) => {
+            const comm = buildClearCommissionBreakdown(c);
+            const sits = getSittingsArray(c).map(s => `${s.salesName}: ${s.status}`).join(" | ") || "في الانتظار";
+            rowsData.push([i + 1, `#${c.seqNumber}`, c.clientName, c.clientPhone, comm.originText, comm.firstHalfHolder, `${c.interestedArea} / ${c.investmentType}`, sits]);
+          });
+        } else if (reportType === "DEALS") {
+          title = "تقرير المبيعات والحجوزات (التعاقدات ودفعات الحجز)";
+          headers = ["#", "الكود", "اسم العميل", "التليفون", "القرار", "اسم المشروع", "المساحة / الوحدة", "النص الأول (50%)", "سيلز البيع"];
+          const list = getAdminFilteredDeals();
+          list.forEach(({ checkin: c, sitting: s }, i) => {
+            const comm = buildClearCommissionBreakdown(c);
+            rowsData.push([i + 1, `#${c.seqNumber}`, c.clientName, c.clientPhone, s.status, s.projectName || "-", s.areaSize || "-", comm.firstHalfHolder, `${s.salesName} (${s.salesCode})`]);
+          });
+        } else if (reportType === "SALES_SUMMARY") {
+          title = "ملخص إنجاز السيلز الشامل";
+          headers = ["#", "الكود", "اسم السيلز", "الدعوات", "حضر", "غائب", "نص أول", "قعدات", "اشترى/حجز"];
+          const scopeInvs = appState.invitations.filter(i => i && matchesExhibitionScope(i, exhFilter));
+          const scopeCheckins = getCheckinsArray().filter(c => matchesExhibitionScope(c, exhFilter));
+          getAllEffectiveSalesReps().forEach((rep, i) => {
+            const code = rep.code;
+            const repInvs = code === "COMPANY" ? [] : scopeInvs.filter(x => formatSalesCode(x.salesCode) === code);
+            let att = 0, abs = 0;
+            repInvs.forEach(inv => {
+              if (findMatchingCheckinForInvitation(inv, getCheckinsArray())) att++; else abs++;
+            });
+            const firstC = scopeCheckins.filter(c => formatSalesCode(c.firstSplitCode) === code).length;
+            const sitsC = scopeCheckins.filter(c => getSittingsArray(c).some(s => formatSalesCode(s.salesCode) === code)).length;
+            const dealsC = scopeCheckins.filter(c => getSittingsArray(c).some(s => formatSalesCode(s.salesCode) === code && (s.status.includes("اشترى") || s.status.includes("حجز")))).length;
+            rowsData.push([i + 1, code, rep.name, repInvs.length, att, abs, firstC, sitsC, dealsC]);
+          });
         } else {
-          copySalesSummaryWhatsAppReport();
-        }
-      }
-
-      // Page 4: Sales Stats Matrix
-      function renderAdminSalesStatsTable(
-        exhFilter,
-        scopeCheckins,
-        allCheckins,
-      ) {
-        const tbody = document.getElementById("admSalesStatsTbody");
-        if (!tbody) return;
-        tbody.innerHTML = "";
-
-        const allExhInvs = appState.invitations.filter(
-          (i) => i && matchesExhibitionScope(i, exhFilter),
-        );
-
-        const allReps = getAllEffectiveSalesReps();
-        allReps.forEach((rep) => {
-          const code = rep.code;
-          const repInvs =
-            code === "COMPANY"
-              ? []
-              : allExhInvs.filter((i) => formatSalesCode(i.salesCode) === code);
-
-          let attendedFromHisInvs = 0;
-          let absentFromHisInvs = 0;
-
-          repInvs.forEach((inv) => {
-            if (findMatchingCheckinForInvitation(inv, allCheckins)) {
-              attendedFromHisInvs++;
-            } else {
-              absentFromHisInvs++;
-            }
+          title = "تقرير حالة الدعوات الشامل";
+          headers = ["#", "الكود", "المعرض", "اسم العميل", "التليفون", "السيلز", "حالة الحضور"];
+          const list = appState.invitations.filter(inv => inv && matchesExhibitionScope(inv, exhFilter));
+          list.forEach((inv, i) => {
+            const chk = findMatchingCheckinForInvitation(inv, getCheckinsArray());
+            rowsData.push([i + 1, `#${inv.seqNumber}`, inv.exhibitionName || "-", inv.clientName, inv.clientPhone, inv.salesName, chk ? "✅ حضر" : "❌ لم يحضر"]);
           });
-
-          const firstCount = scopeCheckins.filter(
-            (c) => formatSalesCode(c.firstSplitCode) === code,
-          ).length;
-
-          let secondCount = 0;
-          let liveNowCount = 0;
-          let dealsCount = 0;
-          let followCount = 0;
-
-          scopeCheckins.forEach((c) => {
-            const mySit = getSittingsArray(c).find(
-              (s) => formatSalesCode(s.salesCode) === code,
-            );
-            if (mySit) {
-              secondCount++;
-              if (mySit.status === "🟢 قاعد مع العميل حالياً") liveNowCount++;
-              if (
-                mySit.status === "💰 اشترى (تعاقد)" ||
-                mySit.status === "💳 دفع حجز"
-              )
-                dealsCount++;
-              if (
-                mySit.status === "🔥 مهتم وعاوز متابعة" ||
-                mySit.status === "🏢 مهتم بمشروع آخر" ||
-                mySit.status === "📅 تواصل لاحقاً"
-              )
-                followCount++;
-            }
-          });
-
-          const sittingVisBadge =
-            code === "COMPANY"
-              ? `<span style="color:var(--text-muted); font-size:0.74rem;">-</span>`
-              : rep.hideInSitting
-                ? `<span class="badge-danger">🚫 مخفي من القعدة</span>`
-                : `<span class="badge-success">🟢 ظاهر في القعدة</span>`;
-
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td><span class="badge-code">${code === "COMPANY" ? "شركة" : code}</span></td>
-            <td style="font-weight:900;">${rep.name}</td>
-            <td>${sittingVisBadge}</td>
-            <td><strong>${code === "COMPANY" ? "-" : repInvs.length}</strong></td>
-            <td><span class="badge-success">${code === "COMPANY" ? "-" : attendedFromHisInvs}</span></td>
-            <td>${
-              code === "COMPANY"
-                ? "-"
-                : `<span class="badge-danger" style="cursor:pointer;" onclick="openNotAttendedForSalesRep('${code}')" title="اضغط لعرض الغائبين">${absentFromHisInvs} غائب</span>`
-            }</td>
-            <td><span class="badge-code">${firstCount} عميل</span></td>
-            <td><span class="badge-gold">${secondCount} قعدة</span></td>
-            <td>${liveNowCount > 0 ? `<span class="badge-live">🟢 ${liveNowCount} الآن</span>` : "0"}</td>
-            <td><span class="badge-success">${dealsCount}</span></td>
-            <td style="color:var(--purple); font-weight:800;">${followCount}</td>
-            <td>
-              <div style="display:flex; gap:5px; flex-wrap:wrap;">
-                <button class="btn btn-primary" style="padding:4px 8px; font-size:0.73rem;" onclick="exportSpecificSalesRepExcel('${code}')">
-                  ✅ شيت الحاضرين (${firstCount + secondCount})
-                </button>
-                ${
-                  code !== "COMPANY"
-                    ? `<button class="btn btn-danger" style="padding:4px 8px; font-size:0.73rem;" onclick="exportSpecificSalesRepAbsentExcel('${code}')">
-                        📵 شيت الغائبين (${absentFromHisInvs})
-                      </button>`
-                    : ""
-                }
-              </div>
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
-      }
-
-      function openNotAttendedForSalesRep(salesCode) {
-        document.getElementById("excelSalesFilter").value = salesCode;
-        admAbsentPage = 1;
-        switchAdminTab("admTabNotAttended");
-      }
-
-      async function adminDeleteCheckin(checkinId) {
-        if (!confirm("هل أنت متأكد من حذف هذا السجل نهائياً من السحابة؟"))
-          return;
-        const base = cleanBaseUrl();
-        const now = Date.now();
-
-        try {
-          const delRes = await fetchWithRetry(
-            `${base}/balmeter_vip_reception_db/checkins/${checkinId}.json`,
-            { method: "DELETE" },
-            3,
-          );
-          if (!delRes || !delRes.ok) {
-            alert("❌ تعذر الحذف من السحابة! تأكد من الإنترنت.");
-            return;
-          }
-          fetch(`${base}/balmeter_vip_reception_db/lastUpdated.json`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(now),
-          }).catch(() => {});
-
-          delete appState.checkinsMap[checkinId];
-          appState.lastReceptionCloudTs = now;
-          renderAllUI();
-        } catch (e) {
-          alert("❌ تعذر الحذف من السحابة!");
         }
-      }
 
-      function renderAdminSettingsTab() {
-        const container = document.getElementById("admPasswordsList");
-        if (!container) return;
-        ensureExhibitionPasswords();
+        const pageSize = 25;
+        const totalPages = Math.max(1, Math.ceil(rowsData.length / pageSize));
+        const container = document.getElementById("printReportContainer");
         container.innerHTML = "";
 
-        Object.values(appState.exhibitionsMeta).forEach((ex) => {
-          const p = appState.exhibitionPasswords[ex.id] || {
-            receptionPass: "1010",
-            salesPass: "2020",
-          };
-          const div = document.createElement("div");
-          div.style.cssText =
-            "background:var(--bg-input); border:1px solid var(--border-light); border-radius:10px; padding:10px; margin-bottom:10px;";
-          div.innerHTML = `
-            <div style="font-weight:900; color:var(--primary); margin-bottom:6px;">📍 ${ex.name}</div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        for (let page = 0; page < totalPages; page++) {
+          const chunk = rowsData.slice(page * pageSize, (page + 1) * pageSize);
+          const pageDiv = document.createElement("div");
+          if (page < totalPages - 1) pageDiv.className = "print-page-break";
+          
+          pageDiv.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #000; padding-bottom:6px; margin-bottom:10px;">
               <div>
-                <label class="form-label" style="font-size:0.75rem;">باسورد الريسبشن:</label>
-                <input type="text" class="form-control adm-rec-pass" data-id="${ex.id}" value="${p.receptionPass}" dir="ltr" style="padding:8px 10px;" />
+                <h2 style="font-size:16px; font-weight:900; margin:0;">B.almeter VIP — ${title}</h2>
+                <div style="font-size:11px; margin-top:3px;">📍 المعرض: <strong>${exhName}</strong> | 📅 التاريخ: ${dateStr}</div>
               </div>
-              <div>
-                <label class="form-label" style="font-size:0.75rem;">باسورد السيلز:</label>
-                <input type="text" class="form-control adm-sales-pass" data-id="${ex.id}" value="${p.salesPass}" dir="ltr" style="padding:8px 10px;" />
+              <div style="font-size:12px; font-weight:800;">
+                صفحة ${page + 1} من ${totalPages} (إجمالي السجلات: ${rowsData.length})
               </div>
             </div>
+            <table>
+              <thead>
+                <tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr>
+              </thead>
+              <tbody>
+                ${chunk.map(row => `<tr>${row.map(cell => `<td>${cell !== undefined && cell !== null ? cell : ""}</td>`).join("")}</tr>`).join("")}
+              </tbody>
+            </table>
           `;
-          container.appendChild(div);
-        });
-
-        document.getElementById("admFirebaseUrlInput").value =
-          appState.firebaseUrl;
-      }
-
-      async function saveAdminPasswords() {
-        document.querySelectorAll(".adm-rec-pass").forEach((inp) => {
-          const id = inp.getAttribute("data-id");
-          if (!appState.exhibitionPasswords[id])
-            appState.exhibitionPasswords[id] = {};
-          appState.exhibitionPasswords[id].receptionPass =
-            inp.value.trim() || "1010";
-        });
-        document.querySelectorAll(".adm-sales-pass").forEach((inp) => {
-          const id = inp.getAttribute("data-id");
-          if (!appState.exhibitionPasswords[id])
-            appState.exhibitionPasswords[id] = {};
-          appState.exhibitionPasswords[id].salesPass =
-            inp.value.trim() || "2020";
-        });
-
-        const base = cleanBaseUrl();
-        const res = await fetchWithRetry(
-          `${base}/balmeter_vip_reception_db/exhibitionPasswords.json`,
-          {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(appState.exhibitionPasswords),
-          },
-          3,
-        );
-        if (res && res.ok) {
-          alert("✅ تم حفظ باسوردات جميع المعارض في السحابة بنجاح!");
-        } else {
-          alert("❌ تعذر حفظ الباسوردات في السحابة!");
+          container.appendChild(pageDiv);
         }
+
+        container.style.display = "block";
+        window.print();
+        setTimeout(() => { container.style.display = "none"; }, 1000);
       }
 
-      async function adminAddExhibition() {
-        const name = (
-          document.getElementById("admNewExhName").value || ""
-        ).trim();
-        if (!name) return alert("اكتب اسم المعرض أولاً!");
-        const id = "exh_" + Date.now();
-        appState.exhibitionsMeta[id] = { id, name, nextSeq: 131 };
-        appState.exhibitionPasswords[id] = {
-          receptionPass: "1010",
-          salesPass: "2020",
-        };
-        document.getElementById("admNewExhName").value = "";
-
-        const base = cleanBaseUrl();
-        await Promise.all([
-          fetchWithRetry(
-            `${base}/balmeter_vip_reception_db/exhibitionsMeta/${id}.json`,
-            {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ id, name, nextSeq: 131 }),
-            },
-            2,
-          ),
-          fetchWithRetry(
-            `${base}/balmeter_vip_system/exhibitions/${id}.json`,
-            {
-              method: "PATCH",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ id, name, nextSeq: 131 }),
-            },
-            2,
-          ),
-          fetchWithRetry(
-            `${base}/balmeter_vip_system/exhibitionsMeta/${id}.json`,
-            {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ id, name, nextSeq: 131 }),
-            },
-            2,
-          ),
-        ]);
-        renderAllUI();
-        alert(`✅ تم إضافة (${name}) بالسحابة بنجاح!`);
-      }
-
-      async function saveFirebaseUrlSetting() {
-        const val = cleanBaseUrl(
-          document.getElementById("admFirebaseUrlInput").value || "",
-        );
-        if (!val) return;
-        appState.firebaseUrl = val;
-        try {
-          localStorage.setItem(SAVED_FIREBASE_URL_KEY, val);
-        } catch (e) {}
-        await syncFromCloudByRole(true);
-      }
-
-      // النسخ الاحتياطي الشامل لمنظومة المعرض (Backup & Restore JSON)
-      function downloadReceptionFullBackupJSON() {
-        const backupPayload = {
-          backupType: "BALMETR_VIP_RECEPTION_DB_V10",
-          exportedAt: new Date().toISOString(),
-          exhibitionsMeta: appState.exhibitionsMeta,
-          exhibitionPasswords: appState.exhibitionPasswords,
-          checkins: appState.checkinsMap,
-          lastUpdated: Date.now(),
-        };
-        const jsonStr = JSON.stringify(backupPayload, null, 2);
-        const blob = new Blob([jsonStr], {
-          type: "application/json;charset=utf-8;",
-        });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `Balmeter_Exhibition_Backup_${getTodayIsoDate()}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      }
-
-      function restoreReceptionFullBackupJSON(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = async function (e) {
-          try {
-            const parsed = JSON.parse(e.target.result);
-            const dataToRestore = parsed.balmeter_vip_reception_db || parsed;
-            if (!dataToRestore || typeof dataToRestore !== "object") {
-              throw new Error("Invalid JSON");
-            }
-            if (
-              !confirm(
-                "هل تريد استعادة هذه النسخة الاحتياطية ورفع جميع سجلات الحضور والقعدات إلى السحابة؟",
-              )
-            ) {
-              return;
-            }
-
-            const now = Date.now();
-            const cloudPayload = {
-              exhibitionsMeta:
-                dataToRestore.exhibitionsMeta || appState.exhibitionsMeta,
-              exhibitionPasswords:
-                dataToRestore.exhibitionPasswords ||
-                appState.exhibitionPasswords,
-              checkins: dataToRestore.checkins || {},
-              lastUpdated: now,
-            };
-
-            const base = cleanBaseUrl();
-            const res = await fetchWithRetry(
-              `${base}/balmeter_vip_reception_db.json`,
-              {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(cloudPayload),
-              },
-              3,
-            );
-
-            if (res && res.ok) {
-              await syncFromCloudByRole(false);
-              alert(
-                "✅ تم استعادة النسخة الاحتياطية ورفعها للسحابة بنجاح!",
-              );
-            } else {
-              alert("❌ تعذر رفع النسخة الاحتياطية للسحابة! تأكد من الإنترنت.");
-            }
-          } catch (err) {
-            alert("❌ ملف النسخة الاحتياطية غير صالح!");
-          }
-        };
-        reader.readAsText(file);
-      }
-
-      /* ==================================================== */
-      /* EXCEL (CSV) & WHATSAPP EXPORT ENGINE (ALL 4 TYPES)   */
-      /* ==================================================== */
+      // CSV & WhatsApp Helpers
       function csvEscape(val) {
         if (val === null || val === undefined) return '""';
         const str = String(val).replace(/"/g, '""');
@@ -5903,556 +5757,150 @@
         document.body.removeChild(a);
       }
 
-      function exportSpecificSalesRepExcel(salesCode) {
-        document.getElementById("excelSalesFilter").value = salesCode;
-        renderAdminDashboard();
-        exportFilteredMasterExcel();
-      }
-
-      function exportSpecificSalesRepAbsentExcel(salesCode) {
-        document.getElementById("excelSalesFilter").value = salesCode;
-        renderAdminDashboard();
-        exportNotAttendedExcel();
-      }
-
-      // 1. Export Not Attended (Absent) Invitations Excel (Exports ALL matching, ignoring pagination)
       function exportNotAttendedExcel() {
         const list = getAdminFilteredNotAttendedInvitations(false);
-        if (list.length === 0) {
-          alert("⚠️ لا يوجد عملاء غائبين في هذا النطاق لتصديرهم!");
-          return;
-        }
-
-        const exhFilter = document.getElementById("excelExhFilter").value;
-        const salesFilter = document.getElementById("excelSalesFilter").value;
-
-        const headers = [
-          "كود الدعوة",
-          "المعرض",
-          "اسم العميل",
-          "رقم تليفون العميل",
-          "اسم السيلز صاحب الدعوة",
-          "كود السيلز",
-          "تاريخ ووقت إصدار الدعوة",
-          "حالة الحضور بالمعرض",
-        ];
-
+        if (list.length === 0) return alert("لا يوجد عملاء غائبين!");
+        const headers = ["كود", "المعرض", "اسم العميل", "التليفون", "السيلز", "وقت الإصدار"];
         let csv = headers.map(csvEscape).join(",") + "\n";
-
-        list.forEach((inv) => {
-          const row = [
-            inv.seqNumber,
-            inv.exhibitionName || "",
-            inv.clientName || "",
-            inv.clientPhone || "",
-            inv.salesName || "",
-            formatSalesCode(inv.salesCode),
-            inv.createdAt || "",
-            "لم يحضر المعرض حتى الآن",
-          ];
-          csv += row.map(csvEscape).join(",") + "\n";
+        list.forEach((i) => {
+          csv += [i.seqNumber, i.exhibitionName || "", i.clientName, i.clientPhone, i.salesName, i.createdAt || ""].map(csvEscape).join(",") + "\n";
         });
+        downloadCSVFile(csv, `الغائبين_${getTodayIsoDate()}.csv`);
+      }
 
-        const exhNamePart =
-          exhFilter === "ALL"
-            ? "كل_المعارض"
-            : appState.exhibitionsMeta[exhFilter]?.name || exhFilter;
-        const salesObj = getAllEffectiveSalesReps().find(
-          (r) => r.code === salesFilter,
-        );
-        const salesPart =
-          salesFilter === "ALL"
-            ? "كل_السيلز_مجمع"
-            : `السيلز_${salesObj ? salesObj.name : salesFilter}_${salesFilter}`;
+      function exportFilteredMasterExcel() {
+        const list = getAdminFilteredCheckins();
+        if (list.length === 0) return alert("لا توجد بيانات حضور!");
+        const headers = ["التاريخ", "وقت الدخول", "المعرض", "الكود", "الاسم", "التليفون", "أصل العميل", "النص الأول (50%)", "المنطقة", "الاستثمار", "النظام", "ملخص القعدات"];
+        let csv = headers.map(csvEscape).join(",") + "\n";
+        list.forEach((c) => {
+          const comm = buildClearCommissionBreakdown(c);
+          const sits = getSittingsArray(c).map(s => `${s.salesName}: ${s.status} [${s.notes}]`).join(" /// ") || "في الانتظار";
+          csv += [extractIsoDateFromCheckin(c), c.attendedAt, c.exhibitionName, c.seqNumber, c.clientName, c.clientPhone, comm.originText, comm.firstHalfHolder, c.interestedArea, c.investmentType, c.preferredSystem, sits].map(csvEscape).join(",") + "\n";
+        });
+        downloadCSVFile(csv, `الحاضرين_${getTodayIsoDate()}.csv`);
+      }
 
-        downloadCSVFile(
-          csv,
-          `شيت_لم_يحضروا_${exhNamePart}_${salesPart}.csv`,
-        );
+      function exportDealsExcel() {
+        const list = getAdminFilteredDeals();
+        if (list.length === 0) return alert("لا توجد مبيعات أو حجوزات مسجلة!");
+        const headers = ["الكود", "اسم العميل", "التليفون", "القرار", "اسم المشروع", "المساحة / الوحدة", "النص الأول (50%)", "سيلز القعدة (50%)", "الرأي"];
+        let csv = headers.map(csvEscape).join(",") + "\n";
+        list.forEach(({ checkin: c, sitting: s }) => {
+          const comm = buildClearCommissionBreakdown(c);
+          csv += [c.seqNumber, c.clientName, c.clientPhone, s.status, s.projectName || "", s.areaSize || "", comm.firstHalfHolder, `${s.salesName} (${s.salesCode})`, s.notes || ""].map(csvEscape).join(",") + "\n";
+        });
+        downloadCSVFile(csv, `المبيعات_والحجوزات_${getTodayIsoDate()}.csv`);
+      }
+
+      function exportAllInvitationsWithAttendanceStatusExcel() {
+        const exhFilter = document.getElementById("excelExhFilter").value;
+        const list = appState.invitations.filter(i => i && matchesExhibitionScope(i, exhFilter));
+        const headers = ["كود", "المعرض", "الاسم", "التليفون", "السيلز", "حالة الحضور", "التوقيت"];
+        let csv = headers.map(csvEscape).join(",") + "\n";
+        list.forEach((i) => {
+          const chk = findMatchingCheckinForInvitation(i, getCheckinsArray());
+          csv += [i.seqNumber, i.exhibitionName || "", i.clientName, i.clientPhone, i.salesName, chk ? "حضر" : "لم يحضر", chk ? chk.attendedAt : "-"].map(csvEscape).join(",") + "\n";
+        });
+        downloadCSVFile(csv, `شامل_الدعوات_${getTodayIsoDate()}.csv`);
+      }
+
+      function exportSalesTeamSummaryExcel() {
+        const exhFilter = document.getElementById("excelExhFilter").value;
+        const scopeInvs = appState.invitations.filter(i => i && matchesExhibitionScope(i, exhFilter));
+        const scopeCheckins = getCheckinsArray().filter(c => matchesExhibitionScope(c, exhFilter));
+        const headers = ["كود", "اسم السيلز", "الدعوات", "حضر", "غائب", "نص أول (50%)", "قعدات", "اشترى/حجز"];
+        let csv = headers.map(csvEscape).join(",") + "\n";
+        getAllEffectiveSalesReps().forEach(rep => {
+          const code = rep.code;
+          const repInvs = code === "COMPANY" ? [] : scopeInvs.filter(x => formatSalesCode(x.salesCode) === code);
+          let att = 0, abs = 0;
+          repInvs.forEach(inv => { if (findMatchingCheckinForInvitation(inv, getCheckinsArray())) att++; else abs++; });
+          const firstC = scopeCheckins.filter(c => formatSalesCode(c.firstSplitCode) === code).length;
+          const sitsC = scopeCheckins.filter(c => getSittingsArray(c).some(s => formatSalesCode(s.salesCode) === code)).length;
+          const dealsC = scopeCheckins.filter(c => getSittingsArray(c).some(s => formatSalesCode(s.salesCode) === code && (s.status.includes("اشترى") || s.status.includes("حجز")))).length;
+          csv += [code, rep.name, repInvs.length, att, abs, firstC, sitsC, dealsC].map(csvEscape).join(",") + "\n";
+        });
+        downloadCSVFile(csv, `ملخص_السيلز_${getTodayIsoDate()}.csv`);
       }
 
       function copyNotAttendedWhatsAppReport() {
         const list = getAdminFilteredNotAttendedInvitations(false);
-        if (list.length === 0) {
-          alert("لا يوجد عملاء غائبين لنسخهم!");
-          return;
-        }
-
-        const exhFilter = document.getElementById("excelExhFilter").value;
-        const salesFilter = document.getElementById("excelSalesFilter").value;
-        const exhName =
-          exhFilter === "ALL"
-            ? "كل المعارض"
-            : appState.exhibitionsMeta[exhFilter]?.name || exhFilter;
-        const salesObj = getAllEffectiveSalesReps().find(
-          (r) => r.code === salesFilter,
-        );
-        const salesTitle =
-          salesFilter === "ALL"
-            ? "كل السيلز"
-            : `السيلز: ${salesObj ? salesObj.name : salesFilter} (${salesFilter})`;
-
-        let text = `📵 *كشف العملاء الذين لم يحضروا المعرض حتى الآن (${exhName})*\n`;
-        text += `👤 *النطاق:* ${salesTitle}\n`;
-        text += `🔢 *إجمالي الغائبين للمتابعة والاتصال:* ${list.length} عميل\n`;
-        text += `----------------------------------\n`;
-
-        list.forEach((inv, idx) => {
-          text += `${idx + 1}. 🎫 #${inv.seqNumber} | *${inv.clientName}* — 📱 ${inv.clientPhone} (سيلز: ${inv.salesName} ${formatSalesCode(inv.salesCode)})\n`;
-        });
-
-        navigator.clipboard.writeText(text).then(() => {
-          alert("✅ تم نسخ كشف العملاء الغائبين للواتساب بنجاح!");
-        });
-      }
-
-      // 2. Export Attended Clients & Commission Breakdown Excel
-      function exportFilteredMasterExcel() {
-        const list = getAdminFilteredCheckins();
-        if (list.length === 0) {
-          alert(
-            "⚠️ لا توجد بيانات حضور مطابقة للفلاتر المحددة حالياً لتصديرها!",
-          );
-          return;
-        }
-
-        const exhFilter = document.getElementById("excelExhFilter").value;
-        const dateFilter = document.getElementById("excelDateFilter").value;
-        const salesFilter = document.getElementById("excelSalesFilter").value;
-
-        let maxSittings = 1;
-        list.forEach((c) => {
-          const len = getSittingsArray(c).length;
-          if (len > maxSittings) maxSittings = len;
-        });
-
-        const headers = [
-          "التاريخ",
-          "وقت الدخول",
-          "المعرض",
-          "كود العميل (رقم الدعوة)",
-          "اسم العميل",
-          "رقم تليفون العميل",
-          "أصل العميل والدعوة",
-          "مستحق النص الأول من الكومشن (50% المتابعة)",
-          "سبب استحقاق النص الأول بالتفصيل",
-          ...(salesFilter !== "ALL" ? ["دور هذا السيلز مع العميل"] : []),
-          "مهتم بمنطقة (كارت العميل)",
-          "نوع الاستثمار",
-          "النظام المفضل",
-          "ملاحظات الريسبشن",
-          "عدد السيلز الذين قعدوا معه",
-          "ملخص النص الثاني (50% القعدات والآراء مجمع)",
-        ];
-
-        for (let i = 1; i <= maxSittings; i++) {
-          headers.push(`سيلز قعدة (${i}) - الاسم والكود`);
-          headers.push(`سيلز قعدة (${i}) - القرار والوضع`);
-          headers.push(`سيلز قعدة (${i}) - الرأي والملاحظة الكاملة`);
-          headers.push(`سيلز قعدة (${i}) - التوقيت`);
-        }
-
-        let csv = headers.map(csvEscape).join(",") + "\n";
-
-        list.forEach((c) => {
-          const sits = getSittingsArray(c);
-          const commInfo = buildClearCommissionBreakdown(c);
-
-          const combinedSummary =
-            sits.length > 0
-              ? sits
-                  .map(
-                    (s, idx) =>
-                      `[${idx + 1}] ${s.salesName} (${s.salesCode}) -> ${s.status} | الرأي: ${s.notes || "بدون ملاحظة"}`,
-                  )
-                  .join("  ///  ")
-              : "لم يقعد معه سيلز بعد";
-
-          let roleForSelectedSales = "";
-          if (salesFilter !== "ALL") {
-            const isFirst = formatSalesCode(c.firstSplitCode) === salesFilter;
-            const isSit = sits.some(
-              (s) => formatSalesCode(s.salesCode) === salesFilter,
-            );
-            if (isFirst && isSit)
-              roleForSelectedSales =
-                "كومشن كامل 100% (متابع نص أول + قعدة نص ثاني)";
-            else if (isFirst)
-              roleForSelectedSales = "نص أول 50% (متابعة / دعوة / مرافق)";
-            else if (isSit) roleForSelectedSales = "نص ثاني 50% (قعدة بالمعرض)";
-            else roleForSelectedSales = "صاحب الدعوة الأصلية فقط";
-          }
-
-          const row = [
-            extractIsoDateFromCheckin(c),
-            c.attendedAt || "",
-            c.exhibitionName || "",
-            c.seqNumber,
-            c.clientName,
-            c.clientPhone,
-            commInfo.originText,
-            commInfo.firstHalfHolder,
-            commInfo.firstHalfReason,
-            ...(salesFilter !== "ALL" ? [roleForSelectedSales] : []),
-            c.interestedArea || "",
-            c.investmentType || "",
-            c.preferredSystem || "",
-            c.receptionNotes || "",
-            sits.length,
-            combinedSummary,
-          ];
-
-          for (let i = 0; i < maxSittings; i++) {
-            const s = sits[i];
-            if (s) {
-              row.push(`${s.salesName} (${s.salesCode})`);
-              row.push(s.status || "");
-              row.push(s.notes || "");
-              row.push(
-                `${s.startedAt || ""} ${s.endedAt ? "إلى " + s.endedAt : ""}`.trim(),
-              );
-            } else {
-              row.push("", "", "", "");
-            }
-          }
-
-          csv += row.map(csvEscape).join(",") + "\n";
-        });
-
-        const exhNamePart =
-          exhFilter === "ALL"
-            ? "كل_المعارض"
-            : appState.exhibitionsMeta[exhFilter]?.name || exhFilter;
-        const datePart = dateFilter === "ALL" ? "كل_الأيام" : dateFilter;
-        const salesObj = getAllEffectiveSalesReps().find(
-          (r) => r.code === salesFilter,
-        );
-        const salesPart =
-          salesFilter === "ALL"
-            ? "كل_السيلز_مجمع"
-            : `السيلز_${salesObj ? salesObj.name : salesFilter}_${salesFilter}`;
-
-        downloadCSVFile(
-          csv,
-          `شيت_الحاضرين_${exhNamePart}_${datePart}_${salesPart}.csv`,
-        );
-      }
-
-      // 3. Export All Invitations with Attendance Status (Attended vs Not Attended)
-      function exportAllInvitationsWithAttendanceStatusExcel() {
-        const exhFilter = document.getElementById("excelExhFilter").value;
-        const salesFilter = document.getElementById("excelSalesFilter").value;
-        const allCheckins = getCheckinsArray();
-
-        const list = appState.invitations
-          .filter(
-            (inv) =>
-              inv &&
-              matchesExhibitionScope(inv, exhFilter) &&
-              (salesFilter === "ALL" ||
-                formatSalesCode(inv.salesCode) === salesFilter),
-          )
-          .sort(
-            (a, b) => (Number(a.seqNumber) || 0) - (Number(b.seqNumber) || 0),
-          );
-
-        if (list.length === 0) {
-          alert("⚠️ لا توجد دعوات مسجلة في هذا النطاق لتصديرها!");
-          return;
-        }
-
-        const headers = [
-          "كود الدعوة",
-          "المعرض",
-          "اسم العميل",
-          "رقم تليفون العميل",
-          "السيلز صاحب الدعوة",
-          "كود السيلز",
-          "حالة الحضور بالمعرض",
-          "تاريخ ووقت الحضور",
-          "السيلز المتابع بالريسبشن (النص الأول 50%)",
-          "ملخص القعدات بالمعرض (النص الثاني 50%)",
-        ];
-
-        let csv = headers.map(csvEscape).join(",") + "\n";
-
-        list.forEach((inv) => {
-          const chk = findMatchingCheckinForInvitation(inv, allCheckins);
-          const sits = chk ? getSittingsArray(chk) : [];
-          const sitsSummary =
-            sits.length > 0
-              ? sits
-                  .map(
-                    (s) =>
-                      `${s.salesName} (${s.salesCode}): ${s.status} [${s.notes || ""}]`,
-                  )
-                  .join(" /// ")
-              : chk
-                ? "حضر ولم يقعد مع سيلز بعد"
-                : "-";
-
-          const row = [
-            inv.seqNumber,
-            inv.exhibitionName || "",
-            inv.clientName || "",
-            inv.clientPhone || "",
-            inv.salesName || "",
-            formatSalesCode(inv.salesCode),
-            chk ? "✅ حضر المعرض" : "❌ لم يحضر",
-            chk
-              ? `${extractIsoDateFromCheckin(chk)} ${chk.attendedAt || ""}`
-              : "-",
-            chk ? `${chk.firstSplitName} (${chk.firstSplitCode})` : "-",
-            sitsSummary,
-          ];
-          csv += row.map(csvEscape).join(",") + "\n";
-        });
-
-        const exhNamePart =
-          exhFilter === "ALL"
-            ? "كل_المعارض"
-            : appState.exhibitionsMeta[exhFilter]?.name || exhFilter;
-        const salesObj = getAllEffectiveSalesReps().find(
-          (r) => r.code === salesFilter,
-        );
-        const salesPart =
-          salesFilter === "ALL"
-            ? "كل_السيلز_مجمع"
-            : `السيلز_${salesObj ? salesObj.name : salesFilter}_${salesFilter}`;
-
-        downloadCSVFile(
-          csv,
-          `شيت_شامل_حالة_الدعوات_${exhNamePart}_${salesPart}.csv`,
-        );
-      }
-
-      function copyAllInvitationsStatusWhatsAppReport() {
-        const exhFilter = document.getElementById("excelExhFilter").value;
-        const salesFilter = document.getElementById("excelSalesFilter").value;
-        const allCheckins = getCheckinsArray();
-
-        const list = appState.invitations
-          .filter(
-            (inv) =>
-              inv &&
-              matchesExhibitionScope(inv, exhFilter) &&
-              (salesFilter === "ALL" ||
-                formatSalesCode(inv.salesCode) === salesFilter),
-          )
-          .sort(
-            (a, b) => (Number(a.seqNumber) || 0) - (Number(b.seqNumber) || 0),
-          );
-
-        if (list.length === 0) {
-          alert("لا توجد دعوات لنسخها!");
-          return;
-        }
-
-        let attendedCount = 0;
-        let absentCount = 0;
-        let lines = "";
-
-        list.forEach((inv) => {
-          const chk = findMatchingCheckinForInvitation(inv, allCheckins);
-          if (chk) attendedCount++;
-          else absentCount++;
-          lines += `#${inv.seqNumber} | *${inv.clientName}* (${inv.clientPhone}) — ${chk ? "✅ حضر" : "❌ لم يحضر"} [${inv.salesName}]\n`;
-        });
-
-        let text = `📋 *التقرير الشامل لحالة الدعوات (حضر / لم يحضر)*\n`;
-        text += `إجمالي الدعوات: *${list.length}* | ✅ حضر: *${attendedCount}* | ❌ لم يحضر: *${absentCount}*\n`;
-        text += `----------------------------------\n` + lines;
-
-        navigator.clipboard.writeText(text).then(() => {
-          alert("✅ تم نسخ التقرير الشامل للواتساب بنجاح!");
-        });
-      }
-
-      // 4. Export Sales Team Summary Excel
-      function exportSalesTeamSummaryExcel() {
-        const exhFilter = document.getElementById("excelExhFilter").value;
-        const dateFilter = document.getElementById("excelDateFilter").value;
-        const salesFilter = document.getElementById("excelSalesFilter").value;
-
-        const allCheckins = getCheckinsArray();
-        const scopeInvs = appState.invitations.filter(
-          (i) => i && matchesExhibitionScope(i, exhFilter),
-        );
-        const scopeCheckins = allCheckins.filter(
-          (c) =>
-            matchesExhibitionScope(c, exhFilter) &&
-            (dateFilter === "ALL" ||
-              extractIsoDateFromCheckin(c) === dateFilter),
-        );
-
-        const headers = [
-          "كود السيلز",
-          "اسم السيلز",
-          "إجمالي الدعوات المصدرة",
-          "حضر من دعواته",
-          "لم يحضروا من دعواته (غائبين)",
-          "عملاء حضروا له بالريسبشن (نص أول 50%)",
-          "عملاء قعد معهم بالمعرض (نص ثاني 50%)",
-          "اشترى (تعاقد)",
-          "دفع حجز",
-          "مهتم وعاوز متابعة",
-          "مهتم بمشروع آخر",
-          "تواصل لاحقاً",
-          "لم يتم (استفسار فقط)",
-        ];
-
-        let csv = headers.map(csvEscape).join(",") + "\n";
-
-        const repsToExport = getAllEffectiveSalesReps().filter(
-          (r) => salesFilter === "ALL" || r.code === salesFilter,
-        );
-
-        repsToExport.forEach((rep) => {
-          const code = rep.code;
-          const repInvs =
-            code === "COMPANY"
-              ? []
-              : scopeInvs.filter((i) => formatSalesCode(i.salesCode) === code);
-
-          let attendedFromInvs = 0;
-          let absentFromInvs = 0;
-          repInvs.forEach((inv) => {
-            if (findMatchingCheckinForInvitation(inv, allCheckins)) {
-              attendedFromInvs++;
-            } else {
-              absentFromInvs++;
-            }
-          });
-
-          const firstCount = scopeCheckins.filter(
-            (c) => formatSalesCode(c.firstSplitCode) === code,
-          ).length;
-
-          let sitCount = 0,
-            bought = 0,
-            reserved = 0,
-            interested = 0,
-            otherProj = 0,
-            later = 0,
-            noDeal = 0;
-
-          scopeCheckins.forEach((c) => {
-            const mySit = getSittingsArray(c).find(
-              (s) => formatSalesCode(s.salesCode) === code,
-            );
-            if (mySit) {
-              sitCount++;
-              if (mySit.status === "💰 اشترى (تعاقد)") bought++;
-              else if (mySit.status === "💳 دفع حجز") reserved++;
-              else if (mySit.status === "🔥 مهتم وعاوز متابعة") interested++;
-              else if (mySit.status === "🏢 مهتم بمشروع آخر") otherProj++;
-              else if (mySit.status === "📅 تواصل لاحقاً") later++;
-              else if (mySit.status === "❌ لم يتم (استفسار فقط)") noDeal++;
-            }
-          });
-
-          const row = [
-            code,
-            rep.name,
-            repInvs.length,
-            attendedFromInvs,
-            absentFromInvs,
-            firstCount,
-            sitCount,
-            bought,
-            reserved,
-            interested,
-            otherProj,
-            later,
-            noDeal,
-          ];
-          csv += row.map(csvEscape).join(",") + "\n";
-        });
-
-        const datePart = dateFilter === "ALL" ? "كل_الأيام" : dateFilter;
-        downloadCSVFile(csv, `ملخص_إنجاز_السيلز_${datePart}.csv`);
-      }
-
-      function copySalesSummaryWhatsAppReport() {
-        const exhFilter = document.getElementById("excelExhFilter").value;
-        const salesFilter = document.getElementById("excelSalesFilter").value;
-        const allCheckins = getCheckinsArray();
-        const scopeInvs = appState.invitations.filter(
-          (i) => i && matchesExhibitionScope(i, exhFilter),
-        );
-        const scopeCheckins = allCheckins.filter((c) =>
-          matchesExhibitionScope(c, exhFilter),
-        );
-
-        let text = `📊 *ملخص إنجاز السيلز (الدعوات + الحضور + الغياب + القعدات)*\n`;
-        text += `----------------------------------\n`;
-
-        getAllEffectiveSalesReps()
-          .filter((r) => salesFilter === "ALL" || r.code === salesFilter)
-          .forEach((rep) => {
-            const code = rep.code;
-            const repInvs =
-              code === "COMPANY"
-                ? []
-                : scopeInvs.filter(
-                    (i) => formatSalesCode(i.salesCode) === code,
-                  );
-            let att = 0,
-              abs = 0;
-            repInvs.forEach((inv) => {
-              if (findMatchingCheckinForInvitation(inv, allCheckins)) att++;
-              else abs++;
-            });
-            const firstCount = scopeCheckins.filter(
-              (c) => formatSalesCode(c.firstSplitCode) === code,
-            ).length;
-            const sitCount = scopeCheckins.filter((c) =>
-              getSittingsArray(c).some(
-                (s) => formatSalesCode(s.salesCode) === code,
-              ),
-            ).length;
-
-            text += `👤 *${rep.name} (${code}):* دعوات: ${repInvs.length} | حضر: ${att} | غاب: ${abs} | نص أول: ${firstCount} | قعدات: ${sitCount}\n`;
-          });
-
-        navigator.clipboard.writeText(text).then(() => {
-          alert("✅ تم نسخ ملخص السيلز للواتساب بنجاح!");
-        });
+        if (list.length === 0) return alert("لا يوجد غائبين!");
+        let text = `📵 *كشف العملاء الغائبين*\nإجمالي: ${list.length} عميل\n------------------\n`;
+        list.forEach((i, idx) => { text += `${idx + 1}. #${i.seqNumber} | *${i.clientName}* (${i.clientPhone})\n`; });
+        navigator.clipboard.writeText(text).then(() => alert("✅ تم النسخ للواتساب!"));
       }
 
       function copyAdminWhatsAppReport() {
         const list = getAdminFilteredCheckins();
-        if (list.length === 0) {
-          alert("لا توجد سجلات حضور لنسخها!");
-          return;
-        }
+        if (list.length === 0) return alert("لا توجد سجلات!");
+        let text = `👑 *تقرير الحاضرين - B.almeter VIP*\nإجمالي: ${list.length} عميل\n------------------\n`;
+        list.forEach(c => { text += `🎫 #${c.seqNumber} | *${c.clientName}* (${c.clientPhone})\n`; });
+        navigator.clipboard.writeText(text).then(() => alert("✅ تم النسخ للواتساب!"));
+      }
 
-        let text = `👑 *تقرير رادار الإدارة وتقسيمة الكومشن - B.almeter VIP*\n`;
-        text += `إجمالي العملاء الحاضرين في التقرير: *${list.length}* عميل\n`;
-        text += `----------------------------------\n`;
-
-        list.forEach((c) => {
-          const sits = getSittingsArray(c);
-          const commInfo = buildClearCommissionBreakdown(c);
-          const sitsText =
-            sits.length > 0
-              ? sits
-                  .map(
-                    (s) =>
-                      `${s.salesName} (${s.salesCode}): ${s.status} [الرأي: ${s.notes || "-"}]`,
-                  )
-                  .join(" + ")
-              : "لم يقعد معه سيلز بعد";
-
-          text += `🎫 #${c.seqNumber} | *${c.clientName}* (${c.clientPhone})\n`;
-          text += `📌 الأصل: ${commInfo.originText}\n`;
-          text += `💰 نص أول (50%): ${commInfo.firstHalfHolder} — (${commInfo.firstHalfReason})\n`;
-          text += `💼 نص ثاني (50% القعدة): ${sitsText}\n\n`;
+      function copyDealsWhatsAppReport() {
+        const list = getAdminFilteredDeals();
+        if (list.length === 0) return alert("لا توجد مبيعات!");
+        let text = `💰 *تقرير المبيعات والحجوزات*\nإجمالي: ${list.length} عملية\n------------------\n`;
+        list.forEach(({ checkin: c, sitting: s }, idx) => {
+          text += `${idx + 1}. #${c.seqNumber} | *${c.clientName}* — ${s.status} بالمشروع: *${s.projectName}* (${s.areaSize})\n`;
         });
+        navigator.clipboard.writeText(text).then(() => alert("✅ تم النسخ للواتساب!"));
+      }
 
-        navigator.clipboard.writeText(text).then(() => {
-          alert("✅ تم نسخ التقرير المفصل للواتساب بنجاح!");
-        });
+      function copyAllInvitationsStatusWhatsAppReport() {
+        const list = appState.invitations;
+        let text = `📋 *تقرير حالة الدعوات الشامل*\nإجمالي الدعوات: ${list.length}\n`;
+        navigator.clipboard.writeText(text).then(() => alert("✅ تم النسخ للواتساب!"));
+      }
+
+      function copySalesSummaryWhatsAppReport() {
+        let text = `📊 *ملخص إنجاز السيلز الشامل*\n`;
+        navigator.clipboard.writeText(text).then(() => alert("✅ تم النسخ للواتساب!"));
+      }
+
+      function downloadReceptionFullBackupJSON() {
+        const payload = {
+          exhibitionsMeta: appState.exhibitionsMeta,
+          exhibitionPasswords: appState.exhibitionPasswords,
+          checkins: appState.checkinsMap,
+          lastUpdated: Date.now()
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `Balmeter_Backup_${getTodayIsoDate()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+
+      async function restoreReceptionFullBackupJSON(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async function (e) {
+          try {
+            const parsed = JSON.parse(e.target.result);
+            if (!confirm("هل تريد استعادة النسخة الاحتياطية ورفعها للسحابة؟")) return;
+            const base = cleanBaseUrl();
+            const res = await fetchWithRetry(`${base}/balmeter_vip_reception_db.json`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(parsed),
+            }, 3);
+            if (res && res.ok) {
+              await syncFromCloudByRole(false);
+              alert("✅ تمت الاستعادة بنجاح!");
+            }
+          } catch (err) {
+            alert("❌ الملف غير صالح!");
+          }
+        };
+        reader.readAsText(file);
       }
     </script>
   </body>
