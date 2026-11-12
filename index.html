@@ -604,7 +604,7 @@
       const ACTIVE_SALES_DRAFT_KEY = "BALMETR_ACTIVE_SALES_DRAFT_V11";
       const SAVED_FIREBASE_URL_KEY = "BALMETR_CLOUD_URL_V11";
 
-      const OBSOLETE_CACHE_KEYS = ["BALMETR_VIP_PRO_V8_FINAL", "BALMETR_ACTIVE_MODE_SESSION_V10", "BALMETR_ACTIVE_SALES_DRAFT_V10"];
+      const OBSOLETE_CACHE_KEYS = ["BALMETR_VIP_PRO_V8_FINAL", "BALMETR_ACTIVE_MODE_SESSION_V10", "BALMETR_ACTIVE_SALES_DRAFT_V10", "BALMETR_CLOSER_CODE"];
 
       let appState = {
         firebaseUrl: DEFAULT_FIREBASE_URL,
@@ -612,7 +612,7 @@
         exhibitionsMeta: { exh_sohag: { id: "exh_sohag", name: "معرض سوهاج", nextSeq: 131 } },
         exhibitionPasswords: { exh_sohag: { receptionPass: "1010", salesPass: "2020" } },
         salesTeam: [
-          { code: "S11", name: "أحمد يوسف", hideInSitting: false }, { code: "S12", name: "أحمد", hideInSitting: false },
+          { code: "S1", name: "أحمد يوسف", hideInSitting: false }, { code: "S12", name: "أحمد", hideInSitting: false },
           { code: "S13", name: "محمود", hideInSitting: false }, { code: "S14", name: "مصطفى", hideInSitting: false }
         ],
         invitations: [], invitationsLoadedInMemory: false, checkinsMap: {}, lastReceptionCloudTs: 0, lastInvitationsCloudTs: 0,
@@ -663,11 +663,16 @@
       }
 
       function toEnglishDigits(str) { return String(str||"").replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d)); }
+      
       function formatSalesCode(code) {
-        if (!code) return "S11"; const clean = toEnglishDigits(String(code)).trim().toUpperCase();
-        if (!clean) return "S11"; if (clean === "COMPANY" || clean === "شركة") return "COMPANY";
+        const defaultCode = (appState.salesTeam && appState.salesTeam.length > 0) ? appState.salesTeam[0].code : "S1";
+        if (!code) return defaultCode; 
+        const clean = toEnglishDigits(String(code)).trim().toUpperCase();
+        if (!clean) return defaultCode; 
+        if (clean === "COMPANY" || clean === "شركة") return "COMPANY";
         return clean.startsWith("S") ? clean : "S" + clean;
       }
+      
       function normalizePhone(raw) {
         let v = toEnglishDigits(raw || "").trim(); const digits = v.replace(/\D/g, "");
         if (/^200?1[0125]\d{8}$/.test(digits)) return "0" + digits.replace(/^200?/, "");
@@ -1156,12 +1161,18 @@
         updateCloserHeaderBadge();
       }
       function updateCloserHeaderBadge() { const badge = document.getElementById("closerActiveNameBadge"), c = getCurrentCloserObj(); if (badge) badge.textContent = `${c.name} (${c.code})`; }
+      
       function onCloserIdentityChange() {
         const val = document.getElementById("closerSelfSelect").value; if (val) localStorage.setItem("BALMETR_CLOSER_CODE", formatSalesCode(val));
         updateCloserHeaderBadge(); document.getElementById("closerIdentityDrawer").style.display = "none";
         if (salesActiveCheckinId) { triggerAutoSittingNow(salesActiveCheckinId); saveActiveSalesDraftToLocal(); } else restoreSalesSittingAfterSync();
       }
-      function getCurrentCloserObj() { const code = formatSalesCode(document.getElementById("closerSelfSelect")?.value || ""); return appState.salesTeam.find(s => formatSalesCode(s.code) === code) || { code: code || "S11", name: code || "سيلز" }; }
+      
+      function getCurrentCloserObj() { 
+        const code = formatSalesCode(document.getElementById("closerSelfSelect")?.value || ""); 
+        const defaultSales = (appState.salesTeam && appState.salesTeam.length > 0) ? appState.salesTeam[0] : { code: code || "S1", name: code || "سيلز" };
+        return appState.salesTeam.find(s => formatSalesCode(s.code) === code) || defaultSales; 
+      }
 
       function handleSalesSearchInput() {
         const raw = toEnglishDigits(document.getElementById("salesClientSearchInput").value || "").replace(/^#/, "").trim(), listEl = document.getElementById("salesMatchesList");
