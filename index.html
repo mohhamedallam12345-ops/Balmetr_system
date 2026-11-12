@@ -128,7 +128,7 @@
       .kpi-card .label { font-size: 0.74rem; color: var(--text-muted); font-weight: 700; }
       .kpi-card .val { font-size: 1.35rem; font-weight: 900; color: var(--primary); margin-top: 2px; }
 
-      .admin-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin-bottom: 14px; }
+      .admin-tabs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin-bottom: 14px; }
       .admin-tab-btn { padding: 11px 8px; border-radius: 10px; background: var(--bg-card); color: var(--text-muted); border: 1.5px solid var(--border-light); font-weight: 800; font-size: 0.84rem; cursor: pointer; text-align: center; transition: all 0.18s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
       .admin-tab-btn .tab-icon { font-size: 1.15rem; }
       .admin-tab-btn.active { background: rgba(245, 158, 11, 0.2); color: var(--gold); border-color: var(--gold); box-shadow: 0 4px 14px rgba(245, 158, 11, 0.18); }
@@ -151,12 +151,12 @@
       .pagination-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
 
       .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.82); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 14px; }
-      .modal-box { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 16px; padding: 20px; width: 100%; max-width: 420px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.65); }
+      .modal-box { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 16px; padding: 20px; width: 100%; max-width: 420px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.65); max-height: 90vh; overflow-y: auto; }
 
       .dev-footer { text-align: center; padding: 14px 10px 20px; margin-top: 20px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.82rem; font-weight: 700; direction: ltr; }
       .dev-footer a { color: var(--gold); font-weight: 900; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); padding: 3px 11px; border-radius: 999px; margin-left: 5px; text-decoration: none; }
 
-      @media (max-width: 900px) { .admin-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+      @media (max-width: 900px) { .admin-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
     </style>
   </head>
   <body>
@@ -344,7 +344,10 @@
 
           <div id="salesActiveClientWorkspace" style="display: none; margin-top: 12px">
             <div id="salesSittingNowBanner" style="background: rgba(16, 185, 129, 0.16); border: 1.5px solid #10b981; color: #a7f3d0; padding: 10px; border-radius: 10px; margin-bottom: 10px; font-size: 0.82rem; font-weight: 800; text-align: center;"></div>
-            <div id="salesClientProfileCard" style="background: var(--bg-input); border: 1px solid var(--border-light); border-radius: 10px; padding: 11px; margin-bottom: 10px;"></div>
+            
+            <div id="salesClientProfileCard" style="background: var(--bg-input); border: 1px solid var(--border-light); border-radius: 10px; padding: 11px; margin-bottom: 10px;">
+                <!-- Full Client Data will be injected here -->
+            </div>
             
             <div style="background: var(--bg-input); border: 1px solid var(--border-light); border-radius: 10px; padding: 11px; margin-bottom: 12px;">
               <div style="font-size: 0.83rem; font-weight: 900; color: var(--gold); margin-bottom: 6px;">💬 آراء وملاحظات السيلز الذين قعدوا قبلك:</div>
@@ -372,7 +375,7 @@
 
             <div class="form-group">
               <label id="salesSittingNotesLabel" class="form-label" style="color: #f87171">2. اكتب رأيك / السبب / تفاصيل القعدة * (إجباري):</label>
-              <textarea id="salesSittingNotes" class="form-control" placeholder="اكتب رأيك بالتفصيل: العميل مهتم بإيه، الميزانية، سبب القرار..." oninput="saveActiveSalesDraftToLocal()"></textarea>
+              <textarea id="salesSittingNotes" class="form-control" placeholder="اكتب رأيك بالتفصيل: العميل مهتم بإيه، الميزانية، سبب القرار..." style="min-height: 120px;" oninput="saveActiveSalesDraftToLocal()"></textarea>
             </div>
 
             <button type="button" id="salesSaveFinalBtn" class="btn btn-success btn-block" onclick="submitSalesFinalOutcome()">✅ إنهاء القعدة وحفظ قراري بالسحابة</button>
@@ -401,11 +404,12 @@
         </div>
 
         <div class="admin-tabs">
-          <button class="admin-tab-btn active" data-tab="admTabRadar" onclick="switchAdminTab('admTabRadar', this)"><span class="tab-icon">📡</span><span>1. الرادار الحي (الحاضرين)</span></button>
-          <button class="admin-tab-btn" data-tab="admTabNotAttended" onclick="switchAdminTab('admTabNotAttended', this)"><span class="tab-icon">📵</span><span>2. الغائبين (لم يحضروا)</span></button>
-          <button class="admin-tab-btn" data-tab="admTabExcelCenter" onclick="switchAdminTab('admTabExcelCenter', this)"><span class="tab-icon">📥</span><span>3. مركز تصدير التقارير (PDF/Excel)</span></button>
-          <button class="admin-tab-btn" data-tab="admTabSalesStats" onclick="switchAdminTab('admTabSalesStats', this)"><span class="tab-icon">📊</span><span>4. إحصائيات السيلز</span></button>
-          <button class="admin-tab-btn" data-tab="admTabSettings" onclick="switchAdminTab('admTabSettings', this)"><span class="tab-icon">🔑</span><span>5. الباسوردات والنسخ الاحتياطي</span></button>
+          <button class="admin-tab-btn active" data-tab="admTabRadar" onclick="switchAdminTab('admTabRadar', this)"><span class="tab-icon">📡</span><span>1. الرادار (الحاضرين)</span></button>
+          <button class="admin-tab-btn" data-tab="admTabNotAttended" onclick="switchAdminTab('admTabNotAttended', this)"><span class="tab-icon">📵</span><span>2. الغائبين</span></button>
+          <button class="admin-tab-btn" data-tab="admTabDeals" onclick="switchAdminTab('admTabDeals', this)"><span class="tab-icon">💰</span><span>3. التعاقدات والحجوزات</span></button>
+          <button class="admin-tab-btn" data-tab="admTabExcelCenter" onclick="switchAdminTab('admTabExcelCenter', this)"><span class="tab-icon">📥</span><span>4. مركز التصدير</span></button>
+          <button class="admin-tab-btn" data-tab="admTabSalesStats" onclick="switchAdminTab('admTabSalesStats', this)"><span class="tab-icon">📊</span><span>5. إحصائيات السيلز</span></button>
+          <button class="admin-tab-btn" data-tab="admTabSettings" onclick="switchAdminTab('admTabSettings', this)"><span class="tab-icon">🔑</span><span>6. الإعدادات</span></button>
         </div>
 
         <!-- 1: RADAR -->
@@ -471,7 +475,32 @@
           </div>
         </div>
 
-        <!-- 3: EXPORT CENTER (EXCEL + PDF) -->
+        <!-- 3: DEALS & RESERVATIONS (NEW) -->
+        <div id="admTabDeals" class="adm-subtab" style="display: none">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title" style="color: var(--success)">💰 المبيعات والحجوزات (<span id="admDealsCount">0</span> بيعة)</div>
+                <input type="text" id="admDealsSearch" class="form-control" placeholder="🔍 بحث شامل..." style="width: 200px; padding: 7px 12px; font-size: 0.82rem" oninput="admDealsPage = 1; renderAdminDealsTable();" />
+              </div>
+              <div class="table-responsive">
+                <table>
+                  <thead>
+                    <tr><th>التاريخ</th><th>كود العميل</th><th>اسم العميل والتليفون</th><th>القرار</th><th>اسم المشروع</th><th>المساحة</th><th>50% الأولى (المتابعة)</th><th>50% الثانية (سيلز البيعة)</th><th>إجراءات البيعة</th></tr>
+                  </thead>
+                  <tbody id="admDealsTbody"></tbody>
+                </table>
+              </div>
+              <div class="pagination-bar">
+                <div id="admDealsPageInfo" style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted);"></div>
+                <div style="display: flex; gap: 6px">
+                  <button id="admDealsPrevBtn" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.78rem" onclick="changeAdminDealsPage(-1)">➡️ السابق</button>
+                  <button id="admDealsNextBtn" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.78rem" onclick="changeAdminDealsPage(1)">التالي ⬅️</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        <!-- 4: EXPORT CENTER (EXCEL + PDF) -->
         <div id="admTabExcelCenter" class="adm-subtab" style="display: none">
           <div class="card">
             <div class="card-header">
@@ -489,8 +518,8 @@
                 <div class="type-desc">كل الحاضرين وتقسيمة 50% وملاحظات السيلز.</div>
               </div>
               <div id="excelCard_DEALS" class="excel-type-card" onclick="selectExcelCenterType('DEALS')">
-                <div class="type-title"><span>💰 3. المبيعات والحجوزات (الجديدة)</span><span class="badge-gold" id="excelBadgeCount_DEALS" style="background:#fde68a; color:#b45309;">0</span></div>
-                <div class="type-desc">عرض العملاء اللي اشتروا أو حجزوا فقط (مع اسم المشروع والمساحة).</div>
+                <div class="type-title"><span>💰 3. المبيعات والحجوزات</span><span class="badge-gold" id="excelBadgeCount_DEALS" style="background:#fde68a; color:#b45309;">0</span></div>
+                <div class="type-desc">العملاء اللي اشتروا أو حجزوا فقط (مشروع ومساحة).</div>
               </div>
               <div id="excelCard_ALL_INVITATIONS" class="excel-type-card" onclick="selectExcelCenterType('ALL_INVITATIONS')">
                 <div class="type-title"><span>📋 4. شامل كل الدعوات</span><span class="badge-code" id="excelBadgeCount_ALL_INVITATIONS">0</span></div>
@@ -520,7 +549,7 @@
           </div>
         </div>
 
-        <!-- 4: SALES STATS -->
+        <!-- 5: SALES STATS -->
         <div id="admTabSalesStats" class="adm-subtab" style="display: none">
           <div class="card">
             <div class="card-header"><div class="card-title">📊 جدول إنجاز السيلز الشامل</div></div>
@@ -535,7 +564,7 @@
           </div>
         </div>
 
-        <!-- 5: SETTINGS & BACKUP (LOCKED) -->
+        <!-- 6: SETTINGS & BACKUP (LOCKED) -->
         <div id="admTabSettings" class="adm-subtab" style="display: none">
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px;">
             <div class="card">
@@ -583,7 +612,7 @@
     <!-- Edit Checkin Modal -->
     <div id="editCheckinModal" class="modal-overlay">
       <div class="modal-box">
-        <h3 style="color: var(--primary); margin-bottom: 10px">✏️ تعديل بيانات العميل</h3>
+        <h3 style="color: var(--primary); margin-bottom: 10px">✏️ تعديل بيانات العميل الأساسية</h3>
         <input type="hidden" id="editCheckinIdInput" />
         <div class="form-group"><label class="form-label">اسم العميل:</label><input type="text" id="editClientNameInput" class="form-control" /></div>
         <div class="form-group"><label class="form-label">رقم التليفون:</label><input type="tel" id="editClientPhoneInput" class="form-control" dir="ltr" style="text-align: right" /></div>
@@ -595,6 +624,32 @@
         </div>
       </div>
     </div>
+
+    <!-- Edit Deal Modal (For Deals Page) -->
+    <div id="editDealModal" class="modal-overlay">
+        <div class="modal-box">
+          <h3 style="color: var(--success); margin-bottom: 10px">✏️ تعديل بيانات البيعة</h3>
+          <input type="hidden" id="editDealCheckinIdInput" />
+          <input type="hidden" id="editDealOldSalesCodeInput" />
+          
+          <div class="form-group"><label class="form-label">القرار:</label>
+            <select id="editDealStatusSelect" class="form-control">
+                <option value="💰 اشترى (تعاقد)">💰 اشترى (تعاقد)</option>
+                <option value="💳 دفع حجز">💳 دفع حجز</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">اسم المشروع:</label><input type="text" id="editDealProjectNameInput" class="form-control" /></div>
+          <div class="form-group"><label class="form-label">المساحة:</label><input type="text" id="editDealProjectAreaInput" class="form-control" /></div>
+          
+          <div class="form-group"><label class="form-label" style="color: var(--gold)">مستحق النص الأول (50% المتابعة):</label><select id="editDealFirstSplitSelect" class="form-control"></select></div>
+          <div class="form-group"><label class="form-label" style="color: var(--success)">مستحق النص الثاني (50% القعدة/الإغلاق):</label><select id="editDealSecondSplitSelect" class="form-control"></select></div>
+
+          <div style="display: flex; gap: 8px; margin-top: 14px">
+            <button type="button" id="saveEditDealBtn" class="btn btn-success" style="flex: 1" onclick="saveAdminEditedDeal()">💾 حفظ بالسحابة</button>
+            <button type="button" class="btn btn-outline" style="flex: 1" onclick="closeEditDealModal()">إلغاء</button>
+          </div>
+        </div>
+      </div>
 
     <script>
       const DEFAULT_FIREBASE_URL = "https://balmetr-vip-default-rtdb.firebaseio.com";
@@ -628,8 +683,8 @@
       let recSurvey = { area: [], type: [], sys: [] };
 
       let salesActiveCheckinId = null, salesChosenOutcome = "";
-      let selectedExcelCenterType = "ABSENT";
-      let admRadarPage = 1, admAbsentPage = 1;
+      let selectedExcelCenterType = "DEALS";
+      let admRadarPage = 1, admAbsentPage = 1, admDealsPage = 1;
       const ADMIN_PAGE_SIZE = 40;
 
       window.addEventListener("DOMContentLoaded", async () => {
@@ -904,6 +959,18 @@
           appState.lastReceptionCloudTs = now; setSyncBadge(true); return true;
         } catch (e) { setSyncBadge(false); return false; }
       }
+      
+      async function deleteSingleSittingFromCloudStrict(checkinId, salesCode) {
+        const base = cleanBaseUrl(), now = Date.now(), sCode = formatSalesCode(salesCode);
+        try {
+          const delRes = await fetchWithRetry(`${base}/balmeter_vip_reception_db/checkins/${checkinId}/sittings/${sCode}.json`, { method: "DELETE" }, 3);
+          if (!delRes || !delRes.ok) throw new Error("HTTP " + (delRes ? delRes.status : "Net"));
+          fetch(`${base}/balmeter_vip_reception_db/lastUpdated.json`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(now) }).catch(() => {});
+          const chk = appState.checkinsMap[checkinId];
+          if (chk && chk.sittings) { delete chk.sittings[sCode]; }
+          appState.lastReceptionCloudTs = now; setSyncBadge(true); return true;
+        } catch (e) { setSyncBadge(false); return false; }
+      }
 
       function toggleExhibitionListDrawer(forceState) {
         isExhDrawerOpen = typeof forceState === "boolean" ? forceState : !isExhDrawerOpen;
@@ -965,7 +1032,7 @@
           btn.onclick = () => {
             if (currentMode === "RECEPTION" || currentMode === "SALES") { if (!confirm(`الانتقال إلى (${ex.name}) يتطلب إدخال الباسورد. متابعة؟`)) return; appState.activeExhibitionId = ex.id; logoutAndReturnToLanding(); return; }
             appState.activeExhibitionId = ex.id; saveActiveModeToLocal();
-            if (currentMode === "ADMIN") { const exFilter = document.getElementById("excelExhFilter"); if (exFilter) exFilter.value = ex.id; admRadarPage = 1; admAbsentPage = 1; toggleExhibitionListDrawer(false); }
+            if (currentMode === "ADMIN") { const exFilter = document.getElementById("excelExhFilter"); if (exFilter) exFilter.value = ex.id; admRadarPage = 1; admAbsentPage = 1; admDealsPage = 1; toggleExhibitionListDrawer(false); }
             renderAllUI();
           };
           pillsWrap.appendChild(btn);
@@ -1210,6 +1277,8 @@
         if (!chk) { workspace.style.display = "none"; return; }
         workspace.style.display = "block"; const closer = getCurrentCloserObj(), commInfo = buildClearCommissionBreakdown(chk);
         document.getElementById("salesSittingNowBanner").innerHTML = `🟢 لايف: <strong>(${closer.name})</strong> قاعد مع <strong>(${chk.clientName} #${chk.seqNumber})</strong>`;
+        
+        // MODIFIED: Full Client Data Display in Sales Mode
         document.getElementById("salesClientProfileCard").innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px; padding-bottom:6px; border-bottom:1px dashed var(--border-light);">
             <div><strong style="color:var(--gold); font-size:0.96rem;">#${chk.seqNumber}</strong><strong style="font-size:0.96rem; margin-right:5px; color:#fff;">${chk.clientName}</strong></div>
@@ -1218,9 +1287,13 @@
           <div style="font-size:0.81rem; line-height:1.65;">
             <div>🎫 <strong>الأصل:</strong> <span style="color:#cbd5e1;">${commInfo.originText}</span></div>
             <div>🔹 <strong>النص الأول (50%):</strong> <span class="badge-code">${commInfo.firstHalfHolder}</span></div>
-            <div>📍 <strong>مهتم بمنطقة:</strong> <span style="color:#fff; font-weight:800;">${chk.interestedArea || "غير محدد"}</span></div>
+            <div>📍 <strong>المنطقة:</strong> <span style="color:#fff; font-weight:800;">${chk.interestedArea || "غير محدد"}</span></div>
+            <div>🏢 <strong>الاستثمار:</strong> <span style="color:#fff; font-weight:800;">${chk.investmentType || "غير محدد"}</span></div>
+            <div>⚙️ <strong>النظام:</strong> <span style="color:#fff; font-weight:800;">${chk.preferredSystem || "غير محدد"}</span></div>
+            ${chk.receptionNotes ? `<div>📝 <strong>ملاحظة ريسبشن:</strong> <span style="color:var(--gold);">${chk.receptionNotes}</span></div>` : ""}
           </div>
         `;
+        
         const prevContainer = document.getElementById("salesPreviousOpinionsList"), allSits = getSittingsArray(chk);
         prevContainer.innerHTML = allSits.length === 0 ? `<div style="font-size:0.8rem; color:var(--text-muted);">لا توجد قعدات سابقة.</div>` : allSits.map((s, idx) => {
           const isLive = s.status === "🟢 قاعد مع العميل حالياً";
@@ -1231,7 +1304,7 @@
               <strong style="color:#fff; font-size:0.83rem;">${idx + 1}. 💼 ${s.salesName} (${s.salesCode})</strong><span class="${isLive ? "badge-live" : "badge-gold"}">${s.status}</span>
             </div>
             ${extra}
-            <div style="font-size:0.81rem; color:#e2e8f0; margin-top:4px; font-weight:700;">💬 الرأي: <span style="color:${s.notes ? "#fde68a" : "var(--text-muted)"};">${s.notes || "جاري القعدة الآن..."}</span></div>
+            <div style="font-size:0.81rem; color:#e2e8f0; margin-top:4px; font-weight:700; word-break: break-word; white-space: pre-wrap;">💬 الرأي: <span style="color:${s.notes ? "#fde68a" : "var(--text-muted)"};">${s.notes || "جاري القعدة الآن..."}</span></div>
           </div>`;
         }).join("");
       }
@@ -1289,7 +1362,7 @@
         if (btnEl) btnEl.classList.add("active"); else { const matchingBtn = document.querySelector(`.admin-tab-btn[data-tab="${tabId}"]`); if (matchingBtn) matchingBtn.classList.add("active"); }
         renderAdminDashboard();
       }
-      function resetAdminPagesAndRender() { admRadarPage = 1; admAbsentPage = 1; renderAdminDashboard(); }
+      function resetAdminPagesAndRender() { admRadarPage = 1; admAbsentPage = 1; admDealsPage = 1; renderAdminDashboard(); }
 
       function getAllEffectiveSalesReps() {
         const map = new Map(); sortSalesTeam(appState.salesTeam).forEach(s => map.set(formatSalesCode(s.code), { code: formatSalesCode(s.code), name: s.name, hideInSitting: Boolean(s.hideInSitting) }));
@@ -1364,7 +1437,12 @@
         }).filter(inv => !search || (inv.clientName || "").toLowerCase().includes(search) || String(inv.seqNumber).toLowerCase().includes(search) || String(inv.clientPhone || "").includes(search) || (inv.salesName || "").toLowerCase().includes(search)).sort((a, b) => (Number(a.seqNumber) || 0) - (Number(b.seqNumber) || 0));
       }
       function getDealsOnlyCheckins() {
-        return getAdminFilteredCheckins().filter(c => getSittingsArray(c).some(s => s.status === "💰 اشترى (تعاقد)" || s.status === "💳 دفع حجز"));
+        const search = toEnglishDigits(document.getElementById("admDealsSearch")?.value || "").trim().toLowerCase();
+        return getAdminFilteredCheckins().filter(c => getSittingsArray(c).some(s => s.status === "💰 اشترى (تعاقد)" || s.status === "💳 دفع حجز"))
+          .filter(c => {
+             if (!search) return true;
+             return (c.clientName || "").toLowerCase().includes(search) || String(c.seqNumber).toLowerCase().includes(search) || String(c.clientPhone).includes(search) || getSittingsArray(c).map(s => `${s.salesName} ${s.salesCode} ${s.projectName || ""} ${s.projectArea || ""}`).join(" ").toLowerCase().includes(search);
+          });
       }
 
       function renderAdminDashboard() {
@@ -1381,7 +1459,7 @@
           });
         });
         document.getElementById("admKpiInvitations").textContent = scopeInvs.length; document.getElementById("admKpiAttended").textContent = scopeCheckins.length; document.getElementById("admKpiNotAttended").textContent = notAttendedList.length; document.getElementById("admKpiSittingNow").textContent = sittingNow; document.getElementById("admKpiTotalSittings").textContent = completedSittings; document.getElementById("admKpiDeals").textContent = deals; document.getElementById("admKpiFollowups").textContent = followups;
-        renderAdminRadarTable(); renderAdminNotAttendedTable(); renderAdminExcelCenterSummary(); renderAdminSalesStatsTable(exhFilter, scopeCheckins, allCheckins); renderAdminSettingsTab();
+        renderAdminRadarTable(); renderAdminNotAttendedTable(); renderAdminDealsTable(); renderAdminExcelCenterSummary(); renderAdminSalesStatsTable(exhFilter, scopeCheckins, allCheckins); renderAdminSettingsTab();
       }
 
       function changeAdminRadarPage(delta) { admRadarPage += delta; renderAdminRadarTable(); }
@@ -1403,14 +1481,14 @@
             return `<div class="history-sitting-card ${isLive ? "live-now" : ""}" style="margin-bottom:6px;">
               <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;"><strong>${idx + 1}. 💼 ${s.salesName} (${s.salesCode})</strong><span class="${isLive ? "badge-live" : "badge-gold"}">${s.status}</span></div>
               ${dealBadge}
-              <div style="font-size:0.82rem; color:#fde68a; margin-top:4px; font-weight:700;">💬 ${s.notes || "جاري الجلسة الآن..."}</div>
+              <div style="font-size:0.82rem; color:#fde68a; margin-top:4px; font-weight:700; white-space:pre-wrap;">💬 ${s.notes || "جاري الجلسة الآن..."}</div>
             </div>`;
           }).join("") : `<span style="color:var(--gold); font-weight:800; font-size:0.8rem;">⏳ في الانتظار (لم يقعد معه سيلز)</span>`;
           return `<tr>
             <td><strong style="color:var(--gold); font-size:0.98rem;">#${c.seqNumber}</strong><div style="font-size:0.74rem; color:var(--text-muted);">${extractIsoDateFromCheckin(c)}</div><div style="font-size:0.74rem; color:var(--text-muted);">🕒 ${c.attendedAt || ""}</div></td>
             <td><div style="font-weight:900; font-size:0.94rem; color:#fff;">${c.clientName}</div><div dir="ltr" style="text-align:right; color:var(--primary); font-weight:800; font-size:0.84rem;">${c.clientPhone}</div></td>
             <td style="min-width:280px;"><div class="comm-detail-box"><div style="margin-bottom:4px;">🎫 الأصل: <span style="color:#e2e8f0;">${commInfo.originText}</span></div><div>💰 النص الأول: <span class="badge-code">${commInfo.firstHalfHolder}</span></div></div></td>
-            <td style="font-size:0.79rem;"><div>📍 المنطقة: ${c.interestedArea || "-"}</div><div>🏢 الاستثمار: ${c.investmentType || "-"}</div></td>
+            <td style="font-size:0.79rem;"><div>📍 المنطقة: ${c.interestedArea || "-"}</div><div>🏢 الاستثمار: ${c.investmentType || "-"}</div><div>⚙️ النظام: ${c.preferredSystem || "-"}</div>${c.receptionNotes ? `<div style="color:var(--gold);">📝 ${c.receptionNotes}</div>`:""}</td>
             <td style="min-width:280px;">${sittingsHTML}</td>
             <td><div style="display:flex; flex-direction:column; gap:6px;"><button class="btn btn-outline" style="padding:5px; font-size:0.75rem; border-color:var(--primary); color:var(--primary);" onclick="openEditCheckinModal('${c.id}')">✏️ تعديل</button><button class="btn btn-danger" style="padding:5px; font-size:0.75rem;" onclick="adminDeleteCheckin('${c.id}')">🗑️ حذف</button></div></td>
           </tr>`;
@@ -1456,6 +1534,101 @@
             <td style="font-size:0.78rem; color:var(--text-muted);">${inv.createdAt || "-"}</td>
             <td><span class="badge-danger">❌ لم يحضر</span></td>
           </tr>`).join("");
+      }
+
+      /* ADMIN DEALS TAB LOGIC */
+      function changeAdminDealsPage(delta) { admDealsPage += delta; renderAdminDealsTable(); }
+      function renderAdminDealsTable() {
+          const tbody = document.getElementById("admDealsTbody"); if (!tbody) return;
+          const list = getDealsOnlyCheckins();
+          document.getElementById("admDealsCount").textContent = list.length;
+          const totalPages = Math.max(1, Math.ceil(list.length / ADMIN_PAGE_SIZE));
+          if (admDealsPage > totalPages) admDealsPage = totalPages; if (admDealsPage < 1) admDealsPage = 1;
+          const pageItems = list.slice((admDealsPage - 1) * ADMIN_PAGE_SIZE, admDealsPage * ADMIN_PAGE_SIZE);
+          const pageInfo = document.getElementById("admDealsPageInfo"), prevBtn = document.getElementById("admDealsPrevBtn"), nextBtn = document.getElementById("admDealsNextBtn");
+          if (pageInfo) pageInfo.textContent = `صفحة ${admDealsPage} من ${totalPages}`;
+          if (prevBtn) prevBtn.disabled = admDealsPage <= 1; if (nextBtn) nextBtn.disabled = admDealsPage >= totalPages;
+
+          tbody.innerHTML = pageItems.length === 0 ? `<tr><td colspan="9" style="text-align:center; padding:24px; color:var(--text-muted);">لا توجد تعاقدات مطابقة للبحث.</td></tr>` : "";
+          
+          pageItems.forEach(c => {
+             const dealSits = getSittingsArray(c).filter(s => s.status === "💰 اشترى (تعاقد)" || s.status === "💳 دفع حجز");
+             const commInfo = buildClearCommissionBreakdown(c);
+             dealSits.forEach(s => {
+                 const tr = document.createElement("tr");
+                 tr.innerHTML = `
+                    <td><div style="font-size:0.74rem; color:var(--text-muted);">${extractIsoDateFromCheckin(c)}</div></td>
+                    <td><strong style="color:var(--gold); font-size:0.98rem;">#${c.seqNumber}</strong></td>
+                    <td><div style="font-weight:900; font-size:0.94rem; color:#fff;">${c.clientName}</div><div dir="ltr" style="text-align:right; color:var(--primary); font-size:0.84rem;">${c.clientPhone}</div></td>
+                    <td><span class="badge-success">${s.status}</span></td>
+                    <td><strong>${s.projectName || "-"}</strong></td>
+                    <td>${s.projectArea || "-"}</td>
+                    <td><span class="badge-code">${commInfo.firstHalfHolder}</span></td>
+                    <td><span class="badge-gold">${s.salesName} (${s.salesCode})</span></td>
+                    <td><button class="btn btn-outline" style="padding:5px 10px; font-size:0.75rem; border-color:var(--success); color:var(--success);" onclick="openEditDealModal('${c.id}', '${s.salesCode}')">✏️ تعديل البيعة</button></td>
+                 `;
+                 tbody.appendChild(tr);
+             });
+          });
+      }
+
+      function openEditDealModal(checkinId, salesCode) {
+          const chk = appState.checkinsMap[checkinId]; if (!chk) return;
+          const sit = getSittingsArray(chk).find(s => formatSalesCode(s.salesCode) === formatSalesCode(salesCode)); if(!sit) return;
+
+          document.getElementById("editDealCheckinIdInput").value = chk.id;
+          document.getElementById("editDealOldSalesCodeInput").value = sit.salesCode;
+          document.getElementById("editDealStatusSelect").value = sit.status;
+          document.getElementById("editDealProjectNameInput").value = sit.projectName || "";
+          document.getElementById("editDealProjectAreaInput").value = sit.projectArea || "";
+
+          const fSel = document.getElementById("editDealFirstSplitSelect"); fSel.innerHTML = "";
+          const sSel = document.getElementById("editDealSecondSplitSelect"); sSel.innerHTML = "";
+          
+          getAllEffectiveSalesReps().forEach(rep => { 
+              const opt = document.createElement("option"); opt.value = rep.code; opt.textContent = rep.code === "COMPANY" ? "🏢 شركة مباشر" : `${rep.name} (${rep.code})`; fSel.appendChild(opt); 
+              if(rep.code !== "COMPANY") {
+                  const opt2 = document.createElement("option"); opt2.value = rep.code; opt2.textContent = `${rep.name} (${rep.code})`; sSel.appendChild(opt2);
+              }
+          });
+          fSel.value = formatSalesCode(chk.firstSplitCode || "COMPANY");
+          sSel.value = formatSalesCode(sit.salesCode);
+
+          document.getElementById("editDealModal").style.display = "flex";
+      }
+      function closeEditDealModal() { document.getElementById("editDealModal").style.display = "none"; }
+      
+      async function saveAdminEditedDeal() {
+          const chkId = document.getElementById("editDealCheckinIdInput").value;
+          const oldSalesCode = document.getElementById("editDealOldSalesCodeInput").value;
+          const chk = appState.checkinsMap[chkId]; if(!chk) return;
+          
+          const newStatus = document.getElementById("editDealStatusSelect").value;
+          const newProjName = (document.getElementById("editDealProjectNameInput").value || "").trim();
+          const newProjArea = (document.getElementById("editDealProjectAreaInput").value || "").trim();
+          const newFirstCode = formatSalesCode(document.getElementById("editDealFirstSplitSelect").value);
+          const newSecondCode = formatSalesCode(document.getElementById("editDealSecondSplitSelect").value);
+
+          const repObj1 = getAllEffectiveSalesReps().find(r => r.code === newFirstCode), newFirstName = newFirstCode === "COMPANY" ? "عميل شركة" : (repObj1 ? repObj1.name : newFirstCode);
+          const repObj2 = getAllEffectiveSalesReps().find(r => r.code === newSecondCode), newSecondName = repObj2 ? repObj2.name : newSecondCode;
+
+          const updatedCheckin = { ...chk, firstSplitCode: newFirstCode, firstSplitName: newFirstName, firstSplitType: newFirstCode === "COMPANY" ? "عميل شركة" : "تعديل بواسطة الإدارة (بيعة)" };
+          
+          const oldSit = getSittingsArray(chk).find(s => formatSalesCode(s.salesCode) === formatSalesCode(oldSalesCode));
+          const updatedSit = { ...oldSit, salesCode: newSecondCode, salesName: newSecondName, status: newStatus, projectName: newProjName, projectArea: newProjArea, updatedAt: new Date().toLocaleTimeString("ar-EG") };
+
+          const btn = document.getElementById("saveEditDealBtn"); btn.disabled = true; btn.textContent = "⏳ جاري الحفظ...";
+          try {
+              // 1. Update Checkin (First Split)
+              if (!await pushSingleCheckinToCloudStrict(updatedCheckin, null)) { alert("❌ تعذر تعديل النص الأول!"); return; }
+              // 2. If Second Split changed, we must delete the old sitting key and create new. Otherwise just update.
+              if(formatSalesCode(oldSalesCode) !== newSecondCode) {
+                  await deleteSingleSittingFromCloudStrict(chkId, oldSalesCode);
+              }
+              if (!await pushSingleSittingToCloudStrict(chkId, updatedSit)) { alert("❌ تعذر تعديل البيعة!"); return; }
+              
+              closeEditDealModal(); renderAdminDashboard();
+          } finally { btn.disabled = false; btn.textContent = "💾 حفظ بالسحابة"; }
       }
 
       function selectExcelCenterType(typeKey) {
@@ -1547,7 +1720,7 @@
         const rows = list.map(c => {
           const sits = getSittingsArray(c), commInfo = buildClearCommissionBreakdown(c);
           const sitsSummary = sits.length > 0 ? sits.map((s, idx) => `[${idx+1}] ${s.salesName}: ${s.status} (${s.notes || "-"})`).join(" | ") : "لم يقعد مع سيلز بعد";
-          return [c.seqNumber, c.clientName, c.clientPhone, commInfo.originText, commInfo.firstHalfHolder, `${c.interestedArea||""} / ${c.investmentType||""}`, sitsSummary];
+          return [c.seqNumber, c.clientName, c.clientPhone, commInfo.originText, commInfo.firstHalfHolder, `${c.interestedArea||""} / ${c.investmentType||""} / ${c.preferredSystem||""}`, sitsSummary];
         });
         return { title: "تقرير العملاء الحاضرين (تقسيمة الكومشن والقعدات)", headers, rows };
       }
