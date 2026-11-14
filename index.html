@@ -89,6 +89,7 @@
       .form-label { display: block; font-size: 0.83rem; font-weight: 800; color: #cbd5e1; margin-bottom: 6px; }
       .form-control { width: 100%; padding: 11px 12px; font-size: 15px; font-weight: 700; color: var(--text-main); background: var(--bg-input); border: 1.5px solid var(--border-light); border-radius: 10px; outline: none; transition: border-color 0.2s; }
       .form-control:focus { border-color: var(--primary); }
+      .form-control:disabled { opacity: 0.55; cursor: not-allowed; background: #070b14; }
       textarea.form-control { min-height: 80px; resize: vertical; }
 
       .survey-section { background: var(--bg-input); border: 1px solid var(--border-light); border-radius: 10px; padding: 10px; margin-bottom: 10px; }
@@ -321,13 +322,15 @@
 
       <!-- 2. SALES CLOSER MODE -->
       <section id="salesScreen" class="mobile-container" style="display: none">
-        <div class="card" style="padding: 12px 14px; background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.4);">
+        <div id="closerIdentityCard" class="card" style="padding: 12px 14px; background: rgba(245, 158, 11, 0.1); border: 1.5px solid var(--gold);">
           <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; cursor: pointer;" onclick="toggleCloserIdentityDrawer()">
-            <div style="font-size: 0.85rem; font-weight: 900; color: #34d399">👤 سيلز القعدة: <span id="closerActiveNameBadge" style="color: #fff"></span></div>
-            <span style="font-size: 0.74rem; font-weight: 800; color: var(--gold); background: rgba(245, 158, 11, 0.14); padding: 3px 8px; border-radius: 6px;">تغيير الاسم ▾</span>
+            <div style="font-size: 0.85rem; font-weight: 900; color: #34d399">👤 سيلز القعدة: <span id="closerActiveNameBadge" style="color: #f87171">⚠️ اختر اسمك أولاً</span></div>
+            <span id="closerDrawerToggleLabel" style="font-size: 0.74rem; font-weight: 800; color: var(--gold); background: rgba(245, 158, 11, 0.14); padding: 3px 8px; border-radius: 6px;">اختر الاسم ▾</span>
           </div>
-          <div id="closerIdentityDrawer" style="display: none; margin-top: 10px">
+          <div id="closerIdentityDrawer" style="display: block; margin-top: 10px">
+            <label class="form-label" style="color: var(--gold); font-size: 0.8rem;">1️⃣ إجباري: ابحث عن اسمك أو اختره من القائمة لفتح البحث عن العميل:</label>
             <input type="text" id="closerSelfSearch" class="form-control" placeholder="🔍 ابحث عن اسمك أو كودك..." oninput="populateCloserSelfSelect()" style="margin-bottom: 8px" />
+            <div id="closerQuickMatchesList" class="search-matches-list" style="display: none; margin-bottom: 8px;"></div>
             <select id="closerSelfSelect" class="form-control" onchange="onCloserIdentityChange()"></select>
           </div>
         </div>
@@ -337,8 +340,13 @@
             <div class="card-title" style="color: var(--success)">🔍 ابحث عن العميل الحاضر لبدء القعدة</div>
             <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 0.75rem" onclick="clearActiveSalesSessionAndReset()">✨ بحث عن عميل آخر</button>
           </div>
+
+          <div id="salesSearchLockNotice" style="background: rgba(239, 68, 68, 0.16); border: 1.5px solid var(--danger); color: #fecaca; padding: 11px 12px; border-radius: 10px; margin-bottom: 10px; font-size: 0.83rem; font-weight: 800; text-align: center; cursor: pointer;" onclick="focusCloserSelection()">
+            🔒 البحث مغلق: يجب اختيار اسمك (سيلز القعدة) من الأعلى أولاً لتتمكن من البحث عن العميل
+          </div>
+
           <div class="form-group" style="margin-bottom: 6px">
-            <input type="text" id="salesClientSearchInput" class="form-control" placeholder="🔢 اكتب كود العميل أو اسمه..." oninput="handleSalesSearchInput()" />
+            <input type="text" id="salesClientSearchInput" class="form-control" placeholder="🔒 اختر اسمك من الأعلى أولاً لفتح البحث..." oninput="handleSalesSearchInput()" disabled />
             <div id="salesMatchesList" class="search-matches-list" style="display: none"></div>
           </div>
 
@@ -475,7 +483,7 @@
           </div>
         </div>
 
-        <!-- 3: DEALS & RESERVATIONS (NEW) -->
+        <!-- 3: DEALS & RESERVATIONS -->
         <div id="admTabDeals" class="adm-subtab" style="display: none">
             <div class="card">
               <div class="card-header">
@@ -677,11 +685,12 @@
       let currentMode = "LANDING";
       let pendingTargetMode = null;
       let isSyncing = false, isSubmittingCheckin = false, isSubmittingSitting = false, isExhDrawerOpen = true;
-      let settingsUnlocked = false; // For Tab 5 security
+      let settingsUnlocked = false;
 
       let recCurrentStep = 1, recStep1Completed = false, recStep2Completed = false, recSelectedInv = null, recIsWalkin = false, recAssignedWalkinSeq = null, recFirstSplitMode = "DEFAULT", recCompanionHostCheckin = null;
       let recSurvey = { area: [], type: [], sys: [] };
 
+      let selectedCloserCode = "";
       let salesActiveCheckinId = null, salesChosenOutcome = "";
       let selectedExcelCenterType = "DEALS";
       let admRadarPage = 1, admAbsentPage = 1, admDealsPage = 1;
@@ -787,10 +796,11 @@
       function saveActiveModeToLocal() { try { localStorage.setItem(ACTIVE_MODE_SESSION_KEY, JSON.stringify({ mode: currentMode, exhibitionId: appState.activeExhibitionId })); } catch (e) {} }
       function saveActiveSalesDraftToLocal() {
         try {
-          if (!salesActiveCheckinId) { localStorage.removeItem(ACTIVE_SALES_DRAFT_KEY); return; }
+          const closer = getCurrentCloserObj();
+          if (!salesActiveCheckinId || !closer || !closer.code) { localStorage.removeItem(ACTIVE_SALES_DRAFT_KEY); return; }
           localStorage.setItem(ACTIVE_SALES_DRAFT_KEY, JSON.stringify({
             checkinId: salesActiveCheckinId, exhibitionId: appState.activeExhibitionId,
-            closerCode: getCurrentCloserObj().code, outcome: salesChosenOutcome,
+            closerCode: closer.code, outcome: salesChosenOutcome,
             notes: document.getElementById("salesSittingNotes")?.value || "",
             projectName: document.getElementById("salesProjectName")?.value || "",
             projectArea: document.getElementById("salesProjectArea")?.value || ""
@@ -808,22 +818,29 @@
       }
       function restoreSalesSittingAfterSync() {
         if (currentMode !== "SALES") return;
-        const closer = getCurrentCloserObj(), exh = getActiveExhibition();
+        const exh = getActiveExhibition();
         try {
           const raw = localStorage.getItem(ACTIVE_SALES_DRAFT_KEY);
           if (raw) {
             const draft = JSON.parse(raw);
-            if (draft.checkinId && appState.checkinsMap[draft.checkinId] && draft.exhibitionId === exh.id) {
-              salesActiveCheckinId = draft.checkinId; salesChosenOutcome = draft.outcome || "";
-              const chk = appState.checkinsMap[salesActiveCheckinId];
-              document.getElementById("salesClientSearchInput").value = `${chk.clientName} (#${chk.seqNumber})`;
-              document.getElementById("salesSittingNotes").value = draft.notes || "";
-              document.getElementById("salesProjectName").value = draft.projectName || "";
-              document.getElementById("salesProjectArea").value = draft.projectArea || "";
-              selectSalesOutcome(salesChosenOutcome, null); 
-              renderSalesActiveClientView(); return;
+            if (draft.checkinId && appState.checkinsMap[draft.checkinId] && draft.exhibitionId === exh.id && draft.closerCode) {
+              selectedCloserCode = formatSalesCode(draft.closerCode);
+              populateCloserSelfSelect();
+              const closer = getCurrentCloserObj();
+              if (closer && closer.code) {
+                document.getElementById("closerIdentityDrawer").style.display = "none";
+                salesActiveCheckinId = draft.checkinId; salesChosenOutcome = draft.outcome || "";
+                const chk = appState.checkinsMap[salesActiveCheckinId];
+                document.getElementById("salesClientSearchInput").value = `${chk.clientName} (#${chk.seqNumber})`;
+                document.getElementById("salesSittingNotes").value = draft.notes || "";
+                document.getElementById("salesProjectName").value = draft.projectName || "";
+                document.getElementById("salesProjectArea").value = draft.projectArea || "";
+                selectSalesOutcome(salesChosenOutcome, null); 
+                renderSalesActiveClientView(); return;
+              }
             }
           }
+          const closer = getCurrentCloserObj();
           if (closer && closer.code) {
             const client = getCheckinsArray().find(c => (c.exhibitionId === exh.id || c.exhibitionName === exh.name) && getSittingsArray(c).some(s => formatSalesCode(s.salesCode) === closer.code && s.status === "🟢 قاعد مع العميل حالياً"));
             if (client) {
@@ -996,10 +1013,17 @@
         const isMaster = entered === MASTER_PASS_1 || entered === MASTER_PASS_2;
 
         if (pendingTargetMode === "RECEPTION") { if (entered === passObj.receptionPass || isMaster) { closePasswordModal(); await activateMode("RECEPTION", true); } else alert("❌ الباسورد غير صحيح!"); }
-        else if (pendingTargetMode === "SALES") { if (entered === passObj.salesPass || isMaster) { closePasswordModal(); await activateMode("SALES", true); restoreSalesSittingAfterSync(); } else alert("❌ الباسورد غير صحيح!"); }
+        else if (pendingTargetMode === "SALES") {
+          if (entered === passObj.salesPass || isMaster) {
+            closePasswordModal();
+            selectedCloserCode = "";
+            clearActiveSalesSessionAndReset();
+            await activateMode("SALES", true);
+          } else alert("❌ الباسورد غير صحيح!");
+        }
         else if (pendingTargetMode === "ADMIN") { if (isMaster) { closePasswordModal(); await activateMode("ADMIN", true); } else alert("❌ باسورد الإدارة غير صحيح!"); }
         else if (pendingTargetMode === "SETTINGS") {
-          if (entered.toUpperCase() === "M-A-L-L-A-M" || isMaster) { settingsUnlocked = true; closePasswordModal(); switchAdminTab('admTabSettings'); } else alert("❌ باسورد الإعدادات غير صحيح!");
+          if (entered.toUpperCase() === "M-A-L-A-L-A-M" || entered.toUpperCase() === "M-A-L-L-A-M" || isMaster) { settingsUnlocked = true; closePasswordModal(); switchAdminTab('admTabSettings'); } else alert("❌ باسورد الإعدادات غير صحيح!");
         }
       }
 
@@ -1014,12 +1038,25 @@
         else {
           switchBtn.style.display = "inline-flex"; modeBadge.style.display = "inline-flex";
           if (mode === "RECEPTION") { modeBadge.textContent = "🛎️ الريسبشن"; exhSection.className = "exhibition-bar mobile-container"; toggleExhibitionListDrawer(false); await ensureCloudInvitationsLoaded(false); }
-          if (mode === "SALES") { modeBadge.textContent = "💼 سيلز القعدة"; exhSection.className = "exhibition-bar mobile-container"; toggleExhibitionListDrawer(false); }
+          if (mode === "SALES") {
+            modeBadge.textContent = "💼 سيلز القعدة";
+            exhSection.className = "exhibition-bar mobile-container";
+            toggleExhibitionListDrawer(false);
+            if (!selectedCloserCode) {
+              const drawer = document.getElementById("closerIdentityDrawer");
+              if (drawer) drawer.style.display = "block";
+            }
+          }
           if (mode === "ADMIN") { modeBadge.textContent = "👑 الإدارة"; exhSection.className = "exhibition-bar"; toggleExhibitionListDrawer(false); await ensureCloudInvitationsLoaded(false); populateAdminFilterDropdowns(); const exFilter = document.getElementById("excelExhFilter"); if (exFilter) exFilter.value = appState.activeExhibitionId; }
         }
         renderAllUI();
       }
-      function logoutAndReturnToLanding() { localStorage.removeItem(ACTIVE_MODE_SESSION_KEY); activateMode("LANDING", false); }
+      function logoutAndReturnToLanding() {
+        selectedCloserCode = "";
+        clearActiveSalesSessionAndReset();
+        localStorage.removeItem(ACTIVE_MODE_SESSION_KEY);
+        activateMode("LANDING", false);
+      }
 
       function renderAllUI() {
         const exh = getActiveExhibition(); if (!exh) return;
@@ -1217,32 +1254,209 @@
       }
 
       /* Sales Closer */
-      function toggleCloserIdentityDrawer() { const d = document.getElementById("closerIdentityDrawer"); if (d) d.style.display = d.style.display === "none" ? "block" : "none"; }
-      function getVisibleSittingSalesTeam() { const vis = appState.salesTeam.filter(s => !s.hideInSitting); return vis.length > 0 ? vis : appState.salesTeam; }
-      function populateCloserSelfSelect() {
-        const select = document.getElementById("closerSelfSelect"); if (!select) return;
-        const search = (document.getElementById("closerSelfSearch")?.value || "").trim().toLowerCase(), saved = formatSalesCode(localStorage.getItem("BALMETR_CLOSER_CODE") || ""), curr = select.value;
-        const sorted = sortSalesTeam(getVisibleSittingSalesTeam()).filter(s => s.name.toLowerCase().includes(search) || s.code.toLowerCase().includes(search));
-        select.innerHTML = ""; sorted.forEach(s => { const opt = document.createElement("option"); opt.value = s.code; opt.textContent = `${s.name} (كود: ${s.code})`; select.appendChild(opt); });
-        if (curr && sorted.some(s => s.code === curr)) select.value = curr; else if (saved && sorted.some(s => s.code === saved)) select.value = saved;
-        updateCloserHeaderBadge();
+      function toggleCloserIdentityDrawer(forceOpen) {
+        const d = document.getElementById("closerIdentityDrawer");
+        if (!d) return;
+        if (typeof forceOpen === "boolean") {
+          d.style.display = forceOpen ? "block" : "none";
+        } else {
+          d.style.display = d.style.display === "none" ? "block" : "none";
+        }
       }
-      function updateCloserHeaderBadge() { const badge = document.getElementById("closerActiveNameBadge"), c = getCurrentCloserObj(); if (badge) badge.textContent = `${c.name} (${c.code})`; }
+
+      function focusCloserSelection() {
+        toggleCloserIdentityDrawer(true);
+        const sel = document.getElementById("closerSelfSelect");
+        if (sel) sel.focus();
+      }
+
+      function getVisibleSittingSalesTeam() {
+        const vis = appState.salesTeam.filter(s => !s.hideInSitting);
+        return vis.length > 0 ? vis : appState.salesTeam;
+      }
+
+      function populateCloserSelfSelect() {
+        const select = document.getElementById("closerSelfSelect");
+        const quickList = document.getElementById("closerQuickMatchesList");
+        if (!select) return;
+
+        const rawSearch = toEnglishDigits(document.getElementById("closerSelfSearch")?.value || "").trim().toLowerCase();
+        const allVisible = sortSalesTeam(getVisibleSittingSalesTeam());
+        const filtered = allVisible.filter(s => s.name.toLowerCase().includes(rawSearch) || s.code.toLowerCase().includes(rawSearch));
+
+        select.innerHTML = "";
+        const emptyOpt = document.createElement("option");
+        emptyOpt.value = "";
+        emptyOpt.textContent = "-- ⚠️ إجباري: اختر اسمك من هنا أولاً --";
+        select.appendChild(emptyOpt);
+
+        filtered.forEach(s => {
+          const opt = document.createElement("option");
+          opt.value = formatSalesCode(s.code);
+          opt.textContent = `${s.name} (كود: ${formatSalesCode(s.code)})`;
+          select.appendChild(opt);
+        });
+
+        // Ensure current selectedCloserCode remains in dropdown if valid in visible list
+        if (selectedCloserCode && allVisible.some(s => formatSalesCode(s.code) === selectedCloserCode)) {
+          if (!filtered.some(s => formatSalesCode(s.code) === selectedCloserCode)) {
+            const currentObj = allVisible.find(s => formatSalesCode(s.code) === selectedCloserCode);
+            if (currentObj) {
+              const opt = document.createElement("option");
+              opt.value = formatSalesCode(currentObj.code);
+              opt.textContent = `${currentObj.name} (كود: ${formatSalesCode(currentObj.code)})`;
+              select.appendChild(opt);
+            }
+          }
+          select.value = selectedCloserCode;
+        } else {
+          selectedCloserCode = "";
+          select.value = "";
+        }
+
+        // Quick clickable results when typing in #closerSelfSearch
+        if (quickList) {
+          if (rawSearch.length > 0) {
+            quickList.style.display = "flex";
+            quickList.innerHTML = "";
+            if (filtered.length === 0) {
+              quickList.innerHTML = `<div style="padding:8px; text-align:center; color:var(--gold); font-size:0.8rem; font-weight:800;">⚠️ لا يوجد سيلز مطابق للبحث.</div>`;
+            } else {
+              filtered.slice(0, 6).forEach(s => {
+                const sCode = formatSalesCode(s.code);
+                const item = document.createElement("div");
+                item.className = "search-match-item";
+                item.innerHTML = `<div><strong style="color:var(--gold);">${sCode}</strong> — <strong style="color:#fff;">${s.name}</strong></div><span class="badge-success">اختيار ✅</span>`;
+                item.onclick = () => selectCloserFromQuickMatch(sCode);
+                quickList.appendChild(item);
+              });
+            }
+          } else {
+            quickList.style.display = "none";
+            quickList.innerHTML = "";
+          }
+        }
+
+        updateCloserHeaderBadge();
+        updateSalesSearchLockState();
+      }
+
+      function selectCloserFromQuickMatch(code) {
+        const select = document.getElementById("closerSelfSelect");
+        const searchInput = document.getElementById("closerSelfSearch");
+        if (searchInput) searchInput.value = "";
+        selectedCloserCode = formatSalesCode(code);
+        populateCloserSelfSelect();
+        if (select) select.value = selectedCloserCode;
+        onCloserIdentityChange();
+      }
+
+      function getCurrentCloserObj() {
+        const rawVal = (document.getElementById("closerSelfSelect")?.value || selectedCloserCode || "").trim();
+        if (!rawVal) return null;
+        const code = formatSalesCode(rawVal);
+        const found = getVisibleSittingSalesTeam().find(s => formatSalesCode(s.code) === code) || appState.salesTeam.find(s => formatSalesCode(s.code) === code);
+        return found ? { ...found, code: formatSalesCode(found.code) } : null;
+      }
+
+      function updateCloserHeaderBadge() {
+        const badge = document.getElementById("closerActiveNameBadge");
+        const toggleLabel = document.getElementById("closerDrawerToggleLabel");
+        const card = document.getElementById("closerIdentityCard");
+        const c = getCurrentCloserObj();
+        if (!badge) return;
+
+        if (c && c.code) {
+          badge.textContent = `${c.name} (${c.code})`;
+          badge.style.color = "#fff";
+          if (toggleLabel) toggleLabel.textContent = "تغيير الاسم ▾";
+          if (card) {
+            card.style.background = "rgba(16, 185, 129, 0.08)";
+            card.style.borderColor = "rgba(16, 185, 129, 0.4)";
+          }
+        } else {
+          badge.textContent = "⚠️ اختر اسمك أولاً";
+          badge.style.color = "#f87171";
+          if (toggleLabel) toggleLabel.textContent = "اختر الاسم ▾";
+          if (card) {
+            card.style.background = "rgba(245, 158, 11, 0.1)";
+            card.style.borderColor = "var(--gold)";
+          }
+        }
+      }
+
+      function updateSalesSearchLockState() {
+        const closer = getCurrentCloserObj();
+        const searchInput = document.getElementById("salesClientSearchInput");
+        const lockNotice = document.getElementById("salesSearchLockNotice");
+        const matchesList = document.getElementById("salesMatchesList");
+        const workspace = document.getElementById("salesActiveClientWorkspace");
+        if (!searchInput) return;
+
+        if (!closer || !closer.code) {
+          searchInput.disabled = true;
+          searchInput.value = "";
+          searchInput.placeholder = "🔒 اختر اسمك من الأعلى أولاً لفتح البحث...";
+          if (lockNotice) lockNotice.style.display = "block";
+          if (matchesList) matchesList.style.display = "none";
+          if (workspace) workspace.style.display = "none";
+        } else {
+          searchInput.disabled = false;
+          searchInput.placeholder = "🔢 اكتب كود العميل أو اسمه...";
+          if (lockNotice) lockNotice.style.display = "none";
+        }
+      }
       
       function onCloserIdentityChange() {
-        const val = document.getElementById("closerSelfSelect").value; if (val) localStorage.setItem("BALMETR_CLOSER_CODE", formatSalesCode(val));
-        updateCloserHeaderBadge(); document.getElementById("closerIdentityDrawer").style.display = "none";
-        if (salesActiveCheckinId) { triggerAutoSittingNow(salesActiveCheckinId); saveActiveSalesDraftToLocal(); } else restoreSalesSittingAfterSync();
-      }
-      
-      function getCurrentCloserObj() { 
-        const code = formatSalesCode(document.getElementById("closerSelfSelect")?.value || ""); 
-        const defaultSales = (appState.salesTeam && appState.salesTeam.length > 0) ? appState.salesTeam[0] : { code: code || "S1", name: code || "سيلز" };
-        return appState.salesTeam.find(s => formatSalesCode(s.code) === code) || defaultSales; 
+        const select = document.getElementById("closerSelfSelect");
+        const rawVal = (select?.value || "").trim();
+        const previousCloserCode = selectedCloserCode;
+
+        if (!rawVal) {
+          selectedCloserCode = "";
+          clearActiveSalesSessionAndReset();
+          updateCloserHeaderBadge();
+          updateSalesSearchLockState();
+          toggleCloserIdentityDrawer(true);
+          return;
+        }
+
+        const newCode = formatSalesCode(rawVal);
+        selectedCloserCode = newCode;
+
+        const searchInput = document.getElementById("closerSelfSearch");
+        if (searchInput && searchInput.value) {
+          searchInput.value = "";
+          populateCloserSelfSelect();
+        }
+
+        // If switching from one sales rep to another while a client was open, reset client workspace to avoid cross-logging
+        if (previousCloserCode && previousCloserCode !== newCode && salesActiveCheckinId) {
+          clearActiveSalesSessionAndReset();
+        }
+
+        updateCloserHeaderBadge();
+        updateSalesSearchLockState();
+        toggleCloserIdentityDrawer(false);
+
+        if (!salesActiveCheckinId) {
+          restoreSalesSittingAfterSync();
+          const clientInput = document.getElementById("salesClientSearchInput");
+          if (clientInput && !clientInput.disabled) clientInput.focus();
+        }
       }
 
       function handleSalesSearchInput() {
-        const raw = toEnglishDigits(document.getElementById("salesClientSearchInput").value || "").replace(/^#/, "").trim(), listEl = document.getElementById("salesMatchesList");
+        const closer = getCurrentCloserObj();
+        const listEl = document.getElementById("salesMatchesList");
+        if (!closer || !closer.code) {
+          if (listEl) listEl.style.display = "none";
+          updateSalesSearchLockState();
+          focusCloserSelection();
+          return;
+        }
+
+        const raw = toEnglishDigits(document.getElementById("salesClientSearchInput").value || "").replace(/^#/, "").trim();
         if (!raw) { listEl.style.display = "none"; return; }
         const exh = getActiveExhibition(), normPhone = normalizePhone(raw), rawLower = raw.toLowerCase();
         const checkins = getCheckinsArray().filter(c => (c.exhibitionId === exh.id || c.exhibitionName === exh.name) && (String(c.seqNumber).toLowerCase().includes(rawLower) || (normPhone.length >= 3 && normalizePhone(c.clientPhone).includes(normPhone)) || (c.clientName || "").toLowerCase().includes(rawLower) || (c.firstSplitName || "").toLowerCase().includes(rawLower)));
@@ -1254,17 +1468,25 @@
           item.onclick = () => openClientForSalesSitting(c.id); listEl.appendChild(item);
         });
       }
+
       async function openClientForSalesSitting(checkinId) {
+        const closer = getCurrentCloserObj();
+        if (!closer || !closer.code) {
+          alert("⚠️ إجباري: يجب اختيار اسمك (سيلز القعدة) من الأعلى أولاً قبل بدء القعدة!");
+          focusCloserSelection();
+          return;
+        }
         salesActiveCheckinId = checkinId; salesChosenOutcome = ""; highlightSelectedOutcomeButton(""); selectSalesOutcome("", null);
         document.getElementById("salesMatchesList").style.display = "none";
         const chk = appState.checkinsMap[checkinId]; if (!chk) return;
         document.getElementById("salesClientSearchInput").value = `${chk.clientName} (#${chk.seqNumber})`;
-        const closer = getCurrentCloserObj(), existingSit = getSittingsArray(chk).find(s => formatSalesCode(s.salesCode) === closer.code);
+        const existingSit = getSittingsArray(chk).find(s => formatSalesCode(s.salesCode) === closer.code);
         document.getElementById("salesSittingNotes").value = existingSit?.notes || "";
         document.getElementById("salesProjectName").value = existingSit?.projectName || "";
         document.getElementById("salesProjectArea").value = existingSit?.projectArea || "";
         saveActiveSalesDraftToLocal(); await triggerAutoSittingNow(checkinId); renderSalesActiveClientView();
       }
+
       async function triggerAutoSittingNow(checkinId) {
         const chk = appState.checkinsMap[checkinId], closer = getCurrentCloserObj(); if (!chk || !closer || !closer.code) return;
         const existingSit = getSittingsArray(chk).find(s => formatSalesCode(s.salesCode) === closer.code), nowTime = new Date().toLocaleTimeString("ar-EG");
@@ -1273,12 +1495,11 @@
       }
 
       function renderSalesActiveClientView() {
-        const workspace = document.getElementById("salesActiveClientWorkspace"), chk = appState.checkinsMap[salesActiveCheckinId];
-        if (!chk) { workspace.style.display = "none"; return; }
-        workspace.style.display = "block"; const closer = getCurrentCloserObj(), commInfo = buildClearCommissionBreakdown(chk);
+        const workspace = document.getElementById("salesActiveClientWorkspace"), chk = appState.checkinsMap[salesActiveCheckinId], closer = getCurrentCloserObj();
+        if (!chk || !closer || !closer.code) { workspace.style.display = "none"; return; }
+        workspace.style.display = "block"; const commInfo = buildClearCommissionBreakdown(chk);
         document.getElementById("salesSittingNowBanner").innerHTML = `🟢 لايف: <strong>(${closer.name})</strong> قاعد مع <strong>(${chk.clientName} #${chk.seqNumber})</strong>`;
         
-        // MODIFIED: Full Client Data Display in Sales Mode
         document.getElementById("salesClientProfileCard").innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px; padding-bottom:6px; border-bottom:1px dashed var(--border-light);">
             <div><strong style="color:var(--gold); font-size:0.96rem;">#${chk.seqNumber}</strong><strong style="font-size:0.96rem; margin-right:5px; color:#fff;">${chk.clientName}</strong></div>
@@ -1326,10 +1547,17 @@
         salesActiveCheckinId = null; salesChosenOutcome = ""; localStorage.removeItem(ACTIVE_SALES_DRAFT_KEY);
         ["salesClientSearchInput", "salesSittingNotes", "salesProjectName", "salesProjectArea"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
         document.getElementById("salesMatchesList").style.display = "none"; document.getElementById("salesActiveClientWorkspace").style.display = "none";
+        updateSalesSearchLockState();
       }
 
       async function submitSalesFinalOutcome() {
         if (isSubmittingSitting) return;
+        const closer = getCurrentCloserObj();
+        if (!closer || !closer.code) {
+          alert("⚠️ إجباري: يجب اختيار اسمك (سيلز القعدة) من الأعلى أولاً!");
+          focusCloserSelection();
+          return;
+        }
         if (!salesActiveCheckinId || !appState.checkinsMap[salesActiveCheckinId]) { alert("⚠️ ابحث عن العميل واختره أولاً!"); return; }
         if (!salesChosenOutcome) { alert("⚠️ إجباري: يجب اختيار القرار النهائي للقعدة!"); return; }
 
@@ -1342,7 +1570,7 @@
           if (!opinionNotes || opinionNotes.length < 3) { alert("⚠️ إجباري: لازم تكتب رأيك أو السبب!"); document.getElementById("salesSittingNotes").focus(); return; }
         }
 
-        const closer = getCurrentCloserObj(), chk = appState.checkinsMap[salesActiveCheckinId], existingSit = getSittingsArray(chk).find(s => formatSalesCode(s.salesCode) === closer.code), nowTime = new Date().toLocaleTimeString("ar-EG");
+        const chk = appState.checkinsMap[salesActiveCheckinId], existingSit = getSittingsArray(chk).find(s => formatSalesCode(s.salesCode) === closer.code), nowTime = new Date().toLocaleTimeString("ar-EG");
         const finalSitting = { salesCode: closer.code, salesName: closer.name, status: salesChosenOutcome, notes: opinionNotes, projectName: pName, projectArea: pArea, startedAt: existingSit?.startedAt || nowTime, startedAtMs: existingSit?.startedAtMs || Date.now(), endedAt: nowTime, updatedAt: nowTime };
 
         const btn = document.getElementById("salesSaveFinalBtn"); isSubmittingSitting = true; btn.disabled = true; btn.textContent = "⏳ جاري الحفظ بالسحابة...";
@@ -1619,9 +1847,7 @@
 
           const btn = document.getElementById("saveEditDealBtn"); btn.disabled = true; btn.textContent = "⏳ جاري الحفظ...";
           try {
-              // 1. Update Checkin (First Split)
               if (!await pushSingleCheckinToCloudStrict(updatedCheckin, null)) { alert("❌ تعذر تعديل النص الأول!"); return; }
-              // 2. If Second Split changed, we must delete the old sitting key and create new. Otherwise just update.
               if(formatSalesCode(oldSalesCode) !== newSecondCode) {
                   await deleteSingleSittingFromCloudStrict(chkId, oldSalesCode);
               }
