@@ -18,7 +18,7 @@
     <style>
       :root {
         --bg-main: #051224;
-        --bg-elevated: rgba(11, 29, 56, 0.9);
+        --bg-elevated: rgba(11, 29, 56, 0.92);
         --bg-input: #07162b;
         --border: rgba(45, 212, 191, 0.16);
         --border-strong: rgba(45, 212, 191, 0.38);
@@ -95,7 +95,7 @@
         margin: 0 auto;
       }
 
-      /* Header */
+      /* Header (Clean — NO Refresh Button) */
       .top-header {
         background: var(--bg-elevated);
         backdrop-filter: blur(14px);
@@ -168,7 +168,6 @@
         border: 1px solid rgba(245, 176, 65, 0.42);
       }
 
-      /* Multi-role switcher & Exhibition bar */
       .switcher-bar {
         background: var(--bg-elevated);
         border: 1px solid var(--border);
@@ -221,7 +220,6 @@
         border-color: var(--gold);
       }
 
-      /* Buttons */
       .btn {
         display: inline-flex;
         align-items: center;
@@ -286,7 +284,6 @@
         font-size: 0.95rem;
       }
 
-      /* Cards & Forms */
       .card {
         background: var(--bg-elevated);
         backdrop-filter: blur(14px);
@@ -378,7 +375,6 @@
         color: var(--primary-bright);
       }
 
-      /* Badges & Live Pulses */
       .badge {
         padding: 3px 9px;
         border-radius: 7px;
@@ -431,7 +427,6 @@
         50% { opacity: 0.55; }
       }
 
-      /* Urgent Action Alerts (Handoffs & Congestion) */
       .alert-banner-red {
         background: rgba(244, 63, 94, 0.16);
         border: 1.5px solid #f43f5e;
@@ -472,7 +467,7 @@
 
       .kpi-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
         gap: 8px;
         margin-bottom: 12px;
       }
@@ -492,13 +487,12 @@
       }
 
       .kpi-card .val {
-        font-size: 1.35rem;
+        font-size: 1.32rem;
         font-weight: 900;
         color: var(--primary-bright);
         margin-top: 2px;
       }
 
-      /* Mobile-First Journey & Radar Cards */
       .journey-card {
         background: var(--bg-input);
         border: 1.5px solid var(--border-strong);
@@ -509,7 +503,7 @@
 
       .journey-card.urgent-pickup {
         border-color: var(--gold);
-        box-shadow: 0 0 0 2px rgba(245, 176, 65, 0.2);
+        box-shadow: 0 0 0 2px rgba(245, 176, 65, 0.22);
       }
 
       .journey-timeline {
@@ -646,13 +640,13 @@
 
       .nav-tab-btn {
         flex: 0 0 auto;
-        padding: 10px 14px;
+        padding: 10px 13px;
         border-radius: 12px;
         background: var(--bg-elevated);
         color: var(--text-muted);
         border: 1.5px solid var(--border);
         font-weight: 800;
-        font-size: 0.82rem;
+        font-size: 0.81rem;
         cursor: pointer;
         white-space: nowrap;
       }
@@ -666,13 +660,13 @@
       .modal-overlay {
         position: fixed;
         inset: 0;
-        background: rgba(2, 10, 22, 0.85);
+        background: rgba(2, 10, 22, 0.86);
         backdrop-filter: blur(6px);
         display: none;
         align-items: center;
         justify-content: center;
         z-index: 9999;
-        padding: 14px;
+        padding: 12px;
       }
 
       .modal-box {
@@ -681,7 +675,7 @@
         border-radius: 16px;
         padding: 18px;
         width: 100%;
-        max-width: 420px;
+        max-width: 460px;
         max-height: 90vh;
         overflow-y: auto;
       }
@@ -857,13 +851,12 @@
     </style>
   </head>
   <body>
-    <!-- Official B.almetr Watermark -->
     <div class="bg-watermark" aria-hidden="true">
       <img src="Logo_White.png" alt="" onerror="this.style.display='none'" />
     </div>
 
     <div class="app-container">
-      <!-- Top Header -->
+      <!-- Top Header (Clean — NO Refresh Button, NO Mute Button) -->
       <header class="top-header">
         <div class="brand-box">
           <img
@@ -875,25 +868,35 @@
           <div id="brandFallbackText" class="brand-fallback-text">
             <span style="color: var(--primary-bright)">B.</span><span style="color: #fff">almetr</span>
           </div>
-          <div id="syncStatusBadge" class="sync-badge syncing">⏳ جاري الاتصال...</div>
+          <div id="syncStatusBadge" class="sync-badge syncing">⏳ اتصال...</div>
           <span id="activeRolePill" class="role-pill" style="display: none"></span>
         </div>
         <div style="display: flex; gap: 6px; align-items: center">
-          <button type="button" class="btn btn-outline btn-sm" onclick="manualRefreshLive()">🔄 تحديث</button>
           <button type="button" id="authActionBtn" class="btn btn-primary btn-sm" onclick="handleAuthBtn()">🔐 دخول</button>
         </div>
       </header>
 
-      <!-- Multi-Role Switcher Bar (Shown ONLY when user has 2+ roles via expo_roles) -->
+      <!-- Multi-Role Switcher Bar -->
       <section id="roleSwitcherBar" class="switcher-bar" style="display: none">
-        <span style="font-size: 0.78rem; font-weight: 900; color: #fcd34d">🎛️ التبديل بين أدوارك:</span>
+        <span style="font-size: 0.78rem; font-weight: 900; color: #fcd34d">🎛️ أدوارك:</span>
         <div id="roleSwitcherPills" class="h-scroll-row"></div>
       </section>
 
-      <!-- Exhibition Bar (Locked to assigned exhibition(s) for staff; full switcher for Master Admin) -->
+      <!-- Exhibition Bar (Strictly Locked to Assigned Exhibition for Staff) -->
       <section id="exhBarSection" class="switcher-bar" style="display: none">
         <span style="font-size: 0.78rem; font-weight: 900; color: var(--primary-bright)">📍 المعرض:</span>
         <div id="exhPillsContainer" class="h-scroll-row"></div>
+      </section>
+
+      <!-- Blocking Card when Non-Manager Staff is NOT Assigned to Any Active Exhibition -->
+      <section id="noExhAssignedView" class="mobile-wrap" style="display: none">
+        <div class="card" style="text-align: center; padding: 30px 18px">
+          <div style="font-size: 2.5rem; margin-bottom: 10px">🔒</div>
+          <h3 style="color: #fcd34d; margin-bottom: 8px">لم يتم تسكينك على أي معرض نشط حالياً</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted)">
+            تواصل مع الإدارة العامة لتحديد المعرض الخاص بك من لوحة <strong>«توزيع طاقم المعرض»</strong> في سيستم الدعوات، وسيفتح معك تلقائياً.
+          </p>
+        </div>
       </section>
 
       <!-- ==================== 0. SMART LOGIN LANDING ==================== -->
@@ -909,7 +912,7 @@
             منظومة تشغيل المعرض اللايف
           </h2>
           <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 18px">
-            أدخل كلمة السر الخاصة بك (ريسبشن، أشرز، سيلز، بروكر، تيم ليدر، مطور، مدير معرض، أو إدارة) وسيتم توجيهك فوراً لشاشاتك.
+            أدخل كلمة السر الخاصة بك وسيتم فتح معرضك وشاشاتك تلقائياً مع التنبيهات الصوتية الفورية.
           </p>
           <input
             type="password"
@@ -941,7 +944,7 @@
 
           <div id="recDuplicateBox" class="alert-banner-red" style="display: none"></div>
 
-          <!-- Step 1: On-demand QR / Search / Walkin -->
+          <!-- Step 1: QR / Search / Walkin / Offline Flyer -->
           <div class="form-group">
             <label class="form-label">1️⃣ ابحث بكود الدعوة / التليفون أو امسح الـ QR:</label>
             <div style="display: flex; gap: 7px; margin-bottom: 8px">
@@ -954,17 +957,22 @@
               />
               <button type="button" class="btn btn-gold" onclick="openQrScannerModal('RECEPTION')">📷 QR</button>
             </div>
-            <button type="button" class="btn btn-outline btn-block" style="min-height: 40px; font-size: 0.82rem" onclick="activateWalkinClient()">
-              ➕ عميل مباشر بدون دعوة (Walk-in)
-            </button>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 7px">
+              <button type="button" class="btn btn-outline btn-sm" onclick="activateWalkinClient(false)">
+                ➕ عميل مباشر (Walk-in)
+              </button>
+              <button type="button" class="btn btn-gold btn-sm" onclick="activateWalkinClient(true)">
+                📄 ورق الشارع (أوفلاين)
+              </button>
+            </div>
             <div id="recMatchesList" class="search-list" style="display: none"></div>
             <div id="recSelectedInvBox" style="display: none; margin-top: 8px; padding: 10px; border-radius: 12px; background: var(--primary-soft); border: 1.5px solid var(--primary-bright); font-size: 0.84rem"></div>
           </div>
 
-          <!-- Walkin Inputs -->
+          <!-- Walkin / Offline Inputs -->
           <div id="recWalkinFields" style="display: none; padding: 12px; background: var(--bg-input); border: 1.5px solid var(--gold); border-radius: 12px; margin-bottom: 12px">
             <div style="display: flex; justify-content: space-between; margin-bottom: 8px">
-              <strong style="color: #fcd34d; font-size: 0.84rem">🎫 عميل مباشر (Walk-in)</strong>
+              <strong id="recWalkinTitle" style="color: #fcd34d; font-size: 0.84rem">🎫 عميل مباشر (Walk-in)</strong>
               <span id="recWalkinSeqBadge" class="badge badge-gold"></span>
             </div>
             <div class="form-group">
@@ -977,91 +985,79 @@
 
           <!-- Step 2: 50% First Split -->
           <div class="form-group" style="padding: 11px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 12px">
-            <label class="form-label" style="color: var(--primary-bright)">2️⃣ صاحب الـ 50% الأولى (المتابعة):</label>
+            <label class="form-label" style="color: var(--primary-bright)">2️⃣ صاحب الدعوة (النص الأول — الافتراضي 0.5%):</label>
             <select id="recFirstSplitMode" class="form-control" style="margin-bottom: 7px" onchange="onRecSplitModeChange()">
               <option value="DEFAULT">🏅 صاحب الدعوة الأصلي</option>
+              <option value="OFFLINE">📄 أوفلاين (ورق الشارع)</option>
               <option value="CUSTOM">🗣️ سيلز آخر (العميل فاكر اسمه)</option>
               <option value="COMPANY">🏢 عميل شركة مباشر (BM)</option>
             </select>
             <select id="recCustomSalesSelect" class="form-control" style="display: none"></select>
           </div>
 
-          <!-- Step 3: Face-to-Face Request -->
+          <!-- Step 3: Specialized Request (Activity -> Area + Systems) -->
           <div class="form-group" style="padding: 11px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 12px">
-            <label class="form-label" style="color: #fcd34d">3️⃣ ريكويست العميل (وجهاً لوجه):</label>
+            <label class="form-label" style="color: #fcd34d">3️⃣ ريكويست العميل المتخصص (وجهاً لوجه):</label>
             <label style="display: flex; align-items: center; gap: 9px; padding: 10px; border-radius: 10px; background: rgba(245, 176, 65, 0.14); border: 1.5px solid var(--gold); cursor: pointer; font-size: 0.84rem; font-weight: 800; margin-bottom: 10px">
               <input type="checkbox" id="recFreeViewerCheck" style="width: 18px; height: 18px" onchange="toggleFreeViewerMode()" />
-              <span>👁️ عميل جاي يتفرج / بدون ريكويست (يتحوّل للبروكر الأول)</span>
+              <span>👁️ أخرى / عميل جاي يتفرج (يتحوّل للبروكر الأول)</span>
             </label>
 
             <div id="recRequestFieldsWrap">
-              <div style="font-size: 0.78rem; font-weight: 800; color: var(--primary-bright); margin-bottom: 5px">📍 المناطق المطلوبة:</div>
-              <div class="chips-grid" id="recAreaChips" style="margin-bottom: 10px">
-                <div class="chip-btn" onclick="toggleReqChip(this, 'area', 'العاصمة الإدارية')">العاصمة الإدارية</div>
-                <div class="chip-btn" onclick="toggleReqChip(this, 'area', 'التجمع')">التجمع</div>
-                <div class="chip-btn" onclick="toggleReqChip(this, 'area', 'زايد')">زايد</div>
-                <div class="chip-btn" onclick="toggleReqChip(this, 'area', '6 أكتوبر')">6 أكتوبر</div>
-                <div class="chip-btn" onclick="toggleReqChip(this, 'area', 'الساحل الشمالي')">الساحل الشمالي</div>
-                <div class="chip-btn" onclick="toggleReqChip(this, 'area', 'مدينة نصر والقاهرة')">مدينة نصر والقاهرة</div>
-                <div class="chip-btn" onclick="toggleReqChip(this, 'area', 'بلد المعرض (المدن الجديدة)')">🏙️ بلد المعرض (المدن الجديدة)</div>
+              <div style="font-size: 0.78rem; font-weight: 800; color: var(--primary-bright); margin-bottom: 5px">🏢 اختر النشاط (لتحديد مناطقه بالظبط):</div>
+              <div class="chips-grid" id="recTypeChips" style="margin-bottom: 8px">
+                <div class="chip-btn" onclick="toggleRecActivity('سكني', this)">🏠 سكني</div>
+                <div class="chip-btn" onclick="toggleRecActivity('تجاري', this)">🛍️ تجاري</div>
+                <div class="chip-btn" onclick="toggleRecActivity('إداري', this)">🏢 إداري</div>
+                <div class="chip-btn" onclick="toggleRecActivity('فندقي', this)">🏨 فندقي</div>
+                <div class="chip-btn" onclick="toggleRecActivity('طبي', this)">➕ طبي</div>
               </div>
+              <div id="recSpecAreaMatrix" style="margin-bottom: 10px"></div>
 
-              <div style="font-size: 0.78rem; font-weight: 800; color: var(--primary-bright); margin-bottom: 5px">🏢 نوع الاستثمار:</div>
-              <div class="chips-grid" id="recTypeChips" style="margin-bottom: 10px">
-                <div class="chip-btn" onclick="toggleReqChip(this, 'type', 'سكني')">🏠 سكني</div>
-                <div class="chip-btn" onclick="toggleReqChip(this, 'type', 'تجاري')">🛍️ تجاري</div>
-                <div class="chip-btn" onclick="toggleReqChip(this, 'type', 'إداري')">🏢 إداري</div>
-                <div class="chip-btn" onclick="toggleReqChip(this, 'type', 'فندقي')">🏨 فندقي</div>
-                <div class="chip-btn" onclick="toggleReqChip(this, 'type', 'طبي')">➕ طبي</div>
-              </div>
-
-              <div style="font-size: 0.78rem; font-weight: 800; color: var(--primary-bright); margin-bottom: 5px">⚙️ النظام المفضل:</div>
+              <div style="font-size: 0.78rem; font-weight: 800; color: #fcd34d; margin-bottom: 5px">⚙️ النظام المطلوب:</div>
               <div class="chips-grid" id="recSysChips" style="margin-bottom: 10px">
-                <div class="chip-btn" onclick="toggleReqChip(this, 'sys', 'الجمعية')">👥 الجمعية</div>
-                <div class="chip-btn" onclick="toggleReqChip(this, 'sys', 'الوديعة')">🪙 الوديعة</div>
-                <div class="chip-btn" onclick="toggleReqChip(this, 'sys', 'الاستلام الفوري')">🔑 استلام فوري</div>
+                <div class="chip-btn" onclick="toggleRecSystem('الجمعية', this)">👥 الجمعية (= حصص عقارية)</div>
+                <div class="chip-btn" onclick="toggleRecSystem('الوديعة', this)">🪙 الوديعة (= عائد بإيجار إلزامي)</div>
+                <div class="chip-btn" onclick="toggleRecSystem('الاستلام الفوري', this)">🔑 استلام فوري</div>
               </div>
             </div>
 
             <input type="text" id="recNotesInput" class="form-control" placeholder="📝 ملاحظات الريسبشن (اختياري)..." />
           </div>
 
-          <!-- Step 4: Usher & Routing Preview -->
+          <!-- Step 4: Usher & Automatic Routing Preview -->
           <div class="form-group" style="padding: 11px; background: var(--bg-input); border: 1.5px solid var(--border-strong); border-radius: 12px">
-            <label class="form-label" style="color: #34d399">4️⃣ تسكين الأشر (الموصلاتي) ومعاينة التوجيه:</label>
+            <label class="form-label" style="color: #34d399">4️⃣ تسكين الأشر (الموصلاتي) والتوجيه التلقائي:</label>
             <select id="recUsherSelect" class="form-control" style="margin-bottom: 8px"></select>
             <div id="recRoutingPreviewBox" style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.65"></div>
           </div>
 
           <button type="button" id="recSubmitBtn" class="btn btn-success btn-block" onclick="submitReceptionCheckin()">
-            ✅ تسجيل الدخول وإرسال إشعار للأشر
+            ✅ تسجيل الدخول وإرسال تنبيه فوري للأشر
           </button>
         </div>
       </section>
 
-      <!-- ==================== 2. USHER VIEW (LIVE HANDOFFS & JOURNEY) ==================== -->
+      <!-- ==================== 2. USHER VIEW (UNLIMITED CLIENTS, 4 CLEAN TABS) ==================== -->
       <section id="usherView" class="mobile-wrap" style="display: none">
-        <!-- Urgent Live Alerts for Usher (Pickups from Reception OR Finished Sessions) -->
-        <div id="usherUrgentAlertsBox"></div>
-
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title" id="usherHeaderTitle">🚶 رحلات الأشر</div>
+        <div class="card" style="padding: 12px">
+          <div class="card-header" style="margin-bottom: 10px">
+            <div class="card-title" id="usherHeaderTitle">🚶 لوحة الأشر</div>
             <button type="button" class="btn btn-gold btn-sm" onclick="openQrScannerModal('USHER')">📷 Scan</button>
           </div>
-          <div style="display: flex; gap: 6px; margin-bottom: 10px">
-            <button type="button" id="usherTabMyBtn" class="btn btn-primary btn-sm" style="flex: 1" onclick="setUsherFilterMode('MINE')">عملائي</button>
-            <button type="button" id="usherTabAllBtn" class="btn btn-outline btn-sm" style="flex: 1" onclick="setUsherFilterMode('ALL')">كل المعرض</button>
-            <button type="button" id="usherTabDoneBtn" class="btn btn-outline btn-sm" style="flex: 1" onclick="setUsherFilterMode('DONE')">للطباعة</button>
+          <div class="nav-tabs-row" style="margin-bottom: 10px">
+            <button type="button" id="usherTabActionBtn" class="nav-tab-btn active" onclick="setUsherFilterMode('ACTION')">🔔 جديد / نقل (<span id="usherCntAction">0</span>)</button>
+            <button type="button" id="usherTabLiveBtn" class="nav-tab-btn" onclick="setUsherFilterMode('LIVE')">🟢 في قعدات (<span id="usherCntLive">0</span>)</button>
+            <button type="button" id="usherTabTransitBtn" class="nav-tab-btn" onclick="setUsherFilterMode('TRANSIT')">🚶 في الطريق (<span id="usherCntTransit">0</span>)</button>
+            <button type="button" id="usherTabDoneBtn" class="nav-tab-btn" onclick="setUsherFilterMode('DONE')">🏁 للطباعة (<span id="usherCntDone">0</span>)</button>
           </div>
           <input type="text" id="usherSearchInput" class="form-control" placeholder="🔍 بحث باسم العميل أو الكود..." oninput="renderUsherView()" style="margin-bottom: 10px" />
           <div id="usherJourneysContainer"></div>
         </div>
       </section>
 
-      <!-- ==================== 3. SALES / BROKER / DEV_SALES VIEW ==================== -->
+      <!-- ==================== 3. SALES / BROKER / DEV_SALES VIEW (ZERO PREVIOUS FEEDBACK) ==================== -->
       <section id="salesSitView" class="mobile-wrap" style="display: none">
-        <!-- Live Incoming / Active Client Alerts -->
         <div id="sitUrgentBannerBox"></div>
 
         <div class="card">
@@ -1071,7 +1067,7 @@
           </div>
 
           <div style="margin-bottom: 12px">
-            <div style="font-size: 0.82rem; font-weight: 900; color: #fcd34d; margin-bottom: 6px">🔔 عملاء في الطريق إليك أو قاعدين معاك:</div>
+            <div style="font-size: 0.82rem; font-weight: 900; color: #fcd34d; margin-bottom: 6px">🔔 عملاء في الطريق إليك أو قاعدين معاك الآن:</div>
             <div id="sitIncomingQueueList" class="search-list"></div>
           </div>
 
@@ -1087,32 +1083,21 @@
           <div id="sitActiveWorkspace" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border)">
             <div id="sitClientInfoBox" style="padding: 12px; background: var(--bg-input); border-radius: 12px; border: 1.5px solid var(--border-strong); margin-bottom: 12px"></div>
 
-            <!-- Start Session Button (Shown when client is IN_TRANSIT or PENDING before LIVE) -->
             <div id="sitStartSessionWrap" style="margin-bottom: 12px; display: none">
               <button type="button" class="btn btn-primary btn-block" onclick="startSittingSessionFromSales()">
-                ▶️ العميل وصل — بدء القعدة الآن (حساب الوقت)
+                ▶️ العميل وصل — بدء القعدة الآن
               </button>
             </div>
 
-            <!-- Edit Request Box (Shown ONLY if account has can_edit_request === true) -->
+            <!-- Specialized Edit Request Box (Shown ONLY if can_edit_request === true) -->
             <div id="sitEditRequestBox" style="display: none; padding: 11px; background: rgba(0, 184, 172, 0.08); border: 1.5px dashed var(--primary-bright); border-radius: 12px; margin-bottom: 12px">
-              <div style="font-size: 0.82rem; font-weight: 900; color: var(--primary-bright); margin-bottom: 8px">✏️ تعديل ريكويست العميل (يحدّث الشركات المرشحة عند الأشر فوراً):</div>
-              <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px">المناطق:</div>
-              <div class="chips-grid" id="sitEditAreaChips" style="margin-bottom: 8px"></div>
-              <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px">نوع الاستثمار:</div>
+              <div style="font-size: 0.82rem; font-weight: 900; color: var(--primary-bright); margin-bottom: 8px">✏️ تعديل ريكويست العميل المتخصص (المطور الأصلي يظل مثبتاً دائماً):</div>
               <div class="chips-grid" id="sitEditTypeChips" style="margin-bottom: 8px"></div>
-              <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px">النظام:</div>
+              <div id="sitEditAreaMatrix" style="margin-bottom: 8px"></div>
               <div class="chips-grid" id="sitEditSysChips" style="margin-bottom: 10px"></div>
-              <button type="button" class="btn btn-primary btn-block" style="min-height: 40px; font-size: 0.84rem" onclick="saveUpdatedClientRequestFromSales()">💾 حفظ الريكويست وتحديث رحلة الأشر</button>
+              <button type="button" class="btn btn-primary btn-block" style="min-height: 40px; font-size: 0.84rem" onclick="saveUpdatedClientRequestFromSales()">💾 حفظ الريكويست وتحديث رحلة العميل</button>
             </div>
 
-            <!-- Previous Opinions (Scoped for dev_sales: ONLY their own company) -->
-            <div id="sitPrevOpinionsWrap" style="margin-bottom: 12px">
-              <div style="font-size: 0.82rem; font-weight: 900; color: #fcd34d; margin-bottom: 6px">💬 القعدات السابقة:</div>
-              <div id="sitPrevOpinionsList"></div>
-            </div>
-
-            <!-- Offer Selection from Real `offers` Table -->
             <div class="form-group">
               <label class="form-label" style="color: #fcd34d">🎁 العرض المرشح / المحجوز (من بنك العروض):</label>
               <select id="sitOfferSelect" class="form-control" onchange="onSitOfferChange()">
@@ -1123,7 +1108,7 @@
 
             <div class="form-group">
               <label class="form-label">🎯 نتيجة القعدة *:</label>
-              <select id="sitOutcomeSelect" class="form-control">
+              <select id="sitOutcomeSelect" class="form-control" onchange="onSitOutcomeChange()">
                 <option value="✨ عرض مناسب لديه">✨ عرض مناسب لديه</option>
                 <option value="💰 اشترى (تعاقد)">💰 اشترى (تعاقد)</option>
                 <option value="💳 دفع حجز">💳 دفع حجز</option>
@@ -1132,21 +1117,26 @@
               </select>
             </div>
 
+            <!-- Deal Total Value (Shown when outcome is Buy / Reserve) -->
+            <div id="sitDealValueWrap" class="form-group" style="display: none; padding: 10px; background: rgba(16, 185, 129, 0.1); border: 1.5px solid var(--success); border-radius: 12px">
+              <label class="form-label" style="color: #34d399">💰 توتال قيمة العقد (بالجنيه المصري):</label>
+              <input type="number" id="sitDealValueInput" class="form-control" dir="ltr" min="0" placeholder="مثال: 2500000" />
+            </div>
+
             <div class="form-group">
-              <label class="form-label">📝 ملاحظاتك ورأيك:</label>
+              <label class="form-label">📝 ملاحظاتك:</label>
               <textarea id="sitNotesInput" class="form-control" rows="3" placeholder="اكتب ملاحظاتك باختصار..."></textarea>
             </div>
 
             <button type="button" id="sitSaveBtn" class="btn btn-success btn-block" onclick="submitSalesSittingResult()">
-              ✅ إنهاء القعدة وإرسال تنبيه للأشر والتالي
+              ✅ إنهاء القعدة (السيستم يوجّه للمحطة التالية أوتوماتيك)
             </button>
           </div>
         </div>
       </section>
 
-      <!-- ==================== 4. TEAM LEADER VIEW (MULTI-TEAM) ==================== -->
+      <!-- ==================== 4. TEAM LEADER VIEW (READ-ONLY LIVE MONITORING — AUTO ROUTING) ==================== -->
       <section id="teamLeaderView" class="mobile-wrap" style="display: none">
-        <!-- Multi-Team Switcher -->
         <div id="tlTeamSwitcherBar" class="switcher-bar" style="display: none">
           <span style="font-size: 0.78rem; font-weight: 900; color: #fcd34d">🏷️ تيماتك:</span>
           <div id="tlTeamSwitcherPills" class="h-scroll-row"></div>
@@ -1154,23 +1144,11 @@
 
         <div class="card">
           <div class="card-header">
-            <div class="card-title" id="tlHeaderTitle">🎖️ لوحة التيم ليدر</div>
+            <div class="card-title" id="tlHeaderTitle">🎖️ متابعة التيم لايف</div>
+            <span class="badge badge-mint">⚡ توزيع تلقائي حسب القوة</span>
           </div>
-
-          <div style="display: flex; gap: 7px; margin-bottom: 12px">
-            <button type="button" id="tlModeAutoBtn" class="btn btn-success btn-sm" style="flex: 1" onclick="setTeamRoutingMode('AUTO')">⚡ تلقائي (حسب القوة)</button>
-            <button type="button" id="tlModeManualBtn" class="btn btn-outline btn-sm" style="flex: 1" onclick="setTeamRoutingMode('MANUAL')">✋ يدوي (بتحويلي)</button>
-          </div>
-
           <div class="kpi-grid" id="tlKpiGrid"></div>
-
-          <!-- Manual Pending Queue -->
-          <div id="tlManualQueueBox" style="margin-bottom: 12px; display: none">
-            <div style="font-size: 0.86rem; font-weight: 900; color: #fcd34d; margin-bottom: 7px">🔔 عملاء في انتظار توجيهك اليدوي:</div>
-            <div id="tlManualQueueList"></div>
-          </div>
-
-          <div style="font-size: 0.84rem; font-weight: 900; color: var(--primary-bright); margin-bottom: 8px">👥 حالة سيلز التيم لايف (حسب الترتيب اليدوي):</div>
+          <div style="font-size: 0.84rem; font-weight: 900; color: var(--primary-bright); margin-bottom: 8px">👥 حالة سيلز التيم لايف (من الأقوى للأضعف):</div>
           <div id="tlLiveRepsCards"></div>
         </div>
       </section>
@@ -1178,28 +1156,45 @@
       <!-- ==================== 5. EXHIBITION MANAGER & MASTER ADMIN VIEW ==================== -->
       <section id="adminRadarView" style="display: none">
         <div id="congestionAlertsContainer"></div>
+
+        <!-- Exclusive Manual Routing Control for Exhibition Manager & Master Admin -->
+        <div class="card" style="padding: 11px 14px">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px">
+            <div style="font-size: 0.84rem; font-weight: 900; color: #fcd34d">
+              🎛️ وضع توزيع المعرض (حصري لمدير المعرض والإدارة):
+            </div>
+            <div style="display: flex; gap: 7px">
+              <button type="button" id="exhModeAutoBtn" class="btn btn-success btn-sm" onclick="setExhibitionRoutingMode('AUTO')">⚡ تلقائي (السيستم يوجّه)</button>
+              <button type="button" id="exhModeManualBtn" class="btn btn-outline btn-sm" onclick="setExhibitionRoutingMode('MANUAL')">✋ يدوي (توجيهي أنا)</button>
+            </div>
+          </div>
+          <div id="admManualQueueBox" style="display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border)"></div>
+        </div>
+
         <div class="kpi-grid" id="admKpiGrid"></div>
 
         <div class="nav-tabs-row" id="admNavTabs">
           <button type="button" class="nav-tab-btn active" onclick="switchAdmTab('admTabLiveRadar', this)">📡 الرادار اللايف</button>
           <button type="button" class="nav-tab-btn" id="admDistTabBtn" style="display: none" onclick="switchAdmTab('admTabDistribution', this)">⚖️ نسب التوزيع لايف</button>
-          <button type="button" class="nav-tab-btn" onclick="switchAdmTab('admTabDeals', this)">💰 التعاقدات</button>
+          <button type="button" class="nav-tab-btn" onclick="switchAdmTab('admTabDeals', this)">💰 التعاقدات والعمولات</button>
           <button type="button" class="nav-tab-btn" onclick="switchAdmTab('admTabSalesDevs', this)">📊 السيلز والمطورين</button>
           <button type="button" class="nav-tab-btn" onclick="switchAdmTab('admTabAbsent', this)">📵 الغائبين</button>
           <button type="button" class="nav-tab-btn" onclick="switchAdmTab('admTabExport', this)">📥 التصدير</button>
+          <button type="button" class="nav-tab-btn" id="admDevOnlyTabBtn" style="display: none" onclick="switchAdmTab('admTabDevOnly', this)">🔒 Devolepor_only</button>
         </div>
 
-        <!-- Pane 1: Live Radar (Mobile-Friendly Cards) -->
+        <!-- Pane 1: Live Radar + Edit / Delete -->
         <div id="admTabLiveRadar" class="adm-pane">
           <div class="card">
             <div class="card-header">
               <div class="card-title">📡 رادار المعرض الحي (<span id="admRadarCount">0</span>)</div>
-              <div style="display: flex; gap: 6px; flex-wrap: wrap; width: 100%; max-width: 360px">
+              <div style="display: flex; gap: 6px; flex-wrap: wrap; width: 100%; max-width: 390px">
                 <input type="text" id="admRadarSearch" class="form-control" style="flex: 1" placeholder="🔍 بحث بالاسم/الكود/الأشر..." oninput="renderAdminRadarPane()" />
                 <select id="admRadarStatusFilter" class="form-control" style="width: auto" onchange="renderAdminRadarPane()">
                   <option value="ALL">الكل</option>
                   <option value="ACTIVE">داخل المعرض</option>
                   <option value="WAITING">بانتظار الأشر</option>
+                  <option value="OFFLINE">📄 أوفلاين فقط</option>
                   <option value="COMPLETED">غادروا</option>
                 </select>
               </div>
@@ -1216,31 +1211,46 @@
               <button type="button" class="btn btn-gold btn-sm" onclick="saveLiveDistributionWeights()">💾 حفظ وتفعيل فوراً</button>
             </div>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px">
-              أي تعديل هنا (مثلاً 0 لتيم مضغوط و1 لتيم فاضي) يسمّع أوتوماتيك في شاشة الريسبشن خلال ثانية بدون إعادة تحميل.
+              أي تعديل هنا يسمّع فوراً في التوجيه التلقائي للريسبشن بدون إعادة تحميل.
             </p>
             <div id="admLiveDistList"></div>
           </div>
         </div>
 
-        <!-- Pane 3: Deals -->
+        <!-- Pane 3: Deals, Contract Totals & Commissions Payout Summary -->
         <div id="admTabDeals" class="adm-pane" style="display: none">
           <div class="card">
             <div class="card-header">
-              <div class="card-title" style="color: #34d399">💰 التعاقدات والحجوزات (50% / 50%)</div>
+              <div class="card-title" style="color: #34d399">💰 التعاقدات وتوتال العقود (تعديل القيمة والنسب مباشرة)</div>
             </div>
+            <div class="kpi-grid" id="admDealsSummaryKpis"></div>
+            <div class="table-responsive" style="margin-bottom: 14px">
+              <table>
+                <thead>
+                  <tr>
+                    <th>العميل</th>
+                    <th>توتال العقد (ج.م)</th>
+                    <th>صاحب الدعوة (النص الأول)</th>
+                    <th>سيلز الترابيزة</th>
+                    <th>تعديل</th>
+                  </tr>
+                </thead>
+                <tbody id="admDealsTbody"></tbody>
+              </table>
+            </div>
+
+            <div class="card-title" style="color: #fcd34d; margin-bottom: 8px">💵 كشف حساب العمولات النهائي (كل شخص ليه كام فلوس بالظبط):</div>
             <div class="table-responsive">
               <table>
                 <thead>
                   <tr>
-                    <th>الكود</th>
-                    <th>العميل</th>
-                    <th>النتيجة</th>
-                    <th>العرض / المشروع</th>
-                    <th>50% الأولى</th>
-                    <th>50% الثانية</th>
+                    <th>الشخص / المصدر</th>
+                    <th>عمولة الدعوات (ج.م)</th>
+                    <th>عمولة الترابيزة (ج.م)</th>
+                    <th>إجمالي المستحق (ج.م)</th>
                   </tr>
                 </thead>
-                <tbody id="admDealsTbody"></tbody>
+                <tbody id="admPayoutsTbody"></tbody>
               </table>
             </div>
           </div>
@@ -1260,7 +1270,7 @@
                     <th>النوع والكود</th>
                     <th>الاسم</th>
                     <th>الحالة الآن</th>
-                    <th>نص أول (50%)</th>
+                    <th>دعوات حضرت</th>
                     <th>قعدات / رحلات</th>
                     <th>تعاقد / حجز</th>
                   </tr>
@@ -1271,15 +1281,12 @@
           </div>
         </div>
 
-        <!-- Pane 5: Absent Clients (Lazy-Loaded) -->
+        <!-- Pane 5: Absent Clients -->
         <div id="admTabAbsent" class="adm-pane" style="display: none">
           <div class="card">
             <div class="card-header">
               <div class="card-title" style="color: #fda4af">📵 العملاء الغائبين (<span id="admAbsentCount">0</span>)</div>
-              <div style="display: flex; gap: 6px; flex-wrap: wrap">
-                <input type="text" id="admAbsentSearch" class="form-control" style="width: 190px" placeholder="🔍 بحث..." oninput="renderAdminAbsentPane()" />
-                <button type="button" class="btn btn-outline btn-sm" onclick="loadAbsentInvitationsLazy(true)">🔄 تحديث الدعوات</button>
-              </div>
+              <input type="text" id="admAbsentSearch" class="form-control" style="width: 210px" placeholder="🔍 بحث..." oninput="renderAdminAbsentPane()" />
             </div>
             <div class="table-responsive">
               <table>
@@ -1306,8 +1313,52 @@
             </div>
             <div style="display: flex; flex-direction: column; gap: 10px">
               <button type="button" class="btn btn-gold btn-block" onclick="exportCheckinsCSV('ATTENDED')">📊 تصدير الحاضرين Excel (.csv)</button>
+              <button type="button" class="btn btn-outline btn-block" onclick="exportCheckinsCSV('OFFLINE')">📄 تصدير عملاء الأوفلاين فقط (.csv)</button>
               <button type="button" class="btn btn-danger btn-block" onclick="exportCheckinsCSV('ABSENT')">📊 تصدير الغائبين Excel (.csv)</button>
               <button type="button" class="btn btn-success btn-block" onclick="copyCheckinsWhatsApp()">🟢 نسخ ملخص المعرض واتساب</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pane 7: Devolepor_only (Locked with M-A-L-L-A-M) -->
+        <div id="admTabDevOnly" class="adm-pane" style="display: none">
+          <div id="expoDevLockCard" class="card mobile-wrap" style="text-align: center; padding: 26px 18px">
+            <div style="font-size: 2.2rem; margin-bottom: 8px">🔒</div>
+            <h3 style="color: var(--primary-bright); margin-bottom: 6px">Devolepor_only</h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px">
+              أدخل كلمة مرور المطور لفتح النسخ الاحتياطي واستعادة بيانات المعارض (JSON):
+            </p>
+            <input
+              type="password"
+              id="expoDevPassInput"
+              class="form-control"
+              dir="ltr"
+              style="text-align: center; font-size: 18px; margin-bottom: 12px"
+              placeholder="••••••••"
+              onkeydown="if (event.key === 'Enter') unlockExpoDevPanel();"
+            />
+            <button type="button" class="btn btn-gold btn-block" onclick="unlockExpoDevPanel()">🔓 فتح البانل</button>
+          </div>
+
+          <div id="expoDevContent" class="card mobile-wrap" style="display: none">
+            <div class="card-header">
+              <div class="card-title">💾 النسخ الاحتياطي والاستعادة (JSON)</div>
+              <button type="button" class="btn btn-danger btn-sm" onclick="lockExpoDevPanel()">🔒 قفل</button>
+            </div>
+            <div style="margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border)">
+              <div style="font-size: 0.82rem; font-weight: 800; color: #34d399; margin-bottom: 8px">
+                📥 تحميل آخر نسخة احتياطية كاملة (جميع رحلات وحضور المعرض الحالي):
+              </div>
+              <button type="button" class="btn btn-success btn-block" onclick="downloadExpoBackupJSON()">
+                📥 تحميل Backup JSON الآن
+              </button>
+            </div>
+            <div>
+              <div style="font-size: 0.82rem; font-weight: 800; color: #fcd34d; margin-bottom: 8px">
+                📤 رفع ودمج نسخة JSON (قديمة أو حديثة) بدون تكرار:
+              </div>
+              <input type="file" id="expoRestoreJsonInput" accept=".json,application/json" class="form-control" onchange="importExpoBackupJSON(event)" />
+              <div id="expoRestoreStatus" style="margin-top: 8px; font-size: 0.8rem; font-weight: 800; color: var(--primary-bright)"></div>
             </div>
           </div>
         </div>
@@ -1345,6 +1396,35 @@
       <a href="https://mohhamedallam12345-ops.github.io/Ny-profile/" target="_blank" rel="noopener noreferrer">ENG/ M.Allam ↗</a>
     </footer>
 
+    <!-- Edit Check-in & Deal Commission Modal -->
+    <div id="editCheckinModal" class="modal-overlay">
+      <div class="modal-box">
+        <h3 style="color: var(--primary-bright); margin-bottom: 12px">✏️ تعديل بيانات العميل والعمولات</h3>
+        <input type="hidden" id="editChkId" />
+        <div class="form-group">
+          <label class="form-label">اسم العميل:</label>
+          <input type="text" id="editChkName" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">رقم التليفون:</label>
+          <input type="tel" id="editChkPhone" class="form-control" dir="ltr" style="text-align: right" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">صاحب النص الأول (الدعوة):</label>
+          <input type="text" id="editChkFirstSplit" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">الأشر المسؤول:</label>
+          <select id="editChkUsher" class="form-control"></select>
+        </div>
+        <div id="editChkDealsWrap" style="margin-bottom: 12px"></div>
+        <div style="display: flex; gap: 8px">
+          <button type="button" class="btn btn-success" style="flex: 1" onclick="saveEditedCheckin()">💾 حفظ التعديلات</button>
+          <button type="button" class="btn btn-outline" style="flex: 1" onclick="closeModal('editCheckinModal')">إلغاء</button>
+        </div>
+      </div>
+    </div>
+
     <!-- QR Scanner Modal -->
     <div id="qrScannerModal" class="modal-overlay">
       <div class="modal-box" style="text-align: center">
@@ -1367,13 +1447,25 @@
     </div>
 
     <script>
-      // ==================== SUPABASE CONFIG (SHARED WITH INVITATIONS SYSTEM) ====================
+      // ==================== SUPABASE CONFIG ====================
       const SUPABASE_URL = "https://xdvmfjpccmzrwynpentr.supabase.co";
       const SUPABASE_KEY = "sb_publishable_1zDPrrzj5QdaILjGuXZujQ_nNpz3Se_";
       const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
       const PUBLIC_ACCOUNT_COLS =
-        "id,role,name,code,team,phone,show_phone_in_report,active_exhibition_ids,expo_roles,managed_teams,can_edit_request,parent_admin_id,hide_in_sitting,dev_activities,dev_areas,dev_min_downpayment,created_at";
+        "id,role,name,code,team,phone,show_phone_in_report,active_exhibition_ids,expo_roles,managed_teams,can_edit_request,first_split_pct,table_split_pct,dev_inventory,dev_systems,parent_admin_id,hide_in_sitting,dev_activities,dev_areas,dev_min_downpayment,created_at";
+
+      const DEV_PANEL_PASS = "M-A-L-L-A-M";
+      const ALL_ACTIVITIES = ["سكني", "تجاري", "إداري", "فندقي", "طبي"];
+      const ALL_AREAS = [
+        "العاصمة الإدارية",
+        "التجمع",
+        "زايد",
+        "6 أكتوبر",
+        "الساحل الشمالي",
+        "مدينة نصر والقاهرة",
+        "بلد المعرض (المدن الجديدة)",
+      ];
 
       const DEFAULT_REPORT_CONFIG = {
         brandTitle: "B.almetr VIP | تقرير رحلة العميل",
@@ -1389,6 +1481,49 @@
         showDevPhones: false,
       };
 
+      // ==================== MANDATORY LOUD SOUND ALERTS (NO MUTE BUTTON) ====================
+      let audioCtx = null;
+      function unlockAudio() {
+        try {
+          if (!audioCtx) {
+            const Ctx = window.AudioContext || window.webkitAudioContext;
+            if (Ctx) audioCtx = new Ctx();
+          }
+          if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+        } catch (e) {}
+      }
+      ["click", "touchstart", "keydown"].forEach((ev) =>
+        window.addEventListener(ev, unlockAudio, { passive: true })
+      );
+
+      function playLoudAlert(kind = "HANDOFF") {
+        try {
+          unlockAudio();
+          if (!audioCtx) return;
+          const now = audioCtx.currentTime;
+          const freqs =
+            kind === "URGENT"
+              ? [880, 1175, 880, 1320]
+              : kind === "INCOMING"
+              ? [784, 1046, 1318]
+              : [660, 880, 1100];
+          freqs.forEach((f, idx) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(f, now + idx * 0.16);
+            gain.gain.setValueAtTime(0.001, now + idx * 0.16);
+            gain.gain.exponentialRampToValueAtTime(0.65, now + idx * 0.16 + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.16 + 0.15);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now + idx * 0.16);
+            osc.stop(now + idx * 0.16 + 0.16);
+          });
+          if (navigator.vibrate) navigator.vibrate([220, 100, 220]);
+        } catch (e) {}
+      }
+
       let appState = {
         currentUser: null,
         activeRole: null,
@@ -1402,25 +1537,26 @@
         invitationsCache: [],
         teamsList: ["المعرض", "الجمعية", "الوديعة", "القاهرة"],
         teamSalesOrder: {},
-        teamRoutingMode: {},
+        exhRoutingMode: {}, // keyed by exhId -> "AUTO" | "MANUAL"
         offersByOwner: new Map(),
         journeyReportConfig: { ...DEFAULT_REPORT_CONFIG },
+        expoDevUnlocked: false,
       };
 
       let recState = {
         selectedInv: null,
         isWalkin: false,
+        isOfflineFlyer: false,
         walkinSeq: null,
-        areas: [],
-        types: [],
+        specInventory: {}, // { "سكني": ["التجمع"], ... }
         systems: [],
         lastSearchResults: [],
       };
 
       let recLookupTimer = null;
-      let usherFilterMode = "MINE";
+      let usherFilterMode = "ACTION";
       let activeSitCheckinId = null;
-      let sitEditReq = { areas: [], types: [], systems: [] };
+      let sitEditReq = { specInventory: {}, systems: [] };
       let qrScannerInstance = null;
       let qrTargetContext = "RECEPTION";
       let realtimeCh = null;
@@ -1444,6 +1580,10 @@
           el.className = "sync-badge offline";
           el.textContent = text || "🔴 غير متصل";
         }
+      }
+
+      function closeModal(id) {
+        document.getElementById(id).style.display = "none";
       }
 
       function rebuildAccountsMap() {
@@ -1471,8 +1611,8 @@
                 appState.journeyReportConfig = { ...DEFAULT_REPORT_CONFIG, ...p };
               }
             } catch (e) {}
-          } else if (row.key.startsWith("team_routing_mode::")) {
-            appState.teamRoutingMode[row.key.replace("team_routing_mode::", "")] = row.value;
+          } else if (row.key.startsWith("exh_routing_mode::")) {
+            appState.exhRoutingMode[row.key.replace("exh_routing_mode::", "")] = row.value;
           }
         });
       }
@@ -1500,7 +1640,10 @@
 
       async function loadCheckinsForActiveExh() {
         const exh = getActiveExhibition();
-        if (!exh) return;
+        if (!exh) {
+          appState.checkins = [];
+          return;
+        }
         const { data, error } = await sb
           .from("exhibition_checkins")
           .select("*")
@@ -1511,7 +1654,6 @@
         }
       }
 
-      // On-demand Offers Loader from real `offers` table
       async function ensureOffersLoadedForUser(u) {
         if (!u) return;
         let ownerKey = "";
@@ -1530,24 +1672,35 @@
         }
       }
 
-      async function manualRefreshLive() {
-        setSyncBadge("syncing");
-        try {
-          await loadInitialMetadata();
-          if (appState.currentUser) {
-            await loadCheckinsForActiveExh();
-            appState.offersByOwner.clear();
-            await ensureOffersLoadedForUser(appState.currentUser);
-            renderActiveRoleView();
+      // ==================== REALTIME (ZERO POLLING + LOUD SOUND TRIGGERS) ====================
+      function checkAndTriggerSoundForCheckinChange(newRow, oldRow) {
+        const u = appState.currentUser;
+        if (!u || !newRow) return;
+        const r = appState.activeRole;
+
+        if (r === "usher" && newRow.assigned_usher_id === u.id) {
+          if (newRow.journey_status === "WAITING_USHER" && oldRow?.journey_status !== "WAITING_USHER") {
+            playLoudAlert("URGENT");
+            return;
           }
-          setSyncBadge(true);
-        } catch (err) {
-          console.error(err);
-          setSyncBadge(false);
+          const hasNewUnacked = (newRow.journey_logs || []).some((st) => st.status === "DONE" && st.handoff_ack === false);
+          const hadUnacked = (oldRow?.journey_logs || []).some((st) => st.status === "DONE" && st.handoff_ack === false);
+          if (hasNewUnacked && !hadUnacked) playLoudAlert("HANDOFF");
+        } else if (["sales", "broker", "dev_sales"].includes(r)) {
+          const isIncomingNow = (newRow.journey_logs || []).some(
+            (st) => st.status === "IN_TRANSIT" && stopBelongsToUser(st, u)
+          );
+          const wasIncoming = (oldRow?.journey_logs || []).some(
+            (st) => st.status === "IN_TRANSIT" && stopBelongsToUser(st, u)
+          );
+          if (isIncomingNow && !wasIncoming) playLoudAlert("INCOMING");
+        } else if (["exh_manager", "manager"].includes(r)) {
+          const needsManual = (newRow.journey_logs || []).some((st) => st.needs_manual_routing && st.status !== "DONE");
+          const hadManual = (oldRow?.journey_logs || []).some((st) => st.needs_manual_routing && st.status !== "DONE");
+          if (needsManual && !hadManual) playLoudAlert("URGENT");
         }
       }
 
-      // ==================== ZERO-POLLING IN-MEMORY REALTIME ====================
       function setupRealtime() {
         if (realtimeCh) {
           try { sb.removeChannel(realtimeCh); } catch (e) {}
@@ -1562,7 +1715,7 @@
 
         try {
           realtimeCh = sb
-            .channel("balmetr-expo-clean-realtime")
+            .channel("balmetr-expo-v3-realtime")
             .on("postgres_changes", { event: "*", schema: "public", table: "exhibition_checkins" }, (payload) => {
               const exhId = appState.activeExhibitionId;
               const { eventType, new: newRow, old: oldRow } = payload;
@@ -1570,11 +1723,14 @@
                 if (!appState.checkins.some((c) => c.id === newRow.id)) {
                   appState.checkins.unshift(newRow);
                 }
+                checkAndTriggerSoundForCheckinChange(newRow, null);
                 renderActiveRoleView();
               } else if (eventType === "UPDATE" && newRow && newRow.exhibition_id === exhId) {
                 const idx = appState.checkins.findIndex((c) => c.id === newRow.id);
+                const prev = idx >= 0 ? appState.checkins[idx] : null;
                 if (idx >= 0) appState.checkins[idx] = newRow;
                 else appState.checkins.unshift(newRow);
+                checkAndTriggerSoundForCheckinChange(newRow, prev);
                 renderActiveRoleView();
               } else if (eventType === "DELETE" && oldRow) {
                 appState.checkins = appState.checkins.filter((c) => c.id !== oldRow.id);
@@ -1582,11 +1738,34 @@
               }
             })
             .on("postgres_changes", { event: "*", schema: "public", table: "exhibitions" }, (payload) => {
-              if (payload.eventType === "UPDATE" && payload.new) {
-                const idx = appState.exhibitions.findIndex((e) => e.id === payload.new.id);
-                if (idx >= 0) appState.exhibitions[idx] = payload.new;
-                renderActiveRoleView();
+              const { eventType, new: newRow, old: oldRow } = payload;
+              if (eventType === "INSERT" && newRow) {
+                if (!appState.exhibitions.some((e) => e.id === newRow.id)) appState.exhibitions.push(newRow);
+              } else if (eventType === "UPDATE" && newRow) {
+                const idx = appState.exhibitions.findIndex((e) => e.id === newRow.id);
+                if (idx >= 0) appState.exhibitions[idx] = newRow;
+              } else if (eventType === "DELETE" && oldRow) {
+                appState.exhibitions = appState.exhibitions.filter((e) => e.id !== oldRow.id);
               }
+              ensureAllowedExhibition();
+              renderChromeAndRoute();
+            })
+            .on("postgres_changes", { event: "*", schema: "public", table: "accounts" }, (payload) => {
+              const { eventType, new: newRow, old: oldRow } = payload;
+              if (eventType === "INSERT" && newRow) {
+                if (!appState.accounts.some((a) => a.id === newRow.id)) appState.accounts.push(newRow);
+              } else if (eventType === "UPDATE" && newRow) {
+                const idx = appState.accounts.findIndex((a) => a.id === newRow.id);
+                if (idx >= 0) appState.accounts[idx] = { ...appState.accounts[idx], ...newRow };
+                if (appState.currentUser?.id === newRow.id) {
+                  appState.currentUser = { ...appState.currentUser, ...newRow };
+                }
+              } else if (eventType === "DELETE" && oldRow) {
+                appState.accounts = appState.accounts.filter((a) => a.id !== oldRow.id);
+              }
+              rebuildAccountsMap();
+              ensureAllowedExhibition();
+              renderChromeAndRoute();
             })
             .on("postgres_changes", { event: "*", schema: "public", table: "system_settings" }, (payload) => {
               if (payload.new) {
@@ -1602,7 +1781,7 @@
         }
       }
 
-      // ==================== AUTH, MULTI-ROLE & MULTI-EXHIBITION LOCK ====================
+      // ==================== STRICT EXHIBITION LOCK & AUTH ====================
       function getUserRoles(u) {
         if (!u) return [];
         const roles = [u.role];
@@ -1621,20 +1800,24 @@
         return [u.team || "المعرض"];
       }
 
+      // STRICT: Non-manager sees ONLY active_exhibition_ids (non-hidden). Manager sees active (non-hidden) exhibitions!
       function getAllowedExhibitionsForUser(u) {
-        if (!u || u.role === "manager") return appState.exhibitions;
-        const assigned = Array.isArray(u.active_exhibition_ids) ? u.active_exhibition_ids : [];
-        if (assigned.length > 0) {
-          const matched = appState.exhibitions.filter((e) => assigned.includes(e.id));
-          if (matched.length > 0) return matched;
+        const visibleExhs = appState.exhibitions.filter((e) => !e.hide_in_sales);
+        if (!u) return [];
+        if (u.role === "manager") {
+          return visibleExhs.length > 0 ? visibleExhs : appState.exhibitions;
         }
-        const vis = appState.exhibitions.filter((e) => !e.hide_in_sales);
-        return vis.length > 0 ? vis : appState.exhibitions;
+        const assigned = Array.isArray(u.active_exhibition_ids) ? u.active_exhibition_ids : [];
+        if (assigned.length === 0) return [];
+        return visibleExhs.filter((e) => assigned.includes(e.id));
       }
 
       function ensureAllowedExhibition() {
         const pool = getAllowedExhibitionsForUser(appState.currentUser);
-        if (pool.length === 0) return;
+        if (pool.length === 0) {
+          appState.activeExhibitionId = null;
+          return;
+        }
         if (!pool.some((e) => e.id === appState.activeExhibitionId)) {
           appState.activeExhibitionId = pool[0].id;
         }
@@ -1647,7 +1830,7 @@
 
       function isAccountInActiveExhibition(acc) {
         const exhId = appState.activeExhibitionId;
-        if (!acc || !exhId) return true;
+        if (!acc || !exhId) return false;
         const ids = Array.isArray(acc.active_exhibition_ids) ? acc.active_exhibition_ids : [];
         return ids.includes(exhId);
       }
@@ -1658,6 +1841,7 @@
       }
 
       async function executeSmartLogin() {
+        unlockAudio();
         const pass = (document.getElementById("smartLoginPasswordInput").value || "").trim();
         if (!pass) return;
         const btn = document.getElementById("smartLoginBtn");
@@ -1667,7 +1851,6 @@
           const { data, error } = await sb.rpc("smart_login", { p_password: pass });
           if (error) throw error;
           if (data?.status === "ACCOUNT" && data.account) {
-            // Merge with full public account columns (expo_roles, managed_teams, active_exhibition_ids, can_edit_request, phone)
             const freshAcc = appState.accountsById.get(data.account.id) || data.account;
             appState.currentUser = { ...freshAcc, ...data.account };
             const roles = getUserRoles(appState.currentUser);
@@ -1699,9 +1882,11 @@
           if (confirm("هل تريد تسجيل الخروج؟")) {
             appState.currentUser = null;
             appState.activeRole = null;
+            appState.activeExhibitionId = null;
             appState.checkins = [];
             appState.invitationsCache = [];
             appState.absentInvitationsLoadedForExh = null;
+            appState.expoDevUnlocked = false;
             if (realtimeCh) {
               try { sb.removeChannel(realtimeCh); } catch (e) {}
               realtimeCh = null;
@@ -1722,14 +1907,21 @@
         const u = appState.currentUser;
         if (!u) return showView("loginLandingView");
 
-        // Header role pill
         const pill = document.getElementById("activeRolePill");
         pill.style.display = "inline-block";
         pill.textContent = `${getRoleName(appState.activeRole)}: ${u.name}`;
         document.getElementById("authActionBtn").textContent = "🚪 خروج";
         document.getElementById("authActionBtn").className = "btn btn-danger btn-sm";
 
-        // Multi-role switcher bar
+        const allowedExhs = getAllowedExhibitionsForUser(u);
+        if (allowedExhs.length === 0) {
+          document.getElementById("exhBarSection").style.display = "none";
+          document.getElementById("roleSwitcherBar").style.display = "none";
+          showView("noExhAssignedView");
+          return;
+        }
+
+        // Multi-role switcher
         const roles = getUserRoles(u);
         const roleBar = document.getElementById("roleSwitcherBar");
         if (roles.length > 1) {
@@ -1744,8 +1936,7 @@
           roleBar.style.display = "none";
         }
 
-        // Exhibition Bar (Locked for staff assigned to 1 exhibition, interactive for Master Admin or multi-exh staff)
-        const allowedExhs = getAllowedExhibitionsForUser(u);
+        // Exhibition Bar
         const exhBar = document.getElementById("exhBarSection");
         exhBar.style.display = "flex";
         const active = getActiveExhibition();
@@ -1764,7 +1955,6 @@
           el.textContent = active ? active.name : "-";
         });
 
-        // Route by activeRole
         const r = appState.activeRole;
         if (r === "reception") showView("receptionView");
         else if (r === "usher") showView("usherView");
@@ -1772,8 +1962,11 @@
         else if (r === "team_leader") showView("teamLeaderView");
         else if (["exh_manager", "manager"].includes(r)) {
           showView("adminRadarView");
+          const isMaster = u.role === "manager";
           const distBtn = document.getElementById("admDistTabBtn");
-          if (distBtn) distBtn.style.display = u.role === "manager" ? "inline-flex" : "none";
+          const devBtn = document.getElementById("admDevOnlyTabBtn");
+          if (distBtn) distBtn.style.display = isMaster ? "inline-flex" : "none";
+          if (devBtn) devBtn.style.display = isMaster ? "inline-flex" : "none";
         } else if (r === "developer") showView("developerCompanyView");
         else showView("salesSitView");
 
@@ -1798,6 +1991,7 @@
       function showView(viewId) {
         [
           "loginLandingView",
+          "noExhAssignedView",
           "receptionView",
           "usherView",
           "salesSitView",
@@ -1859,6 +2053,10 @@
         return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
       }
 
+      function fmtMoney(n) {
+        return Number(n || 0).toLocaleString("en-US", { maximumFractionDigits: 0 });
+      }
+
       function getOrderedTeamSales(teamName) {
         const allTeamSales = appState.accounts.filter(
           (a) =>
@@ -1890,6 +2088,56 @@
         return "FREE";
       }
 
+      // Auto-skip & Auto-loop engine: checks if a stop has ZERO free reps right now
+      function isStopCurrentlyBusy(stop) {
+        if (!stop) return false;
+        if (stop.sales_id) {
+          return getRepLiveState(stop.sales_id) === "LIVE";
+        }
+        if (stop.stop_type === "BROKER") {
+          const brokers = filterAccountsForActiveExh(
+            appState.accounts.filter((a) => accountHasRole(a, "broker"))
+          );
+          if (brokers.length === 0) return false;
+          return brokers.every((b) => getRepLiveState(b.id) === "LIVE");
+        }
+        if (stop.stop_type === "DEVELOPER" && stop.developer_id) {
+          const devSales = filterAccountsForActiveExh(
+            appState.accounts.filter((a) => a.role === "dev_sales" && a.parent_admin_id === stop.developer_id)
+          );
+          if (devSales.length === 0) return false;
+          return devSales.every((ds) => getRepLiveState(ds.id) === "LIVE");
+        }
+        if (stop.team) {
+          const reps = getOrderedTeamSales(stop.team);
+          if (reps.length === 0) return false;
+          return reps.every((r) => getRepLiveState(r.id) === "LIVE");
+        }
+        return false;
+      }
+
+      // Automatically picks the first FREE pending stop (loops from index 0 so skipped busy stops come back automatically!)
+      function pickNextAvailableStopIndex(logs) {
+        let firstPending = -1;
+        for (let i = 0; i < logs.length; i++) {
+          const st = logs[i];
+          if (st.status !== "PENDING") continue;
+          if (firstPending < 0) firstPending = i;
+          if (!isStopCurrentlyBusy(st)) {
+            return i;
+          }
+        }
+        return firstPending;
+      }
+
+      function stopBelongsToUser(st, u) {
+        if (!st || !u) return false;
+        if (st.sales_id === u.id) return true;
+        if (appState.activeRole === "broker" && st.stop_type === "BROKER") return true;
+        if (u.role === "dev_sales" && st.developer_id === u.parent_admin_id) return true;
+        return false;
+      }
+
       function formatElapsedMinutes(startMs) {
         if (!startMs) return "";
         const mins = Math.max(1, Math.round((Date.now() - startMs) / 60000));
@@ -1898,7 +2146,7 @@
 
       function renderActiveRoleView() {
         const r = appState.activeRole;
-        if (!r || !appState.currentUser) return;
+        if (!r || !appState.currentUser || !appState.activeExhibitionId) return;
         if (r === "reception") renderReceptionView();
         else if (r === "usher") renderUsherView();
         else if (["sales", "broker", "dev_sales"].includes(r)) renderSalesSitView();
@@ -1907,7 +2155,7 @@
         else if (r === "developer") renderDeveloperCompanyView();
       }
 
-      // ==================== QR SCANNER ====================
+      // ==================== QR SCANNER (SUPPORTS OFFLINE STREET FLYER QR) ====================
       function openQrScannerModal(context) {
         qrTargetContext = context;
         document.getElementById("qrScannerModal").style.display = "flex";
@@ -1940,14 +2188,18 @@
       }
 
       function handleQrScanSuccess(text) {
+        const raw = String(text || "");
+        // Detect Offline Street Flyer QR: BM|OFFLINE|EXH:...
+        if (raw.includes("|OFFLINE|") && qrTargetContext === "RECEPTION") {
+          activateWalkinClient(true);
+          return;
+        }
         const parts = {};
-        String(text || "")
-          .split("|")
-          .forEach((seg) => {
-            const idx = seg.indexOf(":");
-            if (idx > 0) parts[seg.slice(0, idx)] = seg.slice(idx + 1);
-          });
-        const seq = parts.SEQ || text;
+        raw.split("|").forEach((seg) => {
+          const idx = seg.indexOf(":");
+          if (idx > 0) parts[seg.slice(0, idx)] = seg.slice(idx + 1);
+        });
+        const seq = parts.SEQ || raw;
         if (qrTargetContext === "RECEPTION") {
           document.getElementById("recLookupInput").value = seq;
           executeReceptionLookup();
@@ -1960,7 +2212,56 @@
         }
       }
 
-      // ==================== 1. RECEPTION LOGIC (ON-DEMAND SEARCH + LIVE HANDOFF) ====================
+      // ==================== SPECIALIZED DEVELOPER MATCHING ====================
+      function doesDeveloperMatchSpec(dev, specInventory, systems) {
+        const inv = dev.dev_inventory && typeof dev.dev_inventory === "object" ? dev.dev_inventory : {};
+        const devSys = Array.isArray(dev.dev_systems) ? dev.dev_systems : [];
+        const hasStructuredInv = Object.keys(inv).length > 0;
+
+        // 1. Special Systems Match (الوديعة = عائد بإيجار إلزامي | الجمعية = حصص عقارية | الاستلام الفوري = استلام فوري)
+        if (systems.includes("الوديعة") && devSys.includes("عائد بإيجار إلزامي")) return true;
+        if (systems.includes("الجمعية") && devSys.includes("حصص عقارية")) return true;
+        if (systems.includes("الاستلام الفوري") && devSys.includes("استلام فوري")) return true;
+
+        // 2. Specialized Activity -> Area Matrix Match
+        const reqActs = Object.keys(specInventory || {});
+        if (reqActs.length === 0) return false;
+
+        if (hasStructuredInv) {
+          return reqActs.some((act) => {
+            const devAreasForAct = Array.isArray(inv[act]) ? inv[act] : [];
+            if (devAreasForAct.length === 0) return false;
+            const reqAreas = Array.isArray(specInventory[act]) ? specInventory[act] : [];
+            return reqAreas.length === 0 || reqAreas.some((ar) => devAreasForAct.includes(ar));
+          });
+        }
+
+        // Legacy fallback if developer hasn't filled dev_inventory yet
+        const dActs = dev.dev_activities || [];
+        const dAreas = dev.dev_areas || [];
+        const flatReqAreas = [...new Set(Object.values(specInventory || {}).flat())];
+        const actMatch = reqActs.some((a) => dActs.includes(a));
+        const areaMatch = flatReqAreas.length === 0 || flatReqAreas.some((ar) => dAreas.includes(ar));
+        return actMatch && areaMatch;
+      }
+
+      function formatSpecRequestSummary(specInventory, systems, isFree) {
+        if (isFree) {
+          return { areaText: "أخرى / جاي يتفرج", typeText: "-", sysText: "-" };
+        }
+        const acts = Object.keys(specInventory || {});
+        const parts = acts.map((a) => {
+          const ars = specInventory[a] || [];
+          return ars.length > 0 ? `${a} (${ars.join("، ")})` : a;
+        });
+        return {
+          areaText: parts.join(" | ") || "غير محدد",
+          typeText: acts.join(" ، ") || "غير محدد",
+          sysText: (systems || []).join(" ، ") || "غير محدد",
+        };
+      }
+
+      // ==================== 1. RECEPTION LOGIC ====================
       function renderReceptionView() {
         const salesSel = document.getElementById("recCustomSalesSelect");
         if (salesSel) {
@@ -2002,7 +2303,6 @@
         recLookupTimer = setTimeout(executeReceptionLookup, 220);
       }
 
-      // On-demand lightweight search (Zero 3,000-row download!)
       async function executeReceptionLookup() {
         const exh = getActiveExhibition();
         const raw = String(document.getElementById("recLookupInput").value || "")
@@ -2041,7 +2341,7 @@
 
           listEl.innerHTML =
             matches.length === 0
-              ? `<div style="padding:8px; text-align:center; color:#fcd34d; font-size:0.8rem;">لا توجد دعوة مطابقة — اضغط «عميل مباشر بدون دعوة»</div>`
+              ? `<div style="padding:8px; text-align:center; color:#fcd34d; font-size:0.8rem;">لا توجد دعوة مطابقة — اختر عميل مباشر أو ورق الشارع</div>`
               : matches
                   .map((i) => {
                     const own = getAccountById(i.owner_account_id);
@@ -2062,8 +2362,11 @@
         if (!inv) return;
         recState.selectedInv = inv;
         recState.isWalkin = false;
+        recState.isOfflineFlyer = false;
         document.getElementById("recMatchesList").style.display = "none";
         document.getElementById("recWalkinFields").style.display = "none";
+        document.getElementById("recFirstSplitMode").value = "DEFAULT";
+        onRecSplitModeChange();
         const own = getAccountById(inv.owner_account_id);
         const box = document.getElementById("recSelectedInvBox");
         box.style.display = "block";
@@ -2072,10 +2375,11 @@
         updateRoutingPreview();
       }
 
-      function activateWalkinClient() {
+      function activateWalkinClient(isOffline = false) {
         const exh = getActiveExhibition();
         recState.selectedInv = null;
         recState.isWalkin = true;
+        recState.isOfflineFlyer = Boolean(isOffline);
         let maxSeq = (exh?.next_seq || 131) - 1;
         appState.checkins.forEach((c) => {
           if (c.seq_number > maxSeq) maxSeq = c.seq_number;
@@ -2085,8 +2389,11 @@
         document.getElementById("recSelectedInvBox").style.display = "none";
         document.getElementById("recMatchesList").style.display = "none";
         document.getElementById("recWalkinFields").style.display = "block";
+        document.getElementById("recWalkinTitle").textContent = isOffline
+          ? "📄 عميل ورق الشارع (أوفلاين — 0.5% مستقلة)"
+          : "🎫 عميل مباشر (Walk-in)";
         document.getElementById("recWalkinSeqBadge").textContent = `#${recState.walkinSeq}`;
-        document.getElementById("recFirstSplitMode").value = "COMPANY";
+        document.getElementById("recFirstSplitMode").value = isOffline ? "OFFLINE" : "COMPANY";
         onRecSplitModeChange();
         updateRoutingPreview();
       }
@@ -2127,27 +2434,84 @@
         updateRoutingPreview();
       }
 
-      function toggleReqChip(el, group, val) {
-        const map = { area: recState.areas, type: recState.types, sys: recState.systems };
-        const arr = map[group];
-        const idx = arr.indexOf(val);
-        if (idx >= 0) {
-          arr.splice(idx, 1);
+      function toggleRecActivity(act, el) {
+        if (recState.specInventory[act]) {
+          delete recState.specInventory[act];
           el.classList.remove("selected");
         } else {
-          arr.push(val);
+          recState.specInventory[act] = [];
+          el.classList.add("selected");
+        }
+        renderRecSpecAreaMatrix();
+        updateRoutingPreview();
+      }
+
+      function renderRecSpecAreaMatrix() {
+        const box = document.getElementById("recSpecAreaMatrix");
+        if (!box) return;
+        const acts = Object.keys(recState.specInventory);
+        if (acts.length === 0) {
+          box.innerHTML = "";
+          return;
+        }
+        box.innerHTML = acts
+          .map((act) => {
+            const picked = recState.specInventory[act] || [];
+            const chips = ALL_AREAS.map(
+              (ar) =>
+                `<button type="button" class="chip-btn ${picked.includes(ar) ? "selected" : ""}" style="padding:5px 9px; font-size:0.75rem;" onclick="toggleRecSpecArea('${escapeHtml(act).replace(/'/g, "\\'")}', '${escapeHtml(ar).replace(/'/g, "\\'")}')">${picked.includes(ar) ? "✅" : "➕"} ${escapeHtml(ar)}</button>`
+            ).join("");
+            return `<div style="padding:8px; background:#040f20; border:1px solid var(--border); border-radius:10px; margin-bottom:6px;">
+              <div style="font-size:0.76rem; font-weight:800; color:#fcd34d; margin-bottom:5px;">📍 مناطق «${escapeHtml(act)}» المطلوبة:</div>
+              <div class="chips-grid">${chips}</div>
+            </div>`;
+          })
+          .join("");
+      }
+
+      function toggleRecSpecArea(act, area) {
+        if (!recState.specInventory[act]) recState.specInventory[act] = [];
+        const idx = recState.specInventory[act].indexOf(area);
+        if (idx >= 0) recState.specInventory[act].splice(idx, 1);
+        else recState.specInventory[act].push(area);
+        renderRecSpecAreaMatrix();
+        updateRoutingPreview();
+      }
+
+      function toggleRecSystem(sys, el) {
+        const idx = recState.systems.indexOf(sys);
+        if (idx >= 0) {
+          recState.systems.splice(idx, 1);
+          el.classList.remove("selected");
+        } else {
+          recState.systems.push(sys);
           el.classList.add("selected");
         }
         updateRoutingPreview();
       }
 
-      function computeTargetStopsAndTeam(ownerAcc, isFreeViewer, areas, types, systems) {
+      // ==================== CORE ROUTING ENGINE ====================
+      function computeTargetStopsAndTeam(ownerAcc, isFreeViewer, specInventory, systems) {
         const exh = getActiveExhibition();
         const stops = [];
         let assignedTeam = "المعرض";
+        const isManualExh = appState.exhRoutingMode[exh?.id || ""] === "MANUAL";
 
-        // 1. Free Viewer -> Broker Team first
-        if (isFreeViewer) {
+        // Case 1: Specific B.almetr Sales Rep invitation -> Goes DIRECTLY to their Sales Rep first!
+        if (ownerAcc && ownerAcc.role === "sales") {
+          assignedTeam = ownerAcc.team || "المعرض";
+          stops.push({
+            stop_id: `st_${Date.now()}_own`,
+            stop_name: `💼 ${ownerAcc.name} (${ownerAcc.code})`,
+            stop_type: "BALMETR",
+            team: assignedTeam,
+            sales_id: ownerAcc.id,
+            sales_code: ownerAcc.code,
+            sales_name: ownerAcc.name,
+            status: "PENDING",
+          });
+        } else if (isFreeViewer) {
+          // Case 2: "أخرى / جاي يتفرج" -> Broker first
           assignedTeam = "البروكر";
           stops.push({
             stop_id: `st_${Date.now()}_brk`,
@@ -2158,39 +2522,8 @@
             sales_name: "تيم البروكر",
             status: "PENDING",
           });
-          return { stops, assignedTeam };
-        }
-
-        // 2. Direct Invitation by specific Sales / Broker / Developer / Dev_sales
-        if (ownerAcc && ["sales", "broker", "developer", "dev_sales"].includes(ownerAcc.role)) {
-          if (ownerAcc.role === "developer" || ownerAcc.role === "dev_sales") {
-            const dev =
-              ownerAcc.role === "dev_sales" ? getAccountById(ownerAcc.parent_admin_id) : ownerAcc;
-            stops.push({
-              stop_id: `st_${Date.now()}_dev0`,
-              stop_name: `🏗️ ${dev?.name || ownerAcc.name}`,
-              stop_type: "DEVELOPER",
-              developer_id: dev?.id || ownerAcc.id,
-              sales_id: ownerAcc.role === "dev_sales" ? ownerAcc.id : null,
-              sales_code: ownerAcc.code,
-              sales_name: ownerAcc.name,
-              status: "PENDING",
-            });
-          } else {
-            assignedTeam = ownerAcc.team || "المعرض";
-            stops.push({
-              stop_id: `st_${Date.now()}_own`,
-              stop_name: `💼 ${ownerAcc.name} (${ownerAcc.code})`,
-              stop_type: ownerAcc.role === "broker" ? "BROKER" : "BALMETR",
-              team: assignedTeam,
-              sales_id: ownerAcc.id,
-              sales_code: ownerAcc.code,
-              sales_name: ownerAcc.name,
-              status: "PENDING",
-            });
-          }
         } else {
-          // 3. Free / General / Walk-in -> Exhibition Team Distribution Weights + Strength Order (AUTO) or Team Leader (MANUAL)
+          // Case 3: Offline, Developer, Influencer, Broker, Online BM, Walk-in -> Exhibition Team Distribution Queue FIRST!
           const dist = exh?.layout_config?.teamDistribution || {};
           const activeTeams = appState.teamsList.filter((t) => {
             const cfg = dist[t];
@@ -2204,12 +2537,10 @@
           });
           assignedTeam = weightedList[appState.checkins.length % weightedList.length] || "المعرض";
 
-          const routingKey = `${exh?.id || ""}::${assignedTeam}`;
-          const isManual = appState.teamRoutingMode[routingKey] === "MANUAL";
           let chosenRep = null;
-          if (!isManual) {
+          if (!isManualExh) {
+            // AUTO Strength Order: Always scan from index 0 (Aya -> Mohamed -> Shaimaa -> Mariam) and pick first FREE!
             const orderedReps = getOrderedTeamSales(assignedTeam);
-            // Pick strongest FREE rep first, else strongest non-LIVE rep, else strongest overall
             chosenRep =
               orderedReps.find((r) => getRepLiveState(r.id) === "FREE") ||
               orderedReps.find((r) => getRepLiveState(r.id) !== "LIVE") ||
@@ -2221,10 +2552,10 @@
             stop_id: `st_${Date.now()}_tm`,
             stop_name: chosenRep
               ? `🏷️ تيم ${assignedTeam} ← ${chosenRep.name}`
-              : `🏷️ تيم ${assignedTeam} (بانتظار توجيه التيم ليدر)`,
+              : `🏷️ تيم ${assignedTeam} (بانتظار توجيه مدير المعرض)`,
             stop_type: "BALMETR",
             team: assignedTeam,
-            needs_tl_routing: isManual,
+            needs_manual_routing: isManualExh,
             sales_id: chosenRep?.id || null,
             sales_code: chosenRep?.code || "",
             sales_name: chosenRep?.name || `تيم ${assignedTeam}`,
@@ -2232,28 +2563,45 @@
           });
         }
 
-        // 4. Recommended Active Developers in this Exhibition matching Area & Activity tags
-        const allDevs = appState.accounts.filter((a) => a.role === "developer");
-        const activeDevs = filterAccountsForActiveExh(allDevs);
-        activeDevs.forEach((d) => {
-          if (stops.some((st) => st.developer_id === d.id)) return;
-          const dAreas = d.dev_areas || [];
-          const dActs = d.dev_activities || [];
-          const areaMatch = areas.length === 0 || areas.some((ar) => dAreas.includes(ar));
-          const typeMatch = types.length === 0 || types.some((tp) => dActs.includes(tp));
-          if ((areas.length > 0 || types.length > 0) && areaMatch && typeMatch) {
+        // MANDATORY DEVELOPER STOP: If client came from a Developer / Dev_sales, they MUST visit that Developer even if request changes!
+        if (ownerAcc && (ownerAcc.role === "developer" || ownerAcc.role === "dev_sales")) {
+          const dev =
+            ownerAcc.role === "dev_sales" ? getAccountById(ownerAcc.parent_admin_id) : ownerAcc;
+          if (dev) {
             stops.push({
-              stop_id: `st_${Date.now()}_${d.code}`,
-              stop_name: `🏗️ ${d.name}`,
+              stop_id: `st_${Date.now()}_mdev`,
+              stop_name: `🏗️ ${dev.name} (المطور الداعي ⭐)`,
               stop_type: "DEVELOPER",
-              developer_id: d.id,
-              sales_id: null,
-              sales_code: d.code,
-              sales_name: d.name,
+              developer_id: dev.id,
+              mandatory_developer: true,
+              sales_id: ownerAcc.role === "dev_sales" ? ownerAcc.id : null,
+              sales_code: ownerAcc.code,
+              sales_name: ownerAcc.name,
               status: "PENDING",
             });
           }
-        });
+        }
+
+        // Specialized Matching Developers (Activity -> Exact Area + Systems: وديعة=عائد بإيجار إلزامي, جمعية=حصص عقارية)
+        if (!isFreeViewer) {
+          const allDevs = appState.accounts.filter((a) => a.role === "developer");
+          const activeDevs = filterAccountsForActiveExh(allDevs);
+          activeDevs.forEach((d) => {
+            if (stops.some((st) => st.developer_id === d.id)) return;
+            if (doesDeveloperMatchSpec(d, specInventory, systems)) {
+              stops.push({
+                stop_id: `st_${Date.now()}_${d.code}`,
+                stop_name: `🏗️ ${d.name}`,
+                stop_type: "DEVELOPER",
+                developer_id: d.id,
+                sales_id: null,
+                sales_code: d.code,
+                sales_name: d.name,
+                status: "PENDING",
+              });
+            }
+          });
+        }
 
         return { stops, assignedTeam };
       }
@@ -2268,22 +2616,21 @@
         const { stops, assignedTeam } = computeTargetStopsAndTeam(
           owner,
           isFree,
-          recState.areas,
-          recState.types,
+          recState.specInventory,
           recState.systems
         );
         box.innerHTML =
           `🎯 التيم المستلم: <strong style="color:#fcd34d;">${escapeHtml(assignedTeam)}</strong><br>` +
-          `🗺️ خط السير: ${stops.map((s, idx) => `<span class="badge badge-mint" style="margin:2px;">${idx + 1}. ${escapeHtml(s.stop_name)}</span>`).join(" ")}`;
+          `🗺️ خط السير التلقائي: ${stops.map((s, idx) => `<span class="badge badge-mint" style="margin:2px;">${idx + 1}. ${escapeHtml(s.stop_name)}</span>`).join(" ")}`;
       }
 
       function resetReceptionForm() {
         recState = {
           selectedInv: null,
           isWalkin: false,
+          isOfflineFlyer: false,
           walkinSeq: null,
-          areas: [],
-          types: [],
+          specInventory: {},
           systems: [],
           lastSearchResults: [],
         };
@@ -2297,6 +2644,7 @@
         document.getElementById("recSelectedInvBox").style.display = "none";
         document.getElementById("recWalkinFields").style.display = "none";
         document.getElementById("recDuplicateBox").style.display = "none";
+        document.getElementById("recSpecAreaMatrix").innerHTML = "";
         document.querySelectorAll("#receptionView .chip-btn").forEach((c) => c.classList.remove("selected"));
         updateRoutingPreview();
       }
@@ -2329,7 +2677,11 @@
         let firstCode = "COMPANY";
         let firstName = "عميل شركة (BM)";
         let firstType = "شركة مباشر";
-        if (splitMode === "DEFAULT" && origOwner) {
+        if (splitMode === "OFFLINE" || recState.isOfflineFlyer) {
+          firstCode = "OFFLINE";
+          firstName = "📄 أوفلاين (ورق الشارع)";
+          firstType = "ورق الشارع (أوفلاين)";
+        } else if (splitMode === "DEFAULT" && origOwner) {
           firstCode = origOwner.code;
           firstName = origOwner.name;
           firstType = "صاحب الدعوة";
@@ -2346,10 +2698,10 @@
         const { stops, assignedTeam } = computeTargetStopsAndTeam(
           origOwner,
           isFree,
-          recState.areas,
-          recState.types,
+          recState.specInventory,
           recState.systems
         );
+        const summary = formatSpecRequestSummary(recState.specInventory, recState.systems, isFree);
         const usherId = document.getElementById("recUsherSelect").value || null;
         const usherAcc = usherId ? getAccountById(usherId) : null;
 
@@ -2363,14 +2715,14 @@
           client_phone: clientPhone,
           invitation_id: recState.selectedInv?.id || null,
           original_sales_id: origOwner?.id || null,
-          original_sales_code: origOwner?.code || "-",
-          original_sales_name: origOwner?.name || "-",
+          original_sales_code: origOwner?.code || (firstCode === "OFFLINE" ? "OFFLINE" : "-"),
+          original_sales_name: origOwner?.name || (firstCode === "OFFLINE" ? "أوفلاين" : "-"),
           first_split_code: firstCode,
           first_split_name: firstName,
           first_split_type: firstType,
-          interested_area: isFree ? "عميل يتفرج (بدون ريكويست)" : recState.areas.join(" ، ") || "غير محدد",
-          investment_type: isFree ? "-" : recState.types.join(" ، ") || "غير محدد",
-          preferred_system: isFree ? "-" : recState.systems.join(" ، ") || "غير محدد",
+          interested_area: summary.areaText,
+          investment_type: summary.typeText,
+          preferred_system: summary.sysText,
           is_free_viewer: isFree,
           reception_notes: (document.getElementById("recNotesInput").value || "").trim(),
           assigned_usher_id: usherAcc?.id || null,
@@ -2378,7 +2730,7 @@
           assigned_team: assignedTeam,
           target_stops: stops,
           journey_logs: stops,
-          journey_status: "WAITING_USHER", // Usher gets instant pickup alert!
+          journey_status: "WAITING_USHER",
           date_iso: getTodayIso(),
           attended_at: new Date().toLocaleTimeString("ar-EG"),
           created_at_ms: Date.now(),
@@ -2397,23 +2749,33 @@
             appState.checkins.unshift(payload);
           }
           resetReceptionForm();
-          alert(`✅ تم تسجيل (${clientName} #${seqNumber}) وبعتنا إشعار استلام فوري للأشر (${usherAcc?.name || "-"})!`);
+          alert(`✅ تم تسجيل (${clientName} #${seqNumber}) وبعتنا تنبيه صوتي فوري للأشر (${usherAcc?.name || "-"})!`);
         } catch (err) {
           console.error(err);
           alert("❌ خطأ في الحفظ: " + (err.message || ""));
         } finally {
           btn.disabled = false;
-          btn.textContent = "✅ تسجيل الدخول وإرسال إشعار للأشر";
+          btn.textContent = "✅ تسجيل الدخول وإرسال تنبيه فوري للأشر";
         }
       }
 
-      // ==================== 2. USHER VIEW (LIVE HANDOFF NOTIFICATIONS + JOURNEY) ====================
+      // ==================== 2. USHER VIEW (UNLIMITED CLIENTS, 4 CLEAN TABS, AUTO-LOOP) ====================
       function setUsherFilterMode(mode) {
         usherFilterMode = mode;
-        document.getElementById("usherTabMyBtn").className = mode === "MINE" ? "btn btn-primary btn-sm" : "btn btn-outline btn-sm";
-        document.getElementById("usherTabAllBtn").className = mode === "ALL" ? "btn btn-primary btn-sm" : "btn btn-outline btn-sm";
-        document.getElementById("usherTabDoneBtn").className = mode === "DONE" ? "btn btn-primary btn-sm" : "btn btn-outline btn-sm";
+        ["Action", "Live", "Transit", "Done"].forEach((k) => {
+          const btn = document.getElementById(`usherTab${k}Btn`);
+          if (btn) btn.className = mode === k.toUpperCase() ? "nav-tab-btn active" : "nav-tab-btn";
+        });
         renderUsherView();
+      }
+
+      function classifyUsherClient(c) {
+        if (c.journey_status === "COMPLETED") return "DONE";
+        if (c.journey_status === "WAITING_USHER") return "ACTION";
+        const logs = c.journey_logs || [];
+        if (logs.some((st) => st.status === "DONE" && st.handoff_ack === false)) return "ACTION";
+        if (logs.some((st) => st.status === "LIVE")) return "LIVE";
+        return "TRANSIT";
       }
 
       function renderUsherView() {
@@ -2421,58 +2783,26 @@
         if (!u) return;
         document.getElementById("usherHeaderTitle").textContent = `🚶 الأشر: ${u.name}`;
 
-        // 1. Urgent Live Alerts for THIS Usher
-        const myActive = appState.checkins.filter(
-          (c) => c.assigned_usher_id === u.id && c.journey_status !== "COMPLETED"
-        );
-        const urgentHtml = [];
-        myActive.forEach((c) => {
-          if (c.journey_status === "WAITING_USHER") {
-            const firstStop = (c.journey_logs || [])[0];
-            urgentHtml.push(`
-              <div class="alert-banner-gold">
-                <div style="margin-bottom:8px;">
-                  🔔 <strong>استلام جديد من الريسبشن:</strong> العميل <strong>${escapeHtml(c.client_name)} (#${c.seq_number})</strong> مستنيك على الريسبشن${firstStop ? ` ← المحطة الأولى: <strong>${escapeHtml(firstStop.stop_name)}</strong>` : ""}.
-                </div>
-                <button type="button" class="btn btn-success btn-block" onclick="usherAcceptClientFromReception('${c.id}')">
-                  ✅ استلمت العميل — ابدأ الرحلة (إشعار السيلز)
-                </button>
-              </div>`);
-          } else {
-            const unackedIdx = (c.journey_logs || []).findIndex(
-              (st) => st.status === "DONE" && st.handoff_ack === false
-            );
-            if (unackedIdx >= 0) {
-              const finishedStop = c.journey_logs[unackedIdx];
-              const nextStop = c.journey_logs.find((st) => st.status === "IN_TRANSIT" || st.status === "PENDING");
-              urgentHtml.push(`
-                <div class="alert-banner-mint">
-                  <div style="margin-bottom:8px;">
-                    🔔 <strong>عميلك خلّص القعدة:</strong> <strong>${escapeHtml(c.client_name)} (#${c.seq_number})</strong> خلص عند <strong>${escapeHtml(finishedStop.sales_name || finishedStop.stop_name)}</strong>!
-                    ${nextStop ? `<br>👉 روح هاته وودّيه لـ: <strong style="color:#fcd34d;">${escapeHtml(nextStop.stop_name)}</strong>` : `<br>🏁 خلص آخر محطة — روح هاته للخروج وطباعة التقرير!`}
-                  </div>
-                  <button type="button" class="btn btn-gold btn-block" onclick="usherAcknowledgeHandoff('${c.id}', ${unackedIdx})">
-                    ${nextStop ? "✅ استلمته وفي الطريق للمحطة التالية" : "✅ استلمته — جاهز للخروج والطباعة"}
-                  </button>
-                </div>`);
-            }
-          }
+        const myClients = appState.checkins.filter((c) => c.assigned_usher_id === u.id);
+        const counts = { ACTION: 0, LIVE: 0, TRANSIT: 0, DONE: 0 };
+        myClients.forEach((c) => {
+          counts[classifyUsherClient(c)]++;
         });
-        document.getElementById("usherUrgentAlertsBox").innerHTML = urgentHtml.join("");
+        document.getElementById("usherCntAction").textContent = counts.ACTION;
+        document.getElementById("usherCntLive").textContent = counts.LIVE;
+        document.getElementById("usherCntTransit").textContent = counts.TRANSIT;
+        document.getElementById("usherCntDone").textContent = counts.DONE;
 
-        // 2. Journey Cards List
         const q = (document.getElementById("usherSearchInput").value || "").trim().toLowerCase();
-        const list = appState.checkins.filter((c) => {
-          if (usherFilterMode === "MINE" && (c.assigned_usher_id !== u.id || c.journey_status === "COMPLETED")) return false;
-          if (usherFilterMode === "ALL" && c.journey_status === "COMPLETED") return false;
-          if (usherFilterMode === "DONE" && c.journey_status !== "COMPLETED") return false;
+        const list = myClients.filter((c) => {
+          if (classifyUsherClient(c) !== usherFilterMode) return false;
           if (q && !`${c.seq_number} ${c.client_name} ${c.client_phone}`.toLowerCase().includes(q)) return false;
           return true;
         });
 
         const container = document.getElementById("usherJourneysContainer");
         if (list.length === 0) {
-          container.innerHTML = `<div class="card" style="text-align:center; color:var(--text-muted);">لا توجد رحلات في هذا القسم حالياً.</div>`;
+          container.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:24px; font-size:0.85rem;">لا يوجد عملاء في هذا القسم حالياً.</div>`;
           return;
         }
 
@@ -2480,6 +2810,39 @@
           .map((c) => {
             const stops = c.journey_logs || [];
             const isWaiting = c.journey_status === "WAITING_USHER";
+            const unackedIdx = stops.findIndex((st) => st.status === "DONE" && st.handoff_ack === false);
+            const transitStop = stops.find((st) => st.status === "IN_TRANSIT");
+            const liveStop = stops.find((st) => st.status === "LIVE");
+
+            let topBanner = "";
+            if (isWaiting) {
+              topBanner = `
+                <div class="alert-banner-gold" style="margin-bottom:10px;">
+                  🔔 <strong>عميل جديد على الريسبشن!</strong> استلمه لبدء الرحلة أوتوماتيك.
+                  <button type="button" class="btn btn-success btn-block" style="margin-top:8px;" onclick="usherAcceptClientFromReception('${c.id}')">
+                    ✅ استلمت العميل — ابدأ الرحلة
+                  </button>
+                </div>`;
+            } else if (unackedIdx >= 0) {
+              const fin = stops[unackedIdx];
+              topBanner = `
+                <div class="alert-banner-mint" style="margin-bottom:10px;">
+                  🔔 <strong>خلص عند ${escapeHtml(fin.sales_name || fin.stop_name)}!</strong>
+                  ${transitStop ? `<br>👉 ودّيه دلوقتي لـ: <strong style="color:#fcd34d;">${escapeHtml(transitStop.stop_name)}</strong>` : `<br>🏁 خلص كل المحطات — جاهز للخروج والطباعة!`}
+                  <button type="button" class="btn btn-gold btn-block" style="margin-top:8px;" onclick="usherAcknowledgeHandoff('${c.id}', ${unackedIdx})">
+                    ${transitStop ? "✅ استلمته وفي الطريق للمحطة التالية" : "✅ استلمته — جاهز للخروج"}
+                  </button>
+                </div>`;
+            } else if (liveStop) {
+              topBanner = `<div style="padding:8px 10px; border-radius:10px; background:rgba(16,185,129,0.14); border:1px solid #10b981; color:#34d399; font-size:0.82rem; font-weight:800; margin-bottom:8px;">
+                🟢 قاعد الآن مع: <strong>${escapeHtml(liveStop.sales_name || liveStop.stop_name)}</strong> (${formatElapsedMinutes(liveStop.started_at_ms)})
+              </div>`;
+            } else if (transitStop) {
+              topBanner = `<div style="padding:8px 10px; border-radius:10px; background:var(--gold-soft); border:1px solid var(--gold); color:#fcd34d; font-size:0.82rem; font-weight:800; margin-bottom:8px;">
+                🚶 في الطريق الآن إلى: <strong>${escapeHtml(transitStop.stop_name)}</strong>
+              </div>`;
+            }
+
             const stopsHtml = stops
               .map((st, idx) => {
                 const cls =
@@ -2491,35 +2854,22 @@
                     ? "stop-done"
                     : "";
                 const dur = st.duration_sec ? `⏱️ ${Math.max(1, Math.round(st.duration_sec / 60))} د` : "";
-                let statusBadge = `<span class="badge badge-mint">⏳ لاحقاً</span>`;
-                if (st.status === "IN_TRANSIT") statusBadge = `<span class="badge badge-gold">🚶 في الطريق الآن</span>`;
-                else if (st.status === "LIVE") statusBadge = `<span class="badge-live">🟢 جاري القعدة (${formatElapsedMinutes(st.started_at_ms)})</span>`;
-                else if (st.status === "DONE") statusBadge = `<span class="badge badge-success">✅ تم ${dur}</span>`;
-
-                let actionBtn = "";
-                if (c.journey_status === "ACTIVE") {
-                  if (st.status === "PENDING") {
-                    actionBtn = `<button type="button" class="btn btn-outline btn-sm" onclick="updateUsherStopStatus('${c.id}', ${idx}, 'IN_TRANSIT')">🚶 توجيه لهذه المحطة</button>`;
-                  } else if (st.status === "IN_TRANSIT") {
-                    actionBtn = `<button type="button" class="btn btn-success btn-sm" onclick="updateUsherStopStatus('${c.id}', ${idx}, 'LIVE')">🚪 وصل وبدأ القعدة</button>`;
-                  } else if (st.status === "LIVE") {
-                    actionBtn = `<button type="button" class="btn btn-gold btn-sm" onclick="updateUsherStopStatus('${c.id}', ${idx}, 'DONE')">✅ تم / خروج من القعدة</button>`;
-                  }
-                }
+                let stBadge = `<span class="badge badge-mint">⏳ لاحقاً</span>`;
+                if (st.status === "IN_TRANSIT") stBadge = `<span class="badge badge-gold">🚶 المحطة الحالية</span>`;
+                else if (st.status === "LIVE") stBadge = `<span class="badge-live">🟢 جاري القعدة</span>`;
+                else if (st.status === "DONE") stBadge = `<span class="badge badge-success">✅ تم ${dur}</span>`;
                 return `
                 <div class="journey-stop ${cls}">
                   <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; flex-wrap:wrap;">
-                    <strong style="font-size:0.86rem;">${idx + 1}. ${escapeHtml(st.stop_name)}</strong>
-                    ${statusBadge}
+                    <strong style="font-size:0.85rem;">${idx + 1}. ${escapeHtml(st.stop_name)}</strong>
+                    ${stBadge}
                   </div>
-                  ${st.outcome ? `<div style="font-size:0.78rem; color:#34d399; margin-top:4px;">🎯 ${escapeHtml(st.outcome)} ${st.offer_summary ? `— ${escapeHtml(st.offer_summary)}` : ""}</div>` : ""}
-                  ${actionBtn ? `<div style="margin-top:7px;">${actionBtn}</div>` : ""}
                 </div>`;
               })
               .join("");
 
             return `
-            <div class="journey-card ${isWaiting ? "urgent-pickup" : ""}">
+            <div class="journey-card ${isWaiting || unackedIdx >= 0 ? "urgent-pickup" : ""}">
               <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
                 <div>
                   <strong style="color:#fcd34d;">#${c.seq_number}</strong>
@@ -2527,14 +2877,10 @@
                 </div>
                 <span class="badge badge-mint">🕒 ${escapeHtml(c.attended_at || "-")}</span>
               </div>
-              <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:8px;">
-                📍 ${escapeHtml(c.interested_area)} | 🏢 ${escapeHtml(c.investment_type)} | ⚙️ ${escapeHtml(c.preferred_system)}
+              <div style="font-size:0.77rem; color:var(--text-muted); margin-bottom:8px;">
+                📍 ${escapeHtml(c.interested_area)} | ⚙️ ${escapeHtml(c.preferred_system)}
               </div>
-              ${
-                isWaiting
-                  ? `<button type="button" class="btn btn-success btn-block" style="margin-bottom:10px;" onclick="usherAcceptClientFromReception('${c.id}')">✅ استلمت العميل من الريسبشن — ابدأ الرحلة</button>`
-                  : ""
-              }
+              ${topBanner}
               <div class="journey-timeline">${stopsHtml}</div>
               <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
                 ${
@@ -2542,7 +2888,7 @@
                     ? `<button type="button" class="btn btn-danger" style="flex:1;" onclick="completeClientJourney('${c.id}')">🏁 خروج من المعرض</button>`
                     : `<span class="badge badge-success" style="padding:8px 12px;">✅ غادر (${escapeHtml(c.exited_at || "")})</span>`
                 }
-                <button type="button" class="btn btn-gold" style="flex:1;" onclick="openPrintableClientJourney('${c.id}')">🖨️ طباعة التقرير الملون</button>
+                <button type="button" class="btn btn-gold" style="flex:1;" onclick="openPrintableClientJourney('${c.id}')">🖨️ طباعة التقرير</button>
               </div>
             </div>`;
           })
@@ -2554,14 +2900,16 @@
         if (!chk) return;
         const nowStr = new Date().toLocaleTimeString("ar-EG");
         const logs = [...(chk.journey_logs || [])];
-        if (logs.length > 0 && logs[0].status === "PENDING") {
-          logs[0] = { ...logs[0], status: "IN_TRANSIT", transit_at: nowStr };
+        // Auto-pick first FREE stop (skips busy stops automatically!)
+        const nextIdx = pickNextAvailableStopIndex(logs);
+        if (nextIdx >= 0) {
+          logs[nextIdx] = { ...logs[nextIdx], status: "IN_TRANSIT", transit_at: nowStr };
         }
         const { error } = await sb
           .from("exhibition_checkins")
           .update({ journey_status: "ACTIVE", journey_logs: logs })
           .eq("id", checkinId);
-        if (error) return alert("❌ تعذر تحديث حالة الاستلام!");
+        if (error) return alert("❌ تعذر التحديث!");
         chk.journey_status = "ACTIVE";
         chk.journey_logs = logs;
         renderUsherView();
@@ -2572,44 +2920,6 @@
         if (!chk) return;
         const logs = [...(chk.journey_logs || [])];
         if (logs[stopIdx]) logs[stopIdx] = { ...logs[stopIdx], handoff_ack: true };
-        const { error } = await sb
-          .from("exhibition_checkins")
-          .update({ journey_logs: logs })
-          .eq("id", checkinId);
-        if (error) return alert("❌ تعذر التحديث!");
-        chk.journey_logs = logs;
-        renderUsherView();
-      }
-
-      async function updateUsherStopStatus(checkinId, stopIdx, newStatus) {
-        const chk = appState.checkins.find((c) => c.id === checkinId);
-        if (!chk) return;
-        const logs = [...(chk.journey_logs || [])];
-        const st = { ...logs[stopIdx] };
-        const nowMs = Date.now();
-        const nowStr = new Date().toLocaleTimeString("ar-EG");
-
-        if (newStatus === "IN_TRANSIT") {
-          st.status = "IN_TRANSIT";
-          st.transit_at = nowStr;
-        } else if (newStatus === "LIVE") {
-          st.status = "LIVE";
-          st.started_at = nowStr;
-          st.started_at_ms = nowMs;
-        } else if (newStatus === "DONE") {
-          st.status = "DONE";
-          st.ended_at = nowStr;
-          st.ended_at_ms = nowMs;
-          st.handoff_ack = true;
-          st.duration_sec = st.started_at_ms ? Math.round((nowMs - st.started_at_ms) / 1000) : 60;
-          // Auto-notify next pending stop!
-          const nextIdx = logs.findIndex((x, i) => i > stopIdx && x.status === "PENDING");
-          if (nextIdx >= 0) {
-            logs[nextIdx] = { ...logs[nextIdx], status: "IN_TRANSIT", transit_at: nowStr };
-          }
-        }
-        logs[stopIdx] = st;
-
         const { error } = await sb
           .from("exhibition_checkins")
           .update({ journey_logs: logs })
@@ -2656,7 +2966,7 @@
         openPrintableClientJourney(checkinId);
       }
 
-      // ==================== OFFICIAL COLORFUL JOURNEY REPORT (LINKED TO TAB 7 SETTINGS) ====================
+      // ==================== OFFICIAL COLORFUL JOURNEY REPORT ====================
       function resolveStopPhoneForReport(st, cfg) {
         const rep = st.sales_id ? getAccountById(st.sales_id) : null;
         if (!rep || !rep.phone || !rep.show_phone_in_report) return "";
@@ -2739,8 +3049,7 @@
                      <div><strong>🏁 الخروج:</strong> ${escapeHtml(c.exited_at || "داخل المعرض")}${totalMin ? ` (${totalMin} د)` : ""}</div>`
                   : ""
               }
-              <div><strong>📍 المناطق:</strong> ${escapeHtml(c.interested_area)}</div>
-              <div><strong>🏢 الاستثمار:</strong> ${escapeHtml(c.investment_type)}</div>
+              <div><strong>📍 الطلب:</strong> ${escapeHtml(c.interested_area)}</div>
               <div><strong>⚙️ النظام:</strong> ${escapeHtml(c.preferred_system)}</div>
             </div>
 
@@ -2764,16 +3073,11 @@
         document.body.classList.remove("printing-journey-mode");
       }
 
-      // ==================== 3. SALES / BROKER / DEV_SALES VIEW ====================
+      // ==================== 3. SALES / BROKER / DEV_SALES VIEW (NO PREVIOUS FEEDBACK) ====================
       function findMatchingStopForUser(checkin, u) {
-        const logs = checkin.journey_logs || [];
-        return logs.find((st) => {
-          if (st.status === "DONE") return false;
-          if (st.sales_id === u.id) return true;
-          if (appState.activeRole === "broker" && st.stop_type === "BROKER") return true;
-          if (u.role === "dev_sales" && st.developer_id === u.parent_admin_id) return true;
-          return false;
-        });
+        return (checkin.journey_logs || []).find(
+          (st) => st.status !== "DONE" && stopBelongsToUser(st, u)
+        );
       }
 
       function renderSalesSitView() {
@@ -2864,6 +3168,13 @@
         document.getElementById("sitActiveWorkspace").style.display = "none";
       }
 
+      function onSitOutcomeChange() {
+        const val = document.getElementById("sitOutcomeSelect")?.value || "";
+        const isDeal = val.includes("اشترى") || val.includes("حجز");
+        const wrap = document.getElementById("sitDealValueWrap");
+        if (wrap) wrap.style.display = isDeal ? "block" : "none";
+      }
+
       function renderActiveSitWorkspace() {
         const u = appState.currentUser;
         const c = appState.checkins.find((x) => x.id === activeSitCheckinId);
@@ -2876,16 +3187,13 @@
             <span class="badge badge-mint">🚶 الأشر: ${escapeHtml(c.assigned_usher_name || "-")}</span>
           </div>
           <div style="font-size:0.8rem; color:var(--text-muted);">
-            📍 ${escapeHtml(c.interested_area)} | 🏢 ${escapeHtml(c.investment_type)} | ⚙️ ${escapeHtml(c.preferred_system)}
+            📍 ${escapeHtml(c.interested_area)} | ⚙️ ${escapeHtml(c.preferred_system)}
             ${c.reception_notes ? `<div style="color:#fcd34d; margin-top:4px;">📝 ${escapeHtml(c.reception_notes)}</div>` : ""}
           </div>`;
 
-        // Show "Start Session" button if stop is not LIVE yet
         const myStop = findMatchingStopForUser(c, u);
         const startWrap = document.getElementById("sitStartSessionWrap");
-        if (startWrap) {
-          startWrap.style.display = myStop && myStop.status !== "LIVE" ? "block" : "none";
-        }
+        if (startWrap) startWrap.style.display = myStop && myStop.status !== "LIVE" ? "block" : "none";
 
         // Individual Permission: can_edit_request
         const editBox = document.getElementById("sitEditRequestBox");
@@ -2893,36 +3201,14 @@
         if (canEdit) {
           editBox.style.display = "block";
           sitEditReq = {
-            areas: c.interested_area && !c.is_free_viewer && c.interested_area !== "غير محدد" ? c.interested_area.split(" ، ") : [],
-            types: c.investment_type && !c.is_free_viewer && c.investment_type !== "غير محدد" ? c.investment_type.split(" ، ") : [],
-            systems: c.preferred_system && !c.is_free_viewer && c.preferred_system !== "غير محدد" ? c.preferred_system.split(" ، ") : [],
+            specInventory: {},
+            systems: c.preferred_system && c.preferred_system !== "-" && c.preferred_system !== "غير محدد" ? c.preferred_system.split(" ، ") : [],
           };
-          renderSitEditChips();
+          renderSitEditMatrix();
         } else {
           editBox.style.display = "none";
         }
 
-        // Previous Opinions (dev_sales sees ONLY their company's logs)
-        const prevLogs = (c.journey_logs || []).filter((st) => {
-          if (!st.outcome && st.status !== "DONE") return false;
-          if (u.role === "dev_sales") return st.developer_id === u.parent_admin_id;
-          return true;
-        });
-        document.getElementById("sitPrevOpinionsList").innerHTML =
-          prevLogs.length === 0
-            ? `<div style="font-size:0.78rem; color:var(--text-muted);">لا توجد قعدات سابقة.</div>`
-            : prevLogs
-                .map(
-                  (st) =>
-                    `<div style="padding:8px 10px; background:var(--bg-input); border-radius:9px; margin-bottom:6px; font-size:0.79rem;">
-                      <strong>${escapeHtml(st.stop_name)}</strong> — <span class="badge badge-gold">${escapeHtml(st.outcome || "تم")}</span>
-                      ${st.offer_summary ? `<div style="color:#34d399; margin-top:3px;">🎁 ${escapeHtml(st.offer_summary)}</div>` : ""}
-                      ${st.notes ? `<div style="color:#cbd5e1; margin-top:2px;">💬 ${escapeHtml(st.notes)}</div>` : ""}
-                    </div>`
-                )
-                .join("");
-
-        // Populate Offers from real `offers` table
         const ownerKey =
           u.role === "dev_sales" && u.parent_admin_id
             ? u.parent_admin_id
@@ -2943,6 +3229,92 @@
           `<option value="CUSTOM">✨ أخرى (كتابة عرض سريع)</option>`;
         if (prevOff) offSel.value = prevOff;
         onSitOfferChange();
+        onSitOutcomeChange();
+      }
+
+      function renderSitEditMatrix() {
+        document.getElementById("sitEditTypeChips").innerHTML = ALL_ACTIVITIES.map(
+          (a) =>
+            `<div class="chip-btn ${sitEditReq.specInventory[a] ? "selected" : ""}" onclick="toggleSitEditAct('${a}')">${a}</div>`
+        ).join("");
+        const acts = Object.keys(sitEditReq.specInventory);
+        document.getElementById("sitEditAreaMatrix").innerHTML = acts
+          .map((act) => {
+            const picked = sitEditReq.specInventory[act] || [];
+            const chips = ALL_AREAS.map(
+              (ar) =>
+                `<button type="button" class="chip-btn ${picked.includes(ar) ? "selected" : ""}" style="padding:4px 8px; font-size:0.74rem;" onclick="toggleSitEditArea('${act}','${ar}')">${picked.includes(ar) ? "✅" : "➕"} ${ar}</button>`
+            ).join("");
+            return `<div style="padding:7px; background:#040f20; border-radius:9px; margin-bottom:6px;"><div style="font-size:0.74rem; color:#fcd34d; margin-bottom:4px;">مناطق ${act}:</div><div class="chips-grid">${chips}</div></div>`;
+          })
+          .join("");
+        document.getElementById("sitEditSysChips").innerHTML = ["الجمعية", "الوديعة", "الاستلام الفوري"]
+          .map(
+            (s) =>
+              `<div class="chip-btn ${sitEditReq.systems.includes(s) ? "selected" : ""}" onclick="toggleSitEditSys('${s}')">${s}</div>`
+          )
+          .join("");
+      }
+
+      function toggleSitEditAct(act) {
+        if (sitEditReq.specInventory[act]) delete sitEditReq.specInventory[act];
+        else sitEditReq.specInventory[act] = [];
+        renderSitEditMatrix();
+      }
+
+      function toggleSitEditArea(act, area) {
+        const arr = sitEditReq.specInventory[act] || [];
+        const idx = arr.indexOf(area);
+        if (idx >= 0) arr.splice(idx, 1);
+        else arr.push(area);
+        sitEditReq.specInventory[act] = arr;
+        renderSitEditMatrix();
+      }
+
+      function toggleSitEditSys(sys) {
+        const idx = sitEditReq.systems.indexOf(sys);
+        if (idx >= 0) sitEditReq.systems.splice(idx, 1);
+        else sitEditReq.systems.push(sys);
+        renderSitEditMatrix();
+      }
+
+      async function saveUpdatedClientRequestFromSales() {
+        const c = appState.checkins.find((x) => x.id === activeSitCheckinId);
+        if (!c) return;
+        const summary = formatSpecRequestSummary(sitEditReq.specInventory, sitEditReq.systems, false);
+        const allDevs = filterAccountsForActiveExh(appState.accounts.filter((a) => a.role === "developer"));
+        // Keep ALL completed, live, in-transit, B.almetr, AND mandatory_developer stops untouched!
+        const updatedLogs = (c.journey_logs || []).filter(
+          (st) => st.status !== "PENDING" || st.stop_type !== "DEVELOPER" || st.mandatory_developer
+        );
+        allDevs.forEach((d) => {
+          if (updatedLogs.some((st) => st.developer_id === d.id)) return;
+          if (doesDeveloperMatchSpec(d, sitEditReq.specInventory, sitEditReq.systems)) {
+            updatedLogs.push({
+              stop_id: `st_${Date.now()}_${d.code}`,
+              stop_name: `🏗️ ${d.name}`,
+              stop_type: "DEVELOPER",
+              developer_id: d.id,
+              sales_id: null,
+              sales_code: d.code,
+              sales_name: d.name,
+              status: "PENDING",
+            });
+          }
+        });
+
+        const upd = {
+          interested_area: summary.areaText,
+          investment_type: summary.typeText,
+          preferred_system: summary.sysText,
+          is_free_viewer: false,
+          journey_logs: updatedLogs,
+        };
+        const { error } = await sb.from("exhibition_checkins").update(upd).eq("id", c.id);
+        if (error) return alert("❌ تعذر التحديث!");
+        Object.assign(c, upd);
+        renderActiveSitWorkspace();
+        alert("✅ تم تحديث الريكويست وتحديث الشركات المناسبة (مع تثبيت المطور الداعي)!");
       }
 
       async function startSittingSessionFromSales() {
@@ -2952,13 +3324,7 @@
         const nowMs = Date.now();
         const nowStr = new Date().toLocaleTimeString("ar-EG");
         const logs = [...(c.journey_logs || [])];
-        const idx = logs.findIndex((st) => {
-          if (st.status === "DONE") return false;
-          if (st.sales_id === u.id) return true;
-          if (appState.activeRole === "broker" && st.stop_type === "BROKER") return true;
-          if (u.role === "dev_sales" && st.developer_id === u.parent_admin_id) return true;
-          return false;
-        });
+        const idx = logs.findIndex((st) => st.status !== "DONE" && stopBelongsToUser(st, u));
         if (idx >= 0) {
           logs[idx] = {
             ...logs[idx],
@@ -2980,54 +3346,6 @@
         renderSalesSitView();
       }
 
-      function renderSitEditChips() {
-        const allAreas = ["العاصمة الإدارية", "التجمع", "زايد", "6 أكتوبر", "الساحل الشمالي", "مدينة نصر والقاهرة", "بلد المعرض (المدن الجديدة)"];
-        const allTypes = ["سكني", "تجاري", "إداري", "فندقي", "طبي"];
-        const allSys = ["الجمعية", "الوديعة", "الاستلام الفوري"];
-        document.getElementById("sitEditAreaChips").innerHTML = allAreas
-          .map((a) => `<div class="chip-btn ${sitEditReq.areas.includes(a) ? "selected" : ""}" onclick="toggleSitEditChip('areas','${a}')">${a}</div>`)
-          .join("");
-        document.getElementById("sitEditTypeChips").innerHTML = allTypes
-          .map((t) => `<div class="chip-btn ${sitEditReq.types.includes(t) ? "selected" : ""}" onclick="toggleSitEditChip('types','${t}')">${t}</div>`)
-          .join("");
-        document.getElementById("sitEditSysChips").innerHTML = allSys
-          .map((s) => `<div class="chip-btn ${sitEditReq.systems.includes(s) ? "selected" : ""}" onclick="toggleSitEditChip('systems','${s}')">${s}</div>`)
-          .join("");
-      }
-
-      function toggleSitEditChip(grp, val) {
-        const arr = sitEditReq[grp];
-        const idx = arr.indexOf(val);
-        if (idx >= 0) arr.splice(idx, 1);
-        else arr.push(val);
-        renderSitEditChips();
-      }
-
-      async function saveUpdatedClientRequestFromSales() {
-        const c = appState.checkins.find((x) => x.id === activeSitCheckinId);
-        if (!c) return;
-        const { stops } = computeTargetStopsAndTeam(null, false, sitEditReq.areas, sitEditReq.types, sitEditReq.systems);
-        const existingLogs = [...(c.journey_logs || [])];
-        stops.forEach((ns) => {
-          if (ns.developer_id && !existingLogs.some((el) => el.developer_id === ns.developer_id)) {
-            existingLogs.push(ns);
-          }
-        });
-
-        const upd = {
-          interested_area: sitEditReq.areas.join(" ، ") || "غير محدد",
-          investment_type: sitEditReq.types.join(" ، ") || "غير محدد",
-          preferred_system: sitEditReq.systems.join(" ، ") || "غير محدد",
-          is_free_viewer: false,
-          journey_logs: existingLogs,
-        };
-        const { error } = await sb.from("exhibition_checkins").update(upd).eq("id", c.id);
-        if (error) return alert("❌ تعذر تحديث الريكويست!");
-        Object.assign(c, upd);
-        renderActiveSitWorkspace();
-        alert("✅ تم تحديث الريكويست وإضافة الشركات المناسبة لرحلة الأشر فوراً!");
-      }
-
       function onSitOfferChange() {
         const val = document.getElementById("sitOfferSelect").value;
         document.getElementById("sitCustomOfferInput").style.display = val === "CUSTOM" ? "block" : "none";
@@ -3041,8 +3359,10 @@
         const outcome = document.getElementById("sitOutcomeSelect").value;
         const notes = (document.getElementById("sitNotesInput").value || "").trim();
         const offerVal = document.getElementById("sitOfferSelect").value;
-        let offerSummary = "";
+        const isDeal = outcome.includes("اشترى") || outcome.includes("حجز");
+        const dealValue = isDeal ? Number(document.getElementById("sitDealValueInput")?.value || 0) : 0;
 
+        let offerSummary = "";
         if (offerVal === "CUSTOM") {
           offerSummary = (document.getElementById("sitCustomOfferInput").value || "").trim();
         } else if (offerVal) {
@@ -3056,18 +3376,16 @@
           }
         }
 
+        // Resolve default commission percentages (0.5% first split, 1.0% table split)
+        const firstAcc = c.original_sales_id ? getAccountById(c.original_sales_id) : null;
+        const firstPct = firstAcc?.first_split_pct ?? 0.5;
+        const tablePct = u.table_split_pct ?? 1.0;
+
         const logs = [...(c.journey_logs || [])];
         const nowMs = Date.now();
         const nowStr = new Date().toLocaleTimeString("ar-EG");
 
-        let idx = logs.findIndex(
-          (st) =>
-            st.status !== "DONE" &&
-            (st.sales_id === u.id ||
-              (u.role === "dev_sales" && st.developer_id === u.parent_admin_id) ||
-              (appState.activeRole === "broker" && st.stop_type === "BROKER"))
-        );
-
+        let idx = logs.findIndex((st) => st.status !== "DONE" && stopBelongsToUser(st, u));
         if (idx >= 0) {
           logs[idx] = {
             ...logs[idx],
@@ -3075,7 +3393,7 @@
             sales_code: u.code,
             sales_name: u.name,
             status: "DONE",
-            handoff_ack: false, // Triggers instant alert on Usher screen!
+            handoff_ack: false,
             ended_at: nowStr,
             ended_at_ms: nowMs,
             duration_sec: logs[idx].started_at_ms ? Math.round((nowMs - logs[idx].started_at_ms) / 1000) : 300,
@@ -3083,12 +3401,10 @@
             offer_id: offerVal || null,
             offer_summary: offerSummary,
             notes,
+            deal_value: dealValue,
+            first_pct: firstPct,
+            table_pct: tablePct,
           };
-          // Automatically transition NEXT pending stop to IN_TRANSIT -> Notifies Next Sales & Usher!
-          const nextIdx = logs.findIndex((x, i) => i > idx && x.status === "PENDING");
-          if (nextIdx >= 0) {
-            logs[nextIdx] = { ...logs[nextIdx], status: "IN_TRANSIT", transit_at: nowStr };
-          }
         } else {
           logs.push({
             stop_id: `st_${nowMs}`,
@@ -3108,7 +3424,16 @@
             offer_id: offerVal || null,
             offer_summary: offerSummary,
             notes,
+            deal_value: dealValue,
+            first_pct: firstPct,
+            table_pct: tablePct,
           });
+        }
+
+        // AUTO-LOOP: System automatically picks the next FREE pending stop (skipping busy ones & looping back!)
+        const nextFreeIdx = pickNextAvailableStopIndex(logs);
+        if (nextFreeIdx >= 0) {
+          logs[nextFreeIdx] = { ...logs[nextFreeIdx], status: "IN_TRANSIT", transit_at: nowStr };
         }
 
         const { error } = await sb
@@ -3119,12 +3444,13 @@
         c.journey_status = "ACTIVE";
         c.journey_logs = logs;
         document.getElementById("sitNotesInput").value = "";
+        if (document.getElementById("sitDealValueInput")) document.getElementById("sitDealValueInput").value = "";
         clearActiveSitClient();
         renderSalesSitView();
-        alert(`✅ تم إنهاء القعدة (${outcome}) وبعتنا تنبيه فوري للأشر والمحطة التالية!`);
+        alert(`✅ تم إنهاء القعدة (${outcome}) وتوجيه العميل تلقائياً للمحطة الفاضية التالية!`);
       }
 
-      // ==================== 4. TEAM LEADER VIEW (MULTI-TEAM) ====================
+      // ==================== 4. TEAM LEADER VIEW (LIVE READ-ONLY MONITORING) ====================
       function selectLiveLeaderTeam(teamName) {
         appState.activeLeaderTeam = teamName;
         renderTeamLeaderView();
@@ -3132,9 +3458,7 @@
 
       function renderTeamLeaderView() {
         const u = appState.currentUser;
-        const exh = getActiveExhibition();
-        if (!u || !exh) return;
-
+        if (!u) return;
         const managedTeams = getLeaderManagedTeams(u);
         if (!appState.activeLeaderTeam || !managedTeams.includes(appState.activeLeaderTeam)) {
           appState.activeLeaderTeam = managedTeams[0];
@@ -3156,40 +3480,7 @@
 
         document.getElementById("tlHeaderTitle").textContent = `🎖️ تيم (${teamName}) — ${u.name}`;
 
-        const modeKey = `${exh.id}::${teamName}`;
-        const isManual = appState.teamRoutingMode[modeKey] === "MANUAL";
-        document.getElementById("tlModeAutoBtn").className = !isManual ? "btn btn-success btn-sm" : "btn btn-outline btn-sm";
-        document.getElementById("tlModeManualBtn").className = isManual ? "btn btn-gold btn-sm" : "btn btn-outline btn-sm";
-
         const reps = getOrderedTeamSales(teamName);
-        const pendingManual = appState.checkins.filter(
-          (c) =>
-            c.journey_status !== "COMPLETED" &&
-            (c.journey_logs || []).some((st) => st.team === teamName && !st.sales_id && st.status !== "DONE")
-        );
-
-        const manualBox = document.getElementById("tlManualQueueBox");
-        if (pendingManual.length > 0) {
-          manualBox.style.display = "block";
-          document.getElementById("tlManualQueueList").innerHTML = pendingManual
-            .map(
-              (c) => `
-            <div class="alert-banner-gold">
-              <div style="margin-bottom:8px;"><strong>#${c.seq_number} — ${escapeHtml(c.client_name)}</strong> (الأشر: ${escapeHtml(c.assigned_usher_name || "-")})</div>
-              <div style="display:flex; gap:7px; flex-wrap:wrap;">
-                <select id="tlAssignSel_${c.id}" class="form-control" style="flex:1; min-width:160px;">
-                  <option value="${u.id}">🎖️ لنفسي (${escapeHtml(u.name)})</option>
-                  ${reps.map((r) => `<option value="${r.id}">${escapeHtml(r.name)} (${escapeHtml(r.code)}) — ${getRepLiveState(r.id) === "FREE" ? "متاح" : "مشغول"}</option>`).join("")}
-                </select>
-                <button type="button" class="btn btn-primary" onclick="assignTeamClientManually('${c.id}', '${escapeHtml(teamName).replace(/'/g, "\\'")}')">تحويل ✅</button>
-              </div>
-            </div>`
-            )
-            .join("");
-        } else {
-          manualBox.style.display = "none";
-        }
-
         let liveCnt = 0;
         let dealsCnt = 0;
         const cardsHtml = reps
@@ -3233,58 +3524,94 @@
         document.getElementById("tlKpiGrid").innerHTML = `
           <div class="kpi-card"><div class="label">سيلز التيم</div><div class="val">${reps.length}</div></div>
           <div class="kpi-card"><div class="label">قاعدين الآن</div><div class="val" style="color:#34d399;">${liveCnt}</div></div>
-          <div class="kpi-card"><div class="label">بانتظار توجيه</div><div class="val" style="color:#fcd34d;">${pendingManual.length}</div></div>
-          <div class="kpi-card"><div class="label">تعاقد / حجز</div><div class="val" style="color:#34d399;">${dealsCnt}</div></div>`;
+          <div class="kpi-card"><div class="label">تعاقد / حجز</div><div class="val" style="color:#fcd34d;">${dealsCnt}</div></div>`;
         document.getElementById("tlLiveRepsCards").innerHTML =
           cardsHtml || `<div style="text-align:center; color:var(--text-muted); padding:16px;">لا يوجد سيلز متسكنين في هذا التيم حالياً.</div>`;
       }
 
-      async function setTeamRoutingMode(mode) {
+      // ==================== 5. EXHIBITION MANAGER & MASTER ADMIN ====================
+      async function setExhibitionRoutingMode(mode) {
         const exh = getActiveExhibition();
-        const teamName = appState.activeLeaderTeam;
-        if (!exh || !teamName) return;
-        const key = `${exh.id}::${teamName}`;
-        await sb.from("system_settings").upsert({ key: `team_routing_mode::${key}`, value: mode });
-        appState.teamRoutingMode[key] = mode;
-        renderTeamLeaderView();
+        if (!exh) return;
+        await sb.from("system_settings").upsert({ key: `exh_routing_mode::${exh.id}`, value: mode });
+        appState.exhRoutingMode[exh.id] = mode;
+        renderAdminRadarView();
       }
 
-      async function assignTeamClientManually(checkinId, teamName) {
-        const selId = document.getElementById(`tlAssignSel_${checkinId}`)?.value;
-        const rep = getAccountById(selId);
+      async function assignManualStopByManager(checkinId, stopIdx) {
+        const repId = document.getElementById(`mgrManualSel_${checkinId}_${stopIdx}`)?.value;
+        const rep = getAccountById(repId);
         const chk = appState.checkins.find((c) => c.id === checkinId);
         if (!rep || !chk) return;
-        const logs = (chk.journey_logs || []).map((st) => {
-          if (st.team === teamName && !st.sales_id && st.status !== "DONE") {
-            return {
-              ...st,
-              stop_name: `🏷️ تيم ${teamName} ← ${rep.name}`,
-              sales_id: rep.id,
-              sales_code: rep.code,
-              sales_name: rep.name,
-              needs_tl_routing: false,
-            };
-          }
-          return st;
-        });
+        const logs = [...(chk.journey_logs || [])];
+        logs[stopIdx] = {
+          ...logs[stopIdx],
+          stop_name: `🏷️ ${logs[stopIdx].team || "المعرض"} ← ${rep.name}`,
+          sales_id: rep.id,
+          sales_code: rep.code,
+          sales_name: rep.name,
+          needs_manual_routing: false,
+        };
         await sb.from("exhibition_checkins").update({ journey_logs: logs }).eq("id", checkinId);
         chk.journey_logs = logs;
-        renderTeamLeaderView();
+        renderAdminRadarView();
       }
 
-      // ==================== 5. EXHIBITION MANAGER & MASTER ADMIN ====================
       function switchAdmTab(paneId, btnEl) {
         activeAdmPane = paneId;
         document.querySelectorAll(".adm-pane").forEach((p) => (p.style.display = "none"));
         document.querySelectorAll(".nav-tab-btn").forEach((b) => b.classList.remove("active"));
         document.getElementById(paneId).style.display = "block";
         if (btnEl) btnEl.classList.add("active");
-        if (paneId === "admTabAbsent") loadAbsentInvitationsLazy(false);
+        if (paneId === "admTabAbsent") loadAbsentInvitationsLazy();
         else if (paneId === "admTabDistribution") renderLiveDistributionEditor();
+        else if (paneId === "admTabDevOnly") renderExpoDevPanel();
       }
 
       function renderAdminRadarView() {
-        // 1. Red Congestion Alerts
+        const exh = getActiveExhibition();
+        if (!exh) return;
+
+        // Exclusive Manual Routing toggle
+        const isManual = appState.exhRoutingMode[exh.id] === "MANUAL";
+        document.getElementById("exhModeAutoBtn").className = !isManual ? "btn btn-success btn-sm" : "btn btn-outline btn-sm";
+        document.getElementById("exhModeManualBtn").className = isManual ? "btn btn-gold btn-sm" : "btn btn-outline btn-sm";
+
+        // Manual pending queue for Exhibition Manager
+        const manualItems = [];
+        appState.checkins.forEach((c) => {
+          if (c.journey_status === "COMPLETED") return;
+          (c.journey_logs || []).forEach((st, idx) => {
+            if (st.needs_manual_routing && !st.sales_id && st.status !== "DONE") {
+              manualItems.push({ c, st, idx });
+            }
+          });
+        });
+        const manualBox = document.getElementById("admManualQueueBox");
+        if (manualItems.length > 0) {
+          manualBox.style.display = "block";
+          const allActiveSales = filterAccountsForActiveExh(
+            appState.accounts.filter((a) => accountHasRole(a, "sales") || accountHasRole(a, "broker"))
+          );
+          manualBox.innerHTML = manualItems
+            .map(
+              ({ c, st, idx }) => `
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:7px;">
+              <span style="font-size:0.82rem;">🔔 <strong>#${c.seq_number} ${escapeHtml(c.client_name)}</strong> (${escapeHtml(st.team || "")})</span>
+              <div style="display:flex; gap:6px;">
+                <select id="mgrManualSel_${c.id}_${idx}" class="form-control" style="width:auto; padding:5px 9px; font-size:0.82rem;">
+                  ${allActiveSales.map((r) => `<option value="${r.id}">${escapeHtml(r.name)} (${escapeHtml(r.code)}) — ${getRepLiveState(r.id) === "FREE" ? "متاح" : "مشغول"}</option>`).join("")}
+                </select>
+                <button type="button" class="btn btn-primary btn-sm" onclick="assignManualStopByManager('${c.id}', ${idx})">توجيه ✅</button>
+              </div>
+            </div>`
+            )
+            .join("");
+        } else {
+          manualBox.style.display = "none";
+        }
+
+        // Red Congestion Alerts
         const alerts = [];
         const ushers = filterAccountsForActiveExh(appState.accounts.filter((a) => accountHasRole(a, "usher")));
         const busyUshers = ushers.filter((u) =>
@@ -3307,12 +3634,13 @@
           .map((a) => `<div class="alert-banner-red"><span>${a}</span></div>`)
           .join("");
 
-        // 2. KPIs
         let liveNow = 0;
         let deals = 0;
         let insideNow = 0;
+        let offlineCnt = 0;
         appState.checkins.forEach((c) => {
           if (c.journey_status !== "COMPLETED") insideNow++;
+          if (c.first_split_code === "OFFLINE") offlineCnt++;
           (c.journey_logs || []).forEach((st) => {
             if (st.status === "LIVE") liveNow++;
             if (st.outcome?.includes("اشترى") || st.outcome?.includes("حجز")) deals++;
@@ -3321,12 +3649,13 @@
 
         document.getElementById("admKpiGrid").innerHTML = `
           <div class="kpi-card"><div class="label">إجمالي الحضور</div><div class="val" style="color:#34d399;">${appState.checkins.length}</div></div>
-          <div class="kpi-card"><div class="label">داخل المعرض الآن</div><div class="val" style="color:#7dd3fc;">${insideNow}</div></div>
+          <div class="kpi-card"><div class="label">داخل المعرض</div><div class="val" style="color:#7dd3fc;">${insideNow}</div></div>
           <div class="kpi-card"><div class="label">قعدات لايف</div><div class="val" style="color:#fcd34d;">${liveNow}</div></div>
+          <div class="kpi-card"><div class="label">📄 أوفلاين (شارع)</div><div class="val" style="color:#f5b041;">${offlineCnt}</div></div>
           <div class="kpi-card"><div class="label">تعاقد / حجز</div><div class="val" style="color:#34d399;">${deals}</div></div>`;
 
         renderAdminRadarPane();
-        renderAdminDealsPane();
+        renderAdminDealsAndPayoutsPane();
         renderAdminSalesDevsPane();
         if (activeAdmPane === "admTabDistribution") renderLiveDistributionEditor();
         if (activeAdmPane === "admTabAbsent") renderAdminAbsentPane();
@@ -3360,6 +3689,7 @@
         const list = appState.checkins.filter((c) => {
           if (stFilter === "ACTIVE" && c.journey_status === "COMPLETED") return false;
           if (stFilter === "WAITING" && c.journey_status !== "WAITING_USHER") return false;
+          if (stFilter === "OFFLINE" && c.first_split_code !== "OFFLINE") return false;
           if (stFilter === "COMPLETED" && c.journey_status !== "COMPLETED") return false;
           if (q && !`${c.seq_number} ${c.client_name} ${c.client_phone} ${c.assigned_usher_name || ""}`.toLowerCase().includes(q)) return false;
           return true;
@@ -3378,7 +3708,7 @@
               .map((st) => {
                 const icon = st.status === "DONE" ? "✅" : st.status === "LIVE" ? "🟢" : st.status === "IN_TRANSIT" ? "🚶" : "⏳";
                 return `<div style="font-size:0.78rem; padding:3px 0; border-top:1px solid rgba(45,212,191,0.08);">
-                  ${icon} <strong>${escapeHtml(st.stop_name)}</strong> ${st.outcome ? `— <span style="color:#34d399;">${escapeHtml(st.outcome)}</span>` : ""}
+                  ${icon} <strong>${escapeHtml(st.stop_name)}</strong> ${st.outcome ? `— <span style="color:#34d399;">${escapeHtml(st.outcome)}</span>` : ""} ${st.deal_value ? `<span class="badge badge-gold">${fmtMoney(st.deal_value)} ج.م</span>` : ""}
                 </div>`;
               })
               .join("");
@@ -3394,8 +3724,12 @@
                 ${getClientCurrentStateBadge(c)}
               </div>
               <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; font-size:0.77rem; color:var(--text-muted); margin-bottom:7px;">
-                <span>🚶 الأشر: <strong style="color:#fff;">${escapeHtml(c.assigned_usher_name || "-")}</strong> &nbsp;|&nbsp; 🏅 50%: <strong style="color:#2dd4bf;">${escapeHtml(c.first_split_name)}</strong></span>
-                <button type="button" class="btn btn-gold btn-sm" onclick="openPrintableClientJourney('${c.id}')">🖨️ التقرير</button>
+                <span>🚶 الأشر: <strong style="color:#fff;">${escapeHtml(c.assigned_usher_name || "-")}</strong> &nbsp;|&nbsp; 🏅 الدعوة: <strong style="color:#2dd4bf;">${escapeHtml(c.first_split_name)}</strong></span>
+                <div style="display:flex; gap:5px;">
+                  <button type="button" class="btn btn-gold btn-sm" onclick="openPrintableClientJourney('${c.id}')">🖨️</button>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="openEditCheckinModal('${c.id}')">✏️</button>
+                  <button type="button" class="btn btn-danger btn-sm" onclick="deleteCheckinById('${c.id}')">🗑️</button>
+                </div>
               </div>
               <div>${logsHtml}</div>
             </div>`;
@@ -3403,7 +3737,171 @@
           .join("");
       }
 
-      // Live Team Distribution Editor (Master Admin Only)
+      // ==================== EDIT & DELETE CHECK-INS / DEALS / COMMISSIONS ====================
+      function openEditCheckinModal(checkinId) {
+        const c = appState.checkins.find((x) => x.id === checkinId);
+        if (!c) return;
+        document.getElementById("editChkId").value = c.id;
+        document.getElementById("editChkName").value = c.client_name || "";
+        document.getElementById("editChkPhone").value = c.client_phone || "";
+        document.getElementById("editChkFirstSplit").value = c.first_split_name || "";
+
+        const ushers = filterAccountsForActiveExh(appState.accounts.filter((a) => accountHasRole(a, "usher")));
+        const uSel = document.getElementById("editChkUsher");
+        uSel.innerHTML = `<option value="">-- بدون تغيير --</option>` + ushers
+          .map((u) => `<option value="${u.id}" ${u.id === c.assigned_usher_id ? "selected" : ""}>${escapeHtml(u.name)}</option>`)
+          .join("");
+
+        const dealsWrap = document.getElementById("editChkDealsWrap");
+        const dealStops = (c.journey_logs || [])
+          .map((st, idx) => ({ st, idx }))
+          .filter(({ st }) => st.outcome?.includes("اشترى") || st.outcome?.includes("حجز") || st.deal_value > 0);
+
+        if (dealStops.length > 0) {
+          dealsWrap.innerHTML =
+            `<div style="font-size:0.8rem; font-weight:900; color:#fcd34d; margin-bottom:6px;">💰 تعديل قيمة العقد ونسب العمولات:</div>` +
+            dealStops
+              .map(
+                ({ st, idx }) => `
+              <div style="padding:9px; background:var(--bg-input); border:1px solid var(--gold); border-radius:10px; margin-bottom:7px;">
+                <div style="font-size:0.78rem; font-weight:800; margin-bottom:6px;">${escapeHtml(st.stop_name)} (${escapeHtml(st.outcome || "")})</div>
+                <div style="display:grid; grid-template-columns: 1.4fr 1fr 1fr; gap:6px;">
+                  <div>
+                    <label style="font-size:0.7rem; color:var(--text-muted);">توتال العقد (ج.م)</label>
+                    <input type="number" id="editDealVal_${idx}" class="form-control" style="padding:6px; font-size:0.84rem;" value="${Number(st.deal_value || 0)}" />
+                  </div>
+                  <div>
+                    <label style="font-size:0.7rem; color:var(--text-muted);">نسبة الدعوة %</label>
+                    <input type="number" step="0.1" id="editFirstPct_${idx}" class="form-control" style="padding:6px; font-size:0.84rem;" value="${Number(st.first_pct ?? 0.5)}" />
+                  </div>
+                  <div>
+                    <label style="font-size:0.7rem; color:var(--text-muted);">نسبة الترابيزة %</label>
+                    <input type="number" step="0.1" id="editTablePct_${idx}" class="form-control" style="padding:6px; font-size:0.84rem;" value="${Number(st.table_pct ?? 1.0)}" />
+                  </div>
+                </div>
+              </div>`
+              )
+              .join("");
+        } else {
+          dealsWrap.innerHTML = "";
+        }
+
+        document.getElementById("editCheckinModal").style.display = "flex";
+      }
+
+      async function saveEditedCheckin() {
+        const id = document.getElementById("editChkId").value;
+        const c = appState.checkins.find((x) => x.id === id);
+        if (!c) return;
+        const name = (document.getElementById("editChkName").value || "").trim();
+        const phone = normalizePhone(document.getElementById("editChkPhone").value || "");
+        const firstName = (document.getElementById("editChkFirstSplit").value || "").trim();
+        const usherId = document.getElementById("editChkUsher").value;
+        const usherAcc = usherId ? getAccountById(usherId) : null;
+
+        const logs = (c.journey_logs || []).map((st, idx) => {
+          const vEl = document.getElementById(`editDealVal_${idx}`);
+          if (!vEl) return st;
+          return {
+            ...st,
+            deal_value: Number(vEl.value || 0),
+            first_pct: Number(document.getElementById(`editFirstPct_${idx}`)?.value ?? 0.5),
+            table_pct: Number(document.getElementById(`editTablePct_${idx}`)?.value ?? 1.0),
+          };
+        });
+
+        const upd = {
+          client_name: name || c.client_name,
+          client_phone: phone || c.client_phone,
+          first_split_name: firstName || c.first_split_name,
+          assigned_usher_id: usherAcc ? usherAcc.id : c.assigned_usher_id,
+          assigned_usher_name: usherAcc ? usherAcc.name : c.assigned_usher_name,
+          journey_logs: logs,
+        };
+        const { error } = await sb.from("exhibition_checkins").update(upd).eq("id", id);
+        if (error) return alert("❌ تعذر حفظ التعديل!");
+        Object.assign(c, upd);
+        closeModal("editCheckinModal");
+        renderAdminRadarView();
+      }
+
+      async function deleteCheckinById(checkinId) {
+        if (!confirm("هل أنت متأكد من حذف تسجيل هذا العميل نهائياً؟")) return;
+        const { error } = await sb.from("exhibition_checkins").delete().eq("id", checkinId);
+        if (error) return alert("❌ تعذر الحذف!");
+        appState.checkins = appState.checkins.filter((c) => c.id !== checkinId);
+        renderAdminRadarView();
+      }
+
+      // ==================== DEALS & COMMISSIONS PAYOUT ENGINE ====================
+      function renderAdminDealsAndPayoutsPane() {
+        const rows = [];
+        const payouts = new Map();
+        let totalContractSum = 0;
+        let totalOfflineComm = 0;
+        let totalAllComm = 0;
+
+        const addPayout = (key, label, firstAmt, tableAmt) => {
+          const cur = payouts.get(key) || { label, firstAmt: 0, tableAmt: 0 };
+          cur.firstAmt += firstAmt;
+          cur.tableAmt += tableAmt;
+          payouts.set(key, cur);
+        };
+
+        appState.checkins.forEach((c) => {
+          (c.journey_logs || []).forEach((st) => {
+            if (st.outcome?.includes("اشترى") || st.outcome?.includes("حجز") || Number(st.deal_value) > 0) {
+              const val = Number(st.deal_value || 0);
+              const fPct = Number(st.first_pct ?? 0.5);
+              const tPct = Number(st.table_pct ?? 1.0);
+              const fMoney = (val * fPct) / 100;
+              const tMoney = (val * tPct) / 100;
+
+              totalContractSum += val;
+              totalAllComm += fMoney + tMoney;
+              if (c.first_split_code === "OFFLINE") totalOfflineComm += fMoney;
+
+              const fKey = c.first_split_code || c.first_split_name || "COMPANY";
+              addPayout(fKey, `${c.first_split_name} (${fKey})`, fMoney, 0);
+
+              const tKey = st.sales_code || st.sales_name || "SALES";
+              addPayout(tKey, `${st.sales_name || "-"} (${tKey})`, 0, tMoney);
+
+              rows.push(`<tr>
+                <td><strong>#${c.seq_number} ${escapeHtml(c.client_name)}</strong><br><span class="badge badge-success">${escapeHtml(st.outcome || "")}</span></td>
+                <td dir="ltr" style="font-weight:900; color:#fcd34d;">${fmtMoney(val)} ج.م</td>
+                <td>${escapeHtml(c.first_split_name)}<br><span class="badge badge-mint">${fPct}% = ${fmtMoney(fMoney)} ج.م</span></td>
+                <td>${escapeHtml(st.sales_name || "-")}<br><span class="badge badge-gold">${tPct}% = ${fmtMoney(tMoney)} ج.م</span></td>
+                <td><button type="button" class="btn btn-outline btn-sm" onclick="openEditCheckinModal('${c.id}')">✏️ تعديل</button></td>
+              </tr>`);
+            }
+          });
+        });
+
+        document.getElementById("admDealsSummaryKpis").innerHTML = `
+          <div class="kpi-card"><div class="label">إجمالي العقود</div><div class="val" style="color:#fcd34d;">${fmtMoney(totalContractSum)}</div></div>
+          <div class="kpi-card"><div class="label">إجمالي العمولات</div><div class="val" style="color:#34d399;">${fmtMoney(totalAllComm)}</div></div>
+          <div class="kpi-card"><div class="label">📄 حصة الأوفلاين</div><div class="val" style="color:#f5b041;">${fmtMoney(totalOfflineComm)}</div></div>`;
+
+        document.getElementById("admDealsTbody").innerHTML =
+          rows.join("") || `<tr><td colspan="5" style="text-align:center; padding:18px; color:var(--text-muted);">لا توجد تعاقدات مسجلة بعد.</td></tr>`;
+
+        const payoutRows = [...payouts.values()]
+          .sort((a, b) => b.firstAmt + b.tableAmt - (a.firstAmt + a.tableAmt))
+          .map(
+            (p) => `<tr>
+              <td style="font-weight:800;">${escapeHtml(p.label)}</td>
+              <td dir="ltr">${fmtMoney(p.firstAmt)} ج.م</td>
+              <td dir="ltr">${fmtMoney(p.tableAmt)} ج.م</td>
+              <td dir="ltr" style="font-weight:900; color:#34d399;">${fmtMoney(p.firstAmt + p.tableAmt)} ج.م</td>
+            </tr>`
+          )
+          .join("");
+        document.getElementById("admPayoutsTbody").innerHTML =
+          payoutRows || `<tr><td colspan="4" style="text-align:center; padding:16px; color:var(--text-muted);">سيظهر كشف المستحقات هنا فور تسجيل قيمة العقود.</td></tr>`;
+      }
+
+      // ==================== LIVE DISTRIBUTION EDITOR ====================
       function renderLiveDistributionEditor() {
         const exh = getActiveExhibition();
         const container = document.getElementById("admLiveDistList");
@@ -3446,10 +3944,10 @@
         alert("✅ تم تحديث نسب التوزيع لايف وتفعيلها فوراً على الريسبشن!");
       }
 
-      async function loadAbsentInvitationsLazy(force = false) {
+      async function loadAbsentInvitationsLazy() {
         const exh = getActiveExhibition();
         if (!exh) return;
-        if (!force && appState.absentInvitationsLoadedForExh === exh.id) {
+        if (appState.absentInvitationsLoadedForExh === exh.id) {
           renderAdminAbsentPane();
           return;
         }
@@ -3498,26 +3996,6 @@
                 .join("");
       }
 
-      function renderAdminDealsPane() {
-        const rows = [];
-        appState.checkins.forEach((c) => {
-          (c.journey_logs || []).forEach((st) => {
-            if (st.outcome?.includes("اشترى") || st.outcome?.includes("حجز")) {
-              rows.push(`<tr>
-                <td><strong>#${c.seq_number}</strong></td>
-                <td>${escapeHtml(c.client_name)}</td>
-                <td><span class="badge badge-success">${escapeHtml(st.outcome)}</span></td>
-                <td style="font-size:0.78rem;">${escapeHtml(st.offer_summary || "-")}</td>
-                <td><span class="badge badge-mint">${escapeHtml(c.first_split_name)}</span></td>
-                <td><span class="badge badge-gold">${escapeHtml(st.sales_name)}</span></td>
-              </tr>`);
-            }
-          });
-        });
-        document.getElementById("admDealsTbody").innerHTML =
-          rows.join("") || `<tr><td colspan="6" style="text-align:center; padding:18px; color:var(--text-muted);">لا توجد تعاقدات مسجلة بعد.</td></tr>`;
-      }
-
       function renderAdminSalesDevsPane() {
         const reps = filterAccountsForActiveExh(
           appState.accounts.filter((a) => ["sales", "broker", "usher", "developer"].includes(a.role))
@@ -3559,6 +4037,75 @@
             </tr>`;
           })
           .join("");
+      }
+
+      // ==================== DEVOLEPOR_ONLY (LOCKED WITH M-A-L-L-A-M) ====================
+      function unlockExpoDevPanel() {
+        const val = (document.getElementById("expoDevPassInput")?.value || "").trim();
+        if (val !== DEV_PANEL_PASS) return alert("❌ كلمة مرور Devolepor_only غير صحيحة!");
+        appState.expoDevUnlocked = true;
+        document.getElementById("expoDevPassInput").value = "";
+        renderExpoDevPanel();
+      }
+
+      function lockExpoDevPanel() {
+        appState.expoDevUnlocked = false;
+        renderExpoDevPanel();
+      }
+
+      function renderExpoDevPanel() {
+        document.getElementById("expoDevLockCard").style.display = appState.expoDevUnlocked ? "none" : "block";
+        document.getElementById("expoDevContent").style.display = appState.expoDevUnlocked ? "block" : "none";
+      }
+
+      function downloadExpoBackupJSON() {
+        const exh = getActiveExhibition();
+        const payload = {
+          format: "balmetr_expo_backup_v1",
+          exported_at: new Date().toISOString(),
+          exhibition_id: exh?.id || null,
+          exhibition_name: exh?.name || "",
+          checkins: appState.checkins,
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8;" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `Balmetr_Expo_Backup_${exh?.name || "all"}_${getTodayIso()}.json`;
+        a.click();
+      }
+
+      async function importExpoBackupJSON(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const stEl = document.getElementById("expoRestoreStatus");
+        stEl.textContent = "⏳ جاري قراءة ودمج النسخة...";
+        try {
+          const parsed = JSON.parse(await file.text());
+          const rows = Array.isArray(parsed.checkins)
+            ? parsed.checkins
+            : Array.isArray(parsed)
+            ? parsed
+            : [];
+          if (rows.length === 0) {
+            stEl.textContent = "⚠️ الملف لا يحتوي على سجلات حضور صالحة.";
+            return;
+          }
+          const existingIds = new Set(appState.checkins.map((c) => c.id));
+          const toInsert = rows.filter((r) => r && r.id && !existingIds.has(r.id));
+          let added = 0;
+          for (let i = 0; i < toInsert.length; i += 50) {
+            const batch = toInsert.slice(i, i + 50);
+            const { error } = await sb.from("exhibition_checkins").upsert(batch);
+            if (!error) added += batch.length;
+          }
+          await loadCheckinsForActiveExh();
+          renderAdminRadarView();
+          stEl.textContent = `✅ تم دمج ${added} سجل بنجاح بدون تكرار!`;
+          event.target.value = "";
+        } catch (err) {
+          console.error(err);
+          stEl.textContent = "❌ ملف JSON غير صالح!";
+        }
       }
 
       // ==================== 6. DEVELOPER COMPANY VIEW ====================
@@ -3672,13 +4219,15 @@
       }
 
       async function exportCheckinsCSV(type) {
-        const rows = [["الكود", "الاسم", "التليفون", "صاحب الـ 50% الأولى", "المعرض"]];
-        if (type === "ATTENDED") {
-          appState.checkins.forEach((c) =>
-            rows.push([c.seq_number, c.client_name, `="${c.client_phone}"`, c.first_split_name, c.exhibition_name])
-          );
+        const rows = [["الكود", "الاسم", "التليفون", "صاحب الدعوة", "المعرض"]];
+        if (type === "ATTENDED" || type === "OFFLINE") {
+          appState.checkins
+            .filter((c) => type === "ATTENDED" || c.first_split_code === "OFFLINE")
+            .forEach((c) =>
+              rows.push([c.seq_number, c.client_name, `="${c.client_phone}"`, c.first_split_name, c.exhibition_name])
+            );
         } else {
-          await loadAbsentInvitationsLazy(false);
+          await loadAbsentInvitationsLazy();
           const attPhones = new Set(appState.checkins.map((c) => normalizePhone(c.client_phone)));
           appState.invitationsCache
             .filter((i) => !attPhones.has(normalizePhone(i.client_phone)))
@@ -3697,12 +4246,14 @@
       function copyCheckinsWhatsApp() {
         const exh = getActiveExhibition();
         let deals = 0;
+        let offlineCnt = 0;
         appState.checkins.forEach((c) => {
+          if (c.first_split_code === "OFFLINE") offlineCnt++;
           (c.journey_logs || []).forEach((st) => {
             if (st.outcome?.includes("اشترى") || st.outcome?.includes("حجز")) deals++;
           });
         });
-        const txt = `📊 *تقرير معرض ${exh?.name || ""} (B.almetr VIP)*\n✅ الحاضرين: ${appState.checkins.length}\n💰 تعاقدات / حجوزات: ${deals}`;
+        const txt = `📊 *تقرير معرض ${exh?.name || ""} (B.almetr VIP)*\n✅ الحاضرين: ${appState.checkins.length}\n📄 أوفلاين (ورق الشارع): ${offlineCnt}\n💰 تعاقدات / حجوزات: ${deals}`;
         if (navigator.clipboard?.writeText) {
           navigator.clipboard.writeText(txt).then(() => alert("✅ تم النسخ!"));
         } else {
