@@ -4343,33 +4343,205 @@
         const file = event.target.files[0];
         if (!file) return;
         const stEl = document.getElementById("expoRestoreStatus");
-        stEl.textContent = "⏳ جاري قراءة ودمج النسخة...";
+        stEl.textContent = "⏳ جاري قراءة وتحليل النسخة...";
         try {
           const parsed = JSON.parse(await file.text());
-          const rows = Array.isArray(parsed.checkins)
-            ? parsed.checkins
-            : Array.isArray(parsed)
-            ? parsed
-            : [];
-          if (rows.length === 0) {
-            stEl.textContent = "⚠️ الملف لا يحتوي على سجلات حضور صالحة.";
+
+          // Detect Invitations-only backup (e.g. system23_11.json)
+          if (!parsed.checkins && !Array.isArray(parsed) && (parsed.invitations || parsed.salesTeam)) {
+            stEl.textContent =
+              "⚠️ هذا الملف نسخة دعوات (مثل system23_11.json) وليس سجلات حضور — ارفعه في سيستم الدعوات (index.html) وسيتزامن تلقائياً هنا.";
+            event.target.value = "";
             return;
           }
-          const existingIds = new Set(appState.checkins.map((c) => c.id));
-          const toInsert = rows.filter((r) => r && r.id && !existingIds.has(r.id));
+
+          // Fetch all existing checkin IDs across all exhibitions to avoid duplicates
+          const { data: existingAll } = await sb.from("exhibition_checkins").select("id");
+          const existingIds = new Set((existingAll || []).map((x) => x.id));
+
+          // Helper: find Supabase exhibition by name or ID
+          const exhByName = new Map();
+          const exhById = new Map();
+          (appState.exhibitions || []).forEach((e) => {
+            exhById.set(String(e.id), e);
+            exhByName.set(String(e.name || "").trim(), e);
+          });
+          const accByCode = new Map();
+          (appState.accounts || []).forEach((a) => {
+            if (a.code) accByCode.set(String(a.code).trim().toUpperCase(), a);
+          });
+
+          const isLegacyV11 =
+            parsed.backupType === "BALMETR_VIP_RECEPTION_DB_V11" ||
+            (parsed.checkins && !Array.isArray(parsed.checkins) && typeof parsed.checkins === "object");
+
+          let toInsert = [];
+          let skippedDup = 0;
+          let skippedInvalid = 0;
+          let totalRaw = 0;
+
+          if (isLegacyV11) {
+            const entries = Object.entries(parsed.checkins || {});
+            totalRaw = entries.length;
+            const fallbackExh = getActiveExhibition() || appState.exhibitions[0] || null;
+
+            for (const [key, item] of entries) {
+              if (!item || key === "undefined" || !item.clientName) {
+                skippedInvalid++;
+                continue;
+              }
+              const rowId = String(item.id || key).trim();
+              if (!rowId || rowId === "undefined") {
+                skippedInvalid++;
+                continue;
+              }
+              if (existingIds.has(rowId)) {
+                skippedDup++;
+                continue;
+              }
+              existingIds.add(rowId);
+
+              const exhNameTrim = String(item.exhibitionName || "").trim();
+              let matchedExh = exhByName.get(exhNameTrim) || exhById.get(String(item.exhibitionId || "")) || fallbackExh;
+              if (!matchedExh) {
+                skippedInvalid++;
+                continue;
+              }
+
+              const origCode = String(item.originalSalesCode || "").trim().toUpperCase();
+              const origAcc = origCode && origCode !== "-" ? accByCode.get(origCode) : null;
+              const firstCodeRaw = String(item.firstSplitCode || "COMPANY").trim();
+              const firstCode = firstCodeRaw === "COMPANY" ? "COMPANY" : firstCodeRaw.toUpperCase();
+              const firstName = String(item.firstSplitName || (firstCode === "COMPANY" ? "عميل شركة (BM)" : firstCode)).trim();
+              const firstType = String(item.firstSplitType || (firstCode === "COMPANY" ? "شركة مباشر" : "صاحب الدعوة")).trim();
+
+              const logs = [];
+              const sittingsObj = item.sittings && typeof item.sittings === "object" ? item.sittings : {};
+              for (const [sKey, s] of Object.entries(sittingsObj)) {
+                if (!s || typeof s !== "object") continue;
+                const sCode = String(s.salesCode || sKey || "").trim().toUpperCase();
+                const sAcc = accByCode.get(sCode) || null;
+                const sName = String(s.salesName || sAcc?.name || sCode || "سيلز").trim();
+                const offerParts = [String(s.projectName || "").trim(), String(s.projectArea || "").trim()].filter(Boolean);
+                logs.push({
+                  stop_id: `st_leg_${rowId}_${sCode || logs.length}`,
+                  stop_name: `💼 ${sName}${sCode ? ` (${sCode})` : ""}`,
+                  stop_type: "BALMETR",
+                  team: sAcc?.team || "المعرض",
+                  sales_id: sAcc?.id || null,
+                  sales_code: sCode,
+                  sales_name: sName,
+                  status: "DONE",
+                  handoff_ack: true,
+                  outcome: String(s.status || "").trim(),
+                  offer_summary: offerParts.join(" — "),
+                  notes: String(s.notes || "").trim(),
+                  started_at: String(s.startedAt || "").trim(),
+                  ended_at: String(s.endedAt || "").trim(),
+                  first_pct: 0.5,
+                  table_pct: 1.0,
+                  deal_value: 0,
+                });
+              }
+
+              const notesParts = [];
+              if (item.receptionNotes) notesParts.push(String(item.receptionNotes).trim());
+              if (item.companionOfName) notesParts.push(`مرافق مع: ${String(item.companionOfName).trim()}`);
+
+              toInsert.push({
+                id: rowId,
+                exhibition_id: matchedExh.id,
+                exhibition_name: matchedExh.name,
+                seq_number: Number(item.seqNumber) || 131,
+                is_walkin: Boolean(item.isWalkinGenerated),
+                client_name: String(item.clientName).trim(),
+                client_phone: String(item.clientPhone || "").trim(),
+                invitation_id: null,
+                original_sales_id: origAcc?.id || null,
+                original_sales_code: origCode || "-",
+                original_sales_name: String(item.originalSalesName || origAcc?.name || "-").trim(),
+                first_split_code: firstCode,
+                first_split_name: firstName,
+                first_split_type: firstType,
+                interested_area: String(item.interestedArea || "غير محدد").trim(),
+                investment_type: String(item.investmentType || "غير محدد").trim(),
+                preferred_system: String(item.preferredSystem || "غير محدد").trim(),
+                is_free_viewer: false,
+                reception_notes: notesParts.join(" | "),
+                assigned_usher_id: null,
+                assigned_usher_name: "استيراد قديم",
+                assigned_team: origAcc?.team || "المعرض",
+                target_stops: logs,
+                journey_logs: logs,
+                journey_status: "COMPLETED",
+                date_iso: String(item.dateIso || getTodayIso()).trim(),
+                attended_at: String(item.attendedAt || "").trim(),
+                created_at_ms: Number(item.createdAtMs) || Date.now(),
+              });
+            }
+          } else {
+            const rows = Array.isArray(parsed.checkins)
+              ? parsed.checkins
+              : Array.isArray(parsed)
+              ? parsed
+              : [];
+            totalRaw = rows.length;
+            for (const r of rows) {
+              if (!r || !r.id) {
+                skippedInvalid++;
+                continue;
+              }
+              if (existingIds.has(r.id)) {
+                skippedDup++;
+                continue;
+              }
+              existingIds.add(r.id);
+              toInsert.push(r);
+            }
+          }
+
+          if (totalRaw === 0) {
+            stEl.textContent = "⚠️ الملف لا يحتوي على سجلات حضور صالحة.";
+            event.target.value = "";
+            return;
+          }
+
+          stEl.textContent = `⏳ جاري رفع ${toInsert.length} سجل حضور جديد (من أصل ${totalRaw})...`;
           let added = 0;
+          let failed = 0;
+          let sampleErr = "";
           for (let i = 0; i < toInsert.length; i += 50) {
             const batch = toInsert.slice(i, i + 50);
             const { error } = await sb.from("exhibition_checkins").upsert(batch);
-            if (!error) added += batch.length;
+            if (!error) {
+              added += batch.length;
+            } else {
+              for (const row of batch) {
+                const { error: rowErr } = await sb.from("exhibition_checkins").upsert(row);
+                if (!rowErr) added++;
+                else {
+                  failed++;
+                  if (!sampleErr) sampleErr = rowErr.message || String(rowErr.code || "");
+                }
+              }
+            }
+            stEl.textContent = `⏳ تم رفع ${added} من ${toInsert.length}...`;
           }
+
           await loadCheckinsForActiveExh();
           renderAdminRadarView();
-          stEl.textContent = `✅ تم دمج ${added} سجل بنجاح بدون تكرار!`;
+          const summary =
+            `✅ اكتمل الاستيراد (${isLegacyV11 ? "نسخة قديمة V11" : "نسخة حديثة"}): ` +
+            `تمت إضافة ${added} سجل` +
+            (skippedDup ? ` | متكرر: ${skippedDup}` : "") +
+            (skippedInvalid ? ` | تالف/تخطي: ${skippedInvalid}` : "") +
+            (failed ? ` | فشل: ${failed}${sampleErr ? ` (${sampleErr})` : ""}` : "");
+          stEl.textContent = summary;
           event.target.value = "";
         } catch (err) {
           console.error(err);
-          stEl.textContent = "❌ ملف JSON غير صالح!";
+          stEl.textContent = "❌ ملف JSON غير صالح: " + (err.message || "");
+          event.target.value = "";
         }
       }
 
