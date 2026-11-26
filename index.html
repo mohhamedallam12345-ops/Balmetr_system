@@ -1078,6 +1078,9 @@
         <div id="sitUrgentBannerBox"></div>
 
         <div class="card">
+          <div id="salesMissingOffersBanner" style="display: none; margin-bottom: 10px; background: rgba(239, 68, 68, 0.14); border: 1.5px solid rgba(251, 113, 133, 0.7); color: #fecdd3; border-radius: 11px; padding: 9px 12px; font-size: 0.8rem; font-weight: 800;">
+            🚨 <strong>تنبيه:</strong> لم يتم إضافة عروض لتيمك / شركتك حتى الآن — يُرجى إضافة العروض من سيستم الدعوات عشان تقدر تختارها للعميل!
+          </div>
           <div class="card-header">
             <div class="card-title" id="sitHeaderTitle">💼 شاشة القعدة</div>
             <button type="button" class="btn btn-outline btn-sm" onclick="clearActiveSitClient()">🔍 الكل</button>
@@ -1399,6 +1402,9 @@
             </div>
           </div>
 
+          <div id="devCompMissingOffersBanner" style="display: none; margin-bottom: 12px; background: rgba(239, 68, 68, 0.15); border: 1.5px solid rgba(251, 113, 133, 0.7); color: #fecdd3; border-radius: 12px; padding: 10px 14px; font-size: 0.82rem; font-weight: 800;">
+            🚨 <strong>تنبيه مهم:</strong> لسة ما ضفتش عروض شركتك حتى الآن! ادخل على سيستم الدعوات وأضف عروض شركتك عشان تظهر لسيلز الشركة وقت القعدة مع العملاء.
+          </div>
           <div class="kpi-grid" id="devCompKpiGrid"></div>
 
           <!-- Incoming Clients & Manual Routing Queue -->
@@ -1786,7 +1792,7 @@
       async function ensureOffersLoadedForUser(u) {
         if (!u) return;
         let ownerKey = "";
-        if (u.role === "dev_sales" && u.parent_admin_id) ownerKey = u.parent_admin_id;
+        if ((u.role === "dev_sales" || appState.activeRole === "dev_manager") && u.parent_admin_id) ownerKey = u.parent_admin_id;
         else if (u.role === "developer") ownerKey = u.id;
         else ownerKey = `team_${u.team || "المعرض"}`;
 
@@ -1823,9 +1829,10 @@
             (st) => st.status === "IN_TRANSIT" && stopBelongsToUser(st, u)
           );
           if (isIncomingNow && !wasIncoming) playLoudAlert("INCOMING");
-        } else if (r === "developer") {
-          const devStopsNow = (newRow.journey_logs || []).filter((st) => st.developer_id === u.id && st.status !== "DONE");
-          const devStopsOld = (oldRow?.journey_logs || []).filter((st) => st.developer_id === u.id && st.status !== "DONE");
+        } else if (r === "developer" || r === "dev_manager") {
+          const myDevCoId = u.role === "developer" ? u.id : u.parent_admin_id;
+          const devStopsNow = (newRow.journey_logs || []).filter((st) => st.developer_id === myDevCoId && st.status !== "DONE");
+          const devStopsOld = (oldRow?.journey_logs || []).filter((st) => st.developer_id === myDevCoId && st.status !== "DONE");
           const needsDevManualNow = devStopsNow.some((st) => st.needs_dev_manual_routing && !st.sales_id);
           const hadDevManual = devStopsOld.some((st) => st.needs_dev_manual_routing && !st.sales_id);
           if (needsDevManualNow && !hadDevManual) {
@@ -2120,7 +2127,7 @@
           const devBtn = document.getElementById("admDevOnlyTabBtn");
           if (distBtn) distBtn.style.display = isMaster ? "inline-flex" : "none";
           if (devBtn) devBtn.style.display = isMaster ? "inline-flex" : "none";
-        } else if (r === "developer") showView("developerCompanyView");
+        } else if (r === "developer" || r === "dev_manager") showView("developerCompanyView");
         else showView("salesSitView");
 
         renderActiveRoleView();
@@ -2168,7 +2175,8 @@
           sales: "💼 سيلز",
           broker: "🏢 بروكر",
           dev_sales: "🧑‍💼 سيلز مطور",
-          developer: "🏗️ مطور",
+          dev_manager: "👑 مدير المطور",
+          developer: "🏗️ مدير المطور",
           admin_broker: "🤝 أدمن بروكر",
         };
         return map[role] || role;
@@ -2306,7 +2314,7 @@
         else if (["sales", "broker", "dev_sales"].includes(r)) renderSalesSitView();
         else if (r === "team_leader") renderTeamLeaderView();
         else if (["exh_manager", "manager"].includes(r)) renderAdminRadarView();
-        else if (r === "developer") renderDeveloperCompanyView();
+        else if (r === "developer" || r === "dev_manager") renderDeveloperCompanyView();
       }
 
       // ==================== QR SCANNER (SUPPORTS OFFLINE STREET FLYER QR) ====================
@@ -3333,6 +3341,13 @@
       }
 
       function renderSalesSitView() {
+        const _su = appState.currentUser;
+        if (_su) {
+          const _oKey = _su.role === "dev_sales" && _su.parent_admin_id ? _su.parent_admin_id : `team_${_su.team || "المعرض"}`;
+          const _oList = appState.offersByOwner.get(_oKey) || [];
+          const _mb = document.getElementById("salesMissingOffersBanner");
+          if (_mb) _mb.style.display = _oList.length === 0 ? "block" : "none";
+        }
         const u = appState.currentUser;
         if (!u) return;
         document.getElementById("sitHeaderTitle").textContent = `${getRoleName(appState.activeRole)}: ${u.name} (${u.code})`;
@@ -4706,10 +4721,17 @@
         return notLive || ordered[0];
       }
 
+      function getDevCompanyForUser(u) {
+        if (!u) return null;
+        if (u.role === "developer") return u;
+        if (u.parent_admin_id) return getAccountById(u.parent_admin_id);
+        return null;
+      }
+
       async function setDeveloperRoutingMode(mode) {
-        const u = appState.currentUser;
-        if (!u || u.role !== "developer") return;
-        appState.devRoutingMode = { ...(appState.devRoutingMode || {}), [u.id]: mode };
+        const devCo = getDevCompanyForUser(appState.currentUser);
+        if (!devCo) return;
+        appState.devRoutingMode = { ...(appState.devRoutingMode || {}), [devCo.id]: mode };
         renderDeveloperCompanyView();
         try {
           await sb.from("system_settings").upsert({
@@ -4723,9 +4745,9 @@
       }
 
       async function moveDevSalesOrder(salesId, direction) {
-        const u = appState.currentUser;
-        if (!u || u.role !== "developer") return;
-        const ordered = getOrderedDeveloperSales(u.id);
+        const devCo = getDevCompanyForUser(appState.currentUser);
+        if (!devCo) return;
+        const ordered = getOrderedDeveloperSales(devCo.id);
         const ids = ordered.map((r) => r.id);
         const idx = ids.indexOf(salesId);
         if (idx < 0) return;
@@ -4742,7 +4764,7 @@
           ids[targetIdx] = tmp;
         }
 
-        appState.devSalesOrder = { ...(appState.devSalesOrder || {}), [u.id]: ids };
+        appState.devSalesOrder = { ...(appState.devSalesOrder || {}), [devCo.id]: ids };
         const stEl = document.getElementById("devOrderSaveStatus");
         if (stEl) stEl.textContent = "⏳ جاري الحفظ...";
         renderDeveloperCompanyView();
@@ -4760,8 +4782,8 @@
       }
 
       async function assignDevRepToStop(checkinId, stopIdx) {
-        const u = appState.currentUser;
-        if (!u || u.role !== "developer") return;
+        const devCo = getDevCompanyForUser(appState.currentUser);
+        if (!devCo) return;
         const repId = document.getElementById(`devAssignSel_${checkinId}_${stopIdx}`)?.value;
         const rep = getAccountById(repId);
         const chk = appState.checkins.find((c) => c.id === checkinId);
@@ -4771,7 +4793,7 @@
         const tag = logs[stopIdx].mandatory_developer ? " ⭐" : "";
         logs[stopIdx] = {
           ...logs[stopIdx],
-          stop_name: `🏗️ ${u.name} ← ${rep.name} (${rep.code})${tag}`,
+          stop_name: `🏗️ ${devCo.name} ← ${rep.name} (${rep.code})${tag}`,
           sales_id: rep.id,
           sales_code: rep.code,
           sales_name: rep.name,
@@ -4789,9 +4811,14 @@
       }
 
       function renderDeveloperCompanyView() {
-        const u = appState.currentUser;
-        if (!u) return;
+        const devCo = getDevCompanyForUser(appState.currentUser);
+        if (!devCo) return;
+        const u = devCo;
         document.getElementById("devCompHeaderTitle").textContent = `🏗️ لوحة مدير شركة: ${u.name} (${u.code})`;
+
+        const devOffers = appState.offersByOwner.get(u.id) || [];
+        const missDevBanner = document.getElementById("devCompMissingOffersBanner");
+        if (missDevBanner) missDevBanner.style.display = devOffers.length === 0 ? "block" : "none";
 
         const isManual = appState.devRoutingMode?.[u.id] === "MANUAL";
         const autoBtn = document.getElementById("devModeAutoBtn");
