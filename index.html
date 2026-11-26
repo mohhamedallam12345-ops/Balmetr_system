@@ -934,7 +934,7 @@
         </div>
       </section>
 
-      <!-- ==================== 1. RECEPTION VIEW ==================== -->
+      <!-- ==================== 1. RECEPTION VIEW (CLEAN 3-STEP WIZARD) ==================== -->
       <section id="receptionView" class="mobile-wrap" style="display: none">
         <div class="card">
           <div class="card-header">
@@ -942,99 +942,116 @@
             <button type="button" class="btn btn-outline btn-sm" onclick="resetReceptionForm()">✨ جديد</button>
           </div>
 
+          <!-- Stepper indicator -->
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 14px">
+            <div id="recStepInd1" class="nav-tab-btn active" style="text-align: center; cursor: default; font-size: 0.76rem">1️⃣ العميل</div>
+            <div id="recStepInd2" class="nav-tab-btn" style="text-align: center; cursor: default; font-size: 0.76rem">2️⃣ الريكويست</div>
+            <div id="recStepInd3" class="nav-tab-btn" style="text-align: center; cursor: default; font-size: 0.76rem">3️⃣ الأشر والتأكيد</div>
+          </div>
+
           <div id="recDuplicateBox" class="alert-banner-red" style="display: none"></div>
 
-          <!-- Step 1: QR / Search / Walkin / Offline Flyer -->
-          <div class="form-group">
-            <label class="form-label">1️⃣ ابحث بكود الدعوة / التليفون أو امسح الـ QR:</label>
-            <div style="display: flex; gap: 7px; margin-bottom: 8px">
-              <input
-                type="text"
-                id="recLookupInput"
-                class="form-control"
-                placeholder="🔍 رقم الدعوة أو الموبايل أو الاسم..."
-                oninput="scheduleReceptionLookup()"
-              />
-              <button type="button" class="btn btn-gold" onclick="openQrScannerModal('RECEPTION')">📷 QR</button>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 7px">
-              <button type="button" class="btn btn-outline btn-sm" onclick="activateWalkinClient(false)">
-                ➕ عميل مباشر (Walk-in)
-              </button>
-              <button type="button" class="btn btn-gold btn-sm" onclick="activateWalkinClient(true)">
-                📄 ورق الشارع (أوفلاين)
-              </button>
-            </div>
-            <div id="recMatchesList" class="search-list" style="display: none"></div>
-            <div id="recSelectedInvBox" style="display: none; margin-top: 8px; padding: 10px; border-radius: 12px; background: var(--primary-soft); border: 1.5px solid var(--primary-bright); font-size: 0.84rem"></div>
-          </div>
-
-          <!-- Walkin / Offline Inputs -->
-          <div id="recWalkinFields" style="display: none; padding: 12px; background: var(--bg-input); border: 1.5px solid var(--gold); border-radius: 12px; margin-bottom: 12px">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px">
-              <strong id="recWalkinTitle" style="color: #fcd34d; font-size: 0.84rem">🎫 عميل مباشر (Walk-in)</strong>
-              <span id="recWalkinSeqBadge" class="badge badge-gold"></span>
-            </div>
+          <!-- STEP 1: Identify Client (Open First) -->
+          <div id="recStep1Box">
             <div class="form-group">
-              <input type="text" id="recWalkinName" class="form-control" placeholder="اسم العميل الثلاثي *" oninput="checkReceptionDuplicate()" />
-            </div>
-            <div class="form-group" style="margin-bottom: 0">
-              <input type="tel" id="recWalkinPhone" class="form-control" dir="ltr" style="text-align: right" placeholder="رقم الموبايل *" oninput="checkReceptionDuplicate()" />
-            </div>
-          </div>
-
-          <!-- Step 2: 50% First Split -->
-          <div class="form-group" style="padding: 11px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 12px">
-            <label class="form-label" style="color: var(--primary-bright)">2️⃣ صاحب الدعوة (النص الأول — الافتراضي 0.5%):</label>
-            <select id="recFirstSplitMode" class="form-control" style="margin-bottom: 7px" onchange="onRecSplitModeChange()">
-              <option value="DEFAULT">🏅 صاحب الدعوة الأصلي</option>
-              <option value="OFFLINE">📄 أوفلاين (ورق الشارع)</option>
-              <option value="CUSTOM">🗣️ سيلز آخر (العميل فاكر اسمه)</option>
-              <option value="COMPANY">🏢 عميل شركة مباشر (BM)</option>
-            </select>
-            <select id="recCustomSalesSelect" class="form-control" style="display: none"></select>
-          </div>
-
-          <!-- Step 3: Specialized Request (Activity -> Area + Systems) -->
-          <div class="form-group" style="padding: 11px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 12px">
-            <label class="form-label" style="color: #fcd34d">3️⃣ ريكويست العميل المتخصص (وجهاً لوجه):</label>
-            <label style="display: flex; align-items: center; gap: 9px; padding: 10px; border-radius: 10px; background: rgba(245, 176, 65, 0.14); border: 1.5px solid var(--gold); cursor: pointer; font-size: 0.84rem; font-weight: 800; margin-bottom: 10px">
-              <input type="checkbox" id="recFreeViewerCheck" style="width: 18px; height: 18px" onchange="toggleFreeViewerMode()" />
-              <span>👁️ أخرى / عميل جاي يتفرج (يتحوّل للبروكر الأول)</span>
-            </label>
-
-            <div id="recRequestFieldsWrap">
-              <div style="font-size: 0.78rem; font-weight: 800; color: var(--primary-bright); margin-bottom: 5px">🏢 اختر النشاط (لتحديد مناطقه بالظبط):</div>
-              <div class="chips-grid" id="recTypeChips" style="margin-bottom: 8px">
-                <div class="chip-btn" onclick="toggleRecActivity('سكني', this)">🏠 سكني</div>
-                <div class="chip-btn" onclick="toggleRecActivity('تجاري', this)">🛍️ تجاري</div>
-                <div class="chip-btn" onclick="toggleRecActivity('إداري', this)">🏢 إداري</div>
-                <div class="chip-btn" onclick="toggleRecActivity('فندقي', this)">🏨 فندقي</div>
-                <div class="chip-btn" onclick="toggleRecActivity('طبي', this)">➕ طبي</div>
+              <label class="form-label">🔍 ابحث بكود الدعوة / رقم التليفون أو امسح الـ QR:</label>
+              <div style="display: flex; gap: 7px; margin-bottom: 10px">
+                <input
+                  type="text"
+                  id="recLookupInput"
+                  class="form-control"
+                  placeholder="كود الدعوة أو الموبايل أو الاسم..."
+                  oninput="scheduleReceptionLookup()"
+                />
+                <button type="button" class="btn btn-gold" onclick="openQrScannerModal('RECEPTION')">📷 QR</button>
               </div>
-              <div id="recSpecAreaMatrix" style="margin-bottom: 10px"></div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
+                <button type="button" class="btn btn-outline btn-sm" onclick="activateWalkinClient(false)">
+                  🏢 عميل شركة (Walk-in)
+                </button>
+                <button type="button" class="btn btn-gold btn-sm" onclick="activateWalkinClient(true)">
+                  📄 ورق الشارع (أوفلاين)
+                </button>
+              </div>
+              <div id="recMatchesList" class="search-list" style="display: none"></div>
+              <div id="recSelectedInvBox" style="display: none; margin-top: 10px; padding: 12px; border-radius: 12px; background: var(--primary-soft); border: 1.5px solid var(--primary-bright); font-size: 0.86rem"></div>
+            </div>
 
-              <div style="font-size: 0.78rem; font-weight: 800; color: #fcd34d; margin-bottom: 5px">⚙️ النظام المطلوب:</div>
-              <div class="chips-grid" id="recSysChips" style="margin-bottom: 10px">
-                <div class="chip-btn" onclick="toggleRecSystem('الجمعية', this)">👥 الجمعية (= حصص عقارية)</div>
-                <div class="chip-btn" onclick="toggleRecSystem('الوديعة', this)">🪙 الوديعة (= عائد بإيجار إلزامي)</div>
-                <div class="chip-btn" onclick="toggleRecSystem('الاستلام الفوري', this)">🔑 استلام فوري</div>
+            <!-- Walkin / Offline Inputs (Only shown when clicked) -->
+            <div id="recWalkinFields" style="display: none; padding: 12px; background: var(--bg-input); border: 1.5px solid var(--gold); border-radius: 12px; margin-bottom: 12px">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 8px">
+                <strong id="recWalkinTitle" style="color: #fcd34d; font-size: 0.86rem">🏢 عميل شركة (Walk-in)</strong>
+                <span id="recWalkinSeqBadge" class="badge badge-gold"></span>
+              </div>
+              <div class="form-group">
+                <input type="text" id="recWalkinName" class="form-control" placeholder="اسم العميل الثلاثي *" oninput="checkReceptionDuplicate()" />
+              </div>
+              <div class="form-group" style="margin-bottom: 0">
+                <input type="tel" id="recWalkinPhone" class="form-control" dir="ltr" style="text-align: right" placeholder="رقم الموبايل *" oninput="checkReceptionDuplicate()" />
               </div>
             </div>
 
-            <input type="text" id="recNotesInput" class="form-control" placeholder="📝 ملاحظات الريسبشن (اختياري)..." />
+            <button type="button" id="recStep1NextBtn" class="btn btn-primary btn-block" style="display: none" onclick="goToRecStep(2)">
+              التالي: التفضيلات والريكويست ⬅️
+            </button>
           </div>
 
-          <!-- Step 4: Usher & Automatic Routing Preview -->
-          <div class="form-group" style="padding: 11px; background: var(--bg-input); border: 1.5px solid var(--border-strong); border-radius: 12px">
-            <label class="form-label" style="color: #34d399">4️⃣ تسكين الأشر (الموصلاتي) والتوجيه التلقائي:</label>
-            <select id="recUsherSelect" class="form-control" style="margin-bottom: 8px"></select>
-            <div id="recRoutingPreviewBox" style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.65"></div>
+          <!-- STEP 2: Preferences & Specialized Request (Hidden until Step 1 done) -->
+          <div id="recStep2Box" style="display: none">
+            <div id="recStep2ClientChip" style="display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; background: var(--primary-soft); border: 1px solid var(--primary-bright); border-radius: 12px; margin-bottom: 12px; font-size: 0.84rem"></div>
+
+            <div class="form-group" style="padding: 11px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 12px">
+              <label class="form-label" style="color: #fcd34d">🎯 ريكويست العميل المتخصص (وجهاً لوجه):</label>
+              <label style="display: flex; align-items: center; gap: 9px; padding: 10px; border-radius: 10px; background: rgba(245, 176, 65, 0.14); border: 1.5px solid var(--gold); cursor: pointer; font-size: 0.84rem; font-weight: 800; margin-bottom: 10px">
+                <input type="checkbox" id="recFreeViewerCheck" style="width: 18px; height: 18px" onchange="toggleFreeViewerMode()" />
+                <span>👁️ أخرى / عميل جاي يتفرج (يتحوّل للبروكر الأول)</span>
+              </label>
+
+              <div id="recRequestFieldsWrap">
+                <div style="font-size: 0.78rem; font-weight: 800; color: var(--primary-bright); margin-bottom: 5px">🏢 اختر النشاط (لتحديد مناطقه بالظبط):</div>
+                <div class="chips-grid" id="recTypeChips" style="margin-bottom: 8px">
+                  <div class="chip-btn" onclick="toggleRecActivity('سكني', this)">🏠 سكني</div>
+                  <div class="chip-btn" onclick="toggleRecActivity('تجاري', this)">🛍️ تجاري</div>
+                  <div class="chip-btn" onclick="toggleRecActivity('إداري', this)">🏢 إداري</div>
+                  <div class="chip-btn" onclick="toggleRecActivity('فندقي', this)">🏨 فندقي</div>
+                  <div class="chip-btn" onclick="toggleRecActivity('طبي', this)">➕ طبي</div>
+                </div>
+                <div id="recSpecAreaMatrix" style="margin-bottom: 10px"></div>
+
+                <div style="font-size: 0.78rem; font-weight: 800; color: #fcd34d; margin-bottom: 5px">⚙️ النظام المطلوب:</div>
+                <div class="chips-grid" id="recSysChips" style="margin-bottom: 10px">
+                  <div class="chip-btn" onclick="toggleRecSystem('الجمعية', this)">👥 الجمعية (= حصص عقارية)</div>
+                  <div class="chip-btn" onclick="toggleRecSystem('الوديعة', this)">🪙 الوديعة (= عائد بإيجار إلزامي)</div>
+                  <div class="chip-btn" onclick="toggleRecSystem('الاستلام الفوري', this)">🔑 استلام فوري</div>
+                </div>
+              </div>
+
+              <input type="text" id="recNotesInput" class="form-control" placeholder="📝 ملاحظات الريسبشن (اختياري)..." />
+            </div>
+
+            <div style="display: flex; gap: 8px">
+              <button type="button" class="btn btn-outline" style="flex: 0.7" onclick="goToRecStep(1)">➡️ رجوع</button>
+              <button type="button" class="btn btn-primary" style="flex: 1.5" onclick="goToRecStep(3)">التالي: الأشر والتأكيد ⬅️</button>
+            </div>
           </div>
 
-          <button type="button" id="recSubmitBtn" class="btn btn-success btn-block" onclick="submitReceptionCheckin()">
-            ✅ تسجيل الدخول وإرسال تنبيه فوري للأشر
-          </button>
+          <!-- STEP 3: Review Route, Pick Usher & Confirm Submit -->
+          <div id="recStep3Box" style="display: none">
+            <div id="recStep3SummaryBox" style="padding: 12px; background: var(--bg-input); border: 1.5px solid var(--gold); border-radius: 12px; margin-bottom: 12px; font-size: 0.84rem; line-height: 1.7"></div>
+
+            <div class="form-group" style="padding: 11px; background: var(--bg-input); border: 1.5px solid var(--border-strong); border-radius: 12px">
+              <label class="form-label" style="color: #34d399">🚶 اختر الأشر (الموصلاتي):</label>
+              <select id="recUsherSelect" class="form-control" style="margin-bottom: 10px"></select>
+              <div id="recRoutingPreviewBox" style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.7"></div>
+            </div>
+
+            <div style="display: flex; gap: 8px">
+              <button type="button" class="btn btn-outline" style="flex: 0.7" onclick="goToRecStep(2)">➡️ رجوع</button>
+              <button type="button" id="recSubmitBtn" class="btn btn-success" style="flex: 1.6" onclick="submitReceptionCheckin()">
+                ✅ تأكيد وإرسال للأشر
+              </button>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1396,30 +1413,70 @@
       <a href="https://mohhamedallam12345-ops.github.io/Ny-profile/" target="_blank" rel="noopener noreferrer">ENG/ M.Allam ↗</a>
     </footer>
 
-    <!-- Edit Check-in & Deal Commission Modal -->
+    <!-- Edit Check-in & Deal Commission Modal (FULL EDITABLE) -->
     <div id="editCheckinModal" class="modal-overlay">
-      <div class="modal-box">
-        <h3 style="color: var(--primary-bright); margin-bottom: 12px">✏️ تعديل بيانات العميل والعمولات</h3>
+      <div class="modal-box" style="max-width: 640px; max-height: 90vh; overflow-y: auto">
+        <h3 style="color: var(--primary-bright); margin-bottom: 12px">✏️ تعديل شامل لبيانات العميل وخط السير والعمولات</h3>
         <input type="hidden" id="editChkId" />
-        <div class="form-group">
-          <label class="form-label">اسم العميل:</label>
-          <input type="text" id="editChkName" class="form-control" />
+        <div style="display: grid; grid-template-columns: 1.5fr 1fr 0.7fr; gap: 8px; margin-bottom: 10px">
+          <div>
+            <label class="form-label">اسم العميل:</label>
+            <input type="text" id="editChkName" class="form-control" />
+          </div>
+          <div>
+            <label class="form-label">رقم التليفون:</label>
+            <input type="tel" id="editChkPhone" class="form-control" dir="ltr" style="text-align: right" />
+          </div>
+          <div>
+            <label class="form-label">الكود #:</label>
+            <input type="number" id="editChkSeq" class="form-control" />
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px">
+          <div>
+            <label class="form-label">صاحب النص الأول (الدعوة):</label>
+            <select id="editChkFirstSplit" class="form-control"></select>
+          </div>
+          <div>
+            <label class="form-label">الأشر المسؤول:</label>
+            <select id="editChkUsher" class="form-control"></select>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px">
+          <div>
+            <label class="form-label">التيم المستلم:</label>
+            <select id="editChkTeam" class="form-control"></select>
+          </div>
+          <div>
+            <label class="form-label">حالة الرحلة:</label>
+            <select id="editChkStatus" class="form-control">
+              <option value="WAITING_USHER">🔔 بانتظار استلام الأشر</option>
+              <option value="ACTIVE">🟢 داخل المعرض</option>
+              <option value="COMPLETED">🏁 غادر المعرض</option>
+            </select>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px">
+          <div>
+            <label class="form-label">المناطق المطلوبة:</label>
+            <input type="text" id="editChkArea" class="form-control" />
+          </div>
+          <div>
+            <label class="form-label">النظام المفضل:</label>
+            <input type="text" id="editChkSystem" class="form-control" />
+          </div>
         </div>
         <div class="form-group">
-          <label class="form-label">رقم التليفون:</label>
-          <input type="tel" id="editChkPhone" class="form-control" dir="ltr" style="text-align: right" />
+          <label class="form-label">ملاحظات الريسبشن:</label>
+          <input type="text" id="editChkNotes" class="form-control" />
         </div>
-        <div class="form-group">
-          <label class="form-label">صاحب النص الأول (الدعوة):</label>
-          <input type="text" id="editChkFirstSplit" class="form-control" />
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0 8px">
+          <strong style="color: #fcd34d; font-size: 0.86rem">🗺️ تعديل محطات خط السير والعمولات:</strong>
+          <button type="button" class="btn btn-outline btn-sm" onclick="addEditableStopRow()">➕ إضافة محطة</button>
         </div>
-        <div class="form-group">
-          <label class="form-label">الأشر المسؤول:</label>
-          <select id="editChkUsher" class="form-control"></select>
-        </div>
-        <div id="editChkDealsWrap" style="margin-bottom: 12px"></div>
+        <div id="editChkStopsWrap" style="margin-bottom: 14px"></div>
         <div style="display: flex; gap: 8px">
-          <button type="button" class="btn btn-success" style="flex: 1" onclick="saveEditedCheckin()">💾 حفظ التعديلات</button>
+          <button type="button" class="btn btn-success" style="flex: 1" onclick="saveEditedCheckin()">💾 حفظ كل التعديلات</button>
           <button type="button" class="btn btn-outline" style="flex: 1" onclick="closeModal('editCheckinModal')">إلغاء</button>
         </div>
       </div>
@@ -1835,8 +1892,9 @@
         return ids.includes(exhId);
       }
 
-      function filterAccountsForActiveExh(list) {
+      function filterAccountsForActiveExh(list, strict = false) {
         const assigned = list.filter((a) => isAccountInActiveExhibition(a));
+        if (strict) return assigned;
         return assigned.length > 0 ? assigned : list;
       }
 
@@ -2064,7 +2122,8 @@
             (a.team || "المعرض") === teamName &&
             !a.hide_in_sitting
         );
-        const scoped = filterAccountsForActiveExh(allTeamSales);
+        // STRICT: Only sales reps explicitly assigned & active in THIS exhibition!
+        const scoped = filterAccountsForActiveExh(allTeamSales, true);
         const order = Array.isArray(appState.teamSalesOrder?.[teamName])
           ? appState.teamSalesOrder[teamName]
           : [];
@@ -2262,17 +2321,64 @@
       }
 
       // ==================== 1. RECEPTION LOGIC ====================
-      function renderReceptionView() {
-        const salesSel = document.getElementById("recCustomSalesSelect");
-        if (salesSel) {
-          const allSales = appState.accounts.filter((a) =>
-            ["sales", "broker", "developer"].includes(a.role)
-          );
-          salesSel.innerHTML = allSales
-            .map((s) => `<option value="${s.id}">${escapeHtml(s.code)} — ${escapeHtml(s.name)}</option>`)
-            .join("");
-        }
+      let recCurrentStep = 1;
 
+      function goToRecStep(stepNum) {
+        if (stepNum >= 2) {
+          if (checkReceptionDuplicate()) return;
+          if (!recState.selectedInv) {
+            const name = (document.getElementById("recWalkinName")?.value || "").trim();
+            const phone = normalizePhone(document.getElementById("recWalkinPhone")?.value || "");
+            if (!name || phone.length < 10) {
+              return alert("⚠️ اختر دعوة أولاً أو اكتب اسم العميل ورقم الموبايل الصحيح!");
+            }
+          }
+        }
+        recCurrentStep = stepNum;
+        [1, 2, 3].forEach((n) => {
+          const box = document.getElementById(`recStep${n}Box`);
+          const ind = document.getElementById(`recStepInd${n}`);
+          if (box) box.style.display = n === stepNum ? "block" : "none";
+          if (ind) ind.className = n === stepNum ? "nav-tab-btn active" : "nav-tab-btn";
+        });
+
+        const cName = recState.selectedInv
+          ? recState.selectedInv.client_name
+          : (document.getElementById("recWalkinName")?.value || "").trim();
+        const cPhone = recState.selectedInv
+          ? normalizePhone(recState.selectedInv.client_phone)
+          : normalizePhone(document.getElementById("recWalkinPhone")?.value || "");
+        const cSeq = recState.selectedInv ? recState.selectedInv.seq_number : recState.walkinSeq;
+        const own = recState.selectedInv ? getAccountById(recState.selectedInv.owner_account_id) : null;
+        const srcLabel = recState.isOfflineFlyer
+          ? "📄 ورق الشارع (أوفلاين)"
+          : own
+          ? `🏅 ${own.name} (${own.code})`
+          : "🏢 عميل شركة (BM)";
+
+        if (stepNum === 2) {
+          const chip = document.getElementById("recStep2ClientChip");
+          if (chip) {
+            chip.innerHTML = `<div><strong style="color:#fcd34d;">#${cSeq}</strong> <strong>${escapeHtml(cName)}</strong> <span dir="ltr" style="color:var(--text-muted);">(${escapeHtml(cPhone)})</span><div style="font-size:0.75rem; color:var(--primary-bright);">${escapeHtml(srcLabel)}</div></div><button type="button" class="btn btn-outline btn-sm" onclick="goToRecStep(1)">✏️ تغيير</button>`;
+          }
+        } else if (stepNum === 3) {
+          const isFree = document.getElementById("recFreeViewerCheck")?.checked;
+          const summary = formatSpecRequestSummary(recState.specInventory, recState.systems, isFree);
+          const notes = (document.getElementById("recNotesInput")?.value || "").trim();
+          const sumBox = document.getElementById("recStep3SummaryBox");
+          if (sumBox) {
+            sumBox.innerHTML = `
+              <div style="font-weight:900; color:#fcd34d; margin-bottom:4px;">📋 مراجعة بيانات العميل قبل الإرسال:</div>
+              <div>👤 <strong>#${cSeq} — ${escapeHtml(cName)}</strong> (<span dir="ltr">${escapeHtml(cPhone)}</span>)</div>
+              <div>🎟️ المصدر: <strong>${escapeHtml(srcLabel)}</strong></div>
+              <div>📍 الريكويست: <strong>${escapeHtml(summary.areaText)}</strong> | ⚙️ <strong>${escapeHtml(summary.sysText)}</strong></div>
+              ${notes ? `<div>📝 ملاحظات: ${escapeHtml(notes)}</div>` : ""}`;
+          }
+          updateRoutingPreview();
+        }
+      }
+
+      function renderReceptionView() {
         const usherSel = document.getElementById("recUsherSelect");
         if (usherSel) {
           const allUshers = appState.accounts.filter((a) => accountHasRole(a, "usher"));
@@ -2365,12 +2471,12 @@
         recState.isOfflineFlyer = false;
         document.getElementById("recMatchesList").style.display = "none";
         document.getElementById("recWalkinFields").style.display = "none";
-        document.getElementById("recFirstSplitMode").value = "DEFAULT";
-        onRecSplitModeChange();
         const own = getAccountById(inv.owner_account_id);
         const box = document.getElementById("recSelectedInvBox");
         box.style.display = "block";
         box.innerHTML = `✅ <strong>#${inv.seq_number} — ${escapeHtml(inv.client_name)}</strong> (${escapeHtml(inv.client_phone)}) | الدعوة: <span class="badge badge-gold">${escapeHtml(own?.name || "شركة")} (${escapeHtml(own?.code || "BM")})</span>`;
+        const nextBtn = document.getElementById("recStep1NextBtn");
+        if (nextBtn) nextBtn.style.display = "block";
         checkReceptionDuplicate();
         updateRoutingPreview();
       }
@@ -2393,8 +2499,8 @@
           ? "📄 عميل ورق الشارع (أوفلاين — 0.5% مستقلة)"
           : "🎫 عميل مباشر (Walk-in)";
         document.getElementById("recWalkinSeqBadge").textContent = `#${recState.walkinSeq}`;
-        document.getElementById("recFirstSplitMode").value = isOffline ? "OFFLINE" : "COMPANY";
-        onRecSplitModeChange();
+        const nextBtn = document.getElementById("recStep1NextBtn");
+        if (nextBtn) nextBtn.style.display = "block";
         updateRoutingPreview();
       }
 
@@ -2422,11 +2528,7 @@
         return false;
       }
 
-      function onRecSplitModeChange() {
-        const mode = document.getElementById("recFirstSplitMode").value;
-        document.getElementById("recCustomSalesSelect").style.display =
-          mode === "CUSTOM" ? "block" : "none";
-      }
+      function onRecSplitModeChange() {}
 
       function toggleFreeViewerMode() {
         const isFree = document.getElementById("recFreeViewerCheck").checked;
@@ -2497,8 +2599,15 @@
         let assignedTeam = "المعرض";
         const isManualExh = appState.exhRoutingMode[exh?.id || ""] === "MANUAL";
 
-        // Case 1: Specific B.almetr Sales Rep invitation -> Goes DIRECTLY to their Sales Rep first!
-        if (ownerAcc && ownerAcc.role === "sales") {
+        // Check if inviting sales rep is EXPLICITLY active on a table in THIS exhibition
+        const isOwnerActiveOnTable =
+          ownerAcc &&
+          accountHasRole(ownerAcc, "sales") &&
+          isAccountInActiveExhibition(ownerAcc) &&
+          !ownerAcc.hide_in_sitting;
+
+        // Case 1: Invited by an ACTIVE table B.almetr Sales Rep -> Goes DIRECTLY to them first!
+        if (isOwnerActiveOnTable) {
           assignedTeam = ownerAcc.team || "المعرض";
           stops.push({
             stop_id: `st_${Date.now()}_own`,
@@ -2523,28 +2632,43 @@
             status: "PENDING",
           });
         } else {
-          // Case 3: Offline, Developer, Influencer, Broker, Online BM, Walk-in -> Exhibition Team Distribution Queue FIRST!
-          const dist = exh?.layout_config?.teamDistribution || {};
-          const activeTeams = appState.teamsList.filter((t) => {
-            const cfg = dist[t];
-            return cfg ? cfg.active !== false && Number(cfg.weight) > 0 : true;
-          });
-          const pool = activeTeams.length > 0 ? activeTeams : appState.teamsList;
-          const weightedList = [];
-          pool.forEach((t) => {
-            const w = Math.max(1, Number(dist[t]?.weight ?? 1));
-            for (let i = 0; i < w; i++) weightedList.push(t);
-          });
-          assignedTeam = weightedList[appState.checkins.length % weightedList.length] || "المعرض";
+          // Case 3: Inactive-table Sales Rep's client, Offline, Developer, Influencer, Broker, Online BM, Walk-in -> Distribution Queue!
+          // If invited by an inactive B.almetr sales rep, prioritize their own team's active table reps first; otherwise weighted exhibition teams
+          let teamReps = [];
+          if (ownerAcc && accountHasRole(ownerAcc, "sales")) {
+            const ownTeam = ownerAcc.team || "المعرض";
+            const ownTeamActiveReps = getOrderedTeamSales(ownTeam);
+            if (ownTeamActiveReps.length > 0) {
+              assignedTeam = ownTeam;
+              teamReps = ownTeamActiveReps;
+            }
+          }
+
+          if (teamReps.length === 0) {
+            const dist = exh?.layout_config?.teamDistribution || {};
+            const teamsWithActiveReps = appState.teamsList.filter((t) => getOrderedTeamSales(t).length > 0);
+            const baseTeams = teamsWithActiveReps.length > 0 ? teamsWithActiveReps : appState.teamsList;
+            const activeTeams = baseTeams.filter((t) => {
+              const cfg = dist[t];
+              return cfg ? cfg.active !== false && Number(cfg.weight) > 0 : true;
+            });
+            const pool = activeTeams.length > 0 ? activeTeams : baseTeams;
+            const weightedList = [];
+            pool.forEach((t) => {
+              const w = Math.max(1, Number(dist[t]?.weight ?? 1));
+              for (let i = 0; i < w; i++) weightedList.push(t);
+            });
+            assignedTeam = weightedList[appState.checkins.length % weightedList.length] || pool[0] || "المعرض";
+            teamReps = getOrderedTeamSales(assignedTeam);
+          }
 
           let chosenRep = null;
-          if (!isManualExh) {
-            // AUTO Strength Order: Always scan from index 0 (Aya -> Mohamed -> Shaimaa -> Mariam) and pick first FREE!
-            const orderedReps = getOrderedTeamSales(assignedTeam);
+          if (!isManualExh && teamReps.length > 0) {
+            // AUTO Strength Order: Always scan from index 0 (strongest) and pick first FREE active table rep!
             chosenRep =
-              orderedReps.find((r) => getRepLiveState(r.id) === "FREE") ||
-              orderedReps.find((r) => getRepLiveState(r.id) !== "LIVE") ||
-              orderedReps[0] ||
+              teamReps.find((r) => getRepLiveState(r.id) === "FREE") ||
+              teamReps.find((r) => getRepLiveState(r.id) !== "LIVE") ||
+              teamReps[0] ||
               null;
           }
 
@@ -2555,7 +2679,7 @@
               : `🏷️ تيم ${assignedTeam} (بانتظار توجيه مدير المعرض)`,
             stop_type: "BALMETR",
             team: assignedTeam,
-            needs_manual_routing: isManualExh,
+            needs_manual_routing: isManualExh || !chosenRep,
             sales_id: chosenRep?.id || null,
             sales_code: chosenRep?.code || "",
             sales_name: chosenRep?.name || `تيم ${assignedTeam}`,
@@ -2646,6 +2770,15 @@
         document.getElementById("recDuplicateBox").style.display = "none";
         document.getElementById("recSpecAreaMatrix").innerHTML = "";
         document.querySelectorAll("#receptionView .chip-btn").forEach((c) => c.classList.remove("selected"));
+        const nextBtn = document.getElementById("recStep1NextBtn");
+        if (nextBtn) nextBtn.style.display = "none";
+        recCurrentStep = 1;
+        [1, 2, 3].forEach((n) => {
+          const box = document.getElementById(`recStep${n}Box`);
+          const ind = document.getElementById(`recStepInd${n}`);
+          if (box) box.style.display = n === 1 ? "block" : "none";
+          if (ind) ind.className = n === 1 ? "nav-tab-btn active" : "nav-tab-btn";
+        });
         updateRoutingPreview();
       }
 
@@ -2673,25 +2806,17 @@
           }
         }
 
-        const splitMode = document.getElementById("recFirstSplitMode").value;
         let firstCode = "COMPANY";
         let firstName = "عميل شركة (BM)";
         let firstType = "شركة مباشر";
-        if (splitMode === "OFFLINE" || recState.isOfflineFlyer) {
+        if (recState.isOfflineFlyer) {
           firstCode = "OFFLINE";
           firstName = "📄 أوفلاين (ورق الشارع)";
           firstType = "ورق الشارع (أوفلاين)";
-        } else if (splitMode === "DEFAULT" && origOwner) {
+        } else if (origOwner) {
           firstCode = origOwner.code;
           firstName = origOwner.name;
           firstType = "صاحب الدعوة";
-        } else if (splitMode === "CUSTOM") {
-          const customAcc = getAccountById(document.getElementById("recCustomSalesSelect").value);
-          if (customAcc) {
-            firstCode = customAcc.code;
-            firstName = customAcc.name;
-            firstType = "العميل فاكر اسمه";
-          }
         }
 
         const isFree = document.getElementById("recFreeViewerCheck").checked;
@@ -2898,10 +3023,11 @@
       async function usherAcceptClientFromReception(checkinId) {
         const chk = appState.checkins.find((c) => c.id === checkinId);
         if (!chk) return;
-        const nowStr = new Date().toLocaleTimeString("ar-EG");
         const logs = [...(chk.journey_logs || [])];
-        // Auto-pick first FREE stop (skips busy stops automatically!)
         const nextIdx = pickNextAvailableStopIndex(logs);
+        const destName = nextIdx >= 0 ? logs[nextIdx].stop_name : "التوجيه اليدوي";
+        if (!confirm(`تأكيد استلام العميل (${chk.client_name}) من الريسبشن والتوجه إلى: ${destName}؟`)) return;
+        const nowStr = new Date().toLocaleTimeString("ar-EG");
         if (nextIdx >= 0) {
           logs[nextIdx] = { ...logs[nextIdx], status: "IN_TRANSIT", transit_at: nowStr };
         }
@@ -2918,6 +3044,7 @@
       async function usherAcknowledgeHandoff(checkinId, stopIdx) {
         const chk = appState.checkins.find((c) => c.id === checkinId);
         if (!chk) return;
+        if (!confirm(`تأكيد استلام العميل (${chk.client_name}) ونقله للمحطة التالية؟`)) return;
         const logs = [...(chk.journey_logs || [])];
         if (logs[stopIdx]) logs[stopIdx] = { ...logs[stopIdx], handoff_ack: true };
         const { error } = await sb
@@ -3223,7 +3350,7 @@
           offers
             .map(
               (o) =>
-                `<option value="${o.id}">${escapeHtml(o.project_name)} (${escapeHtml(o.unit_type || "-")} | ${escapeHtml(o.area || "-")} | ${escapeHtml(o.total_price || "-")})</option>`
+                `<option value="${o.id}">${escapeHtml(o.project_name)} (${escapeHtml(o.unit_type || "-")} | ${escapeHtml(o.area || "-")} | ${escapeHtml(o.total_price || "-")}${o.expected_roi ? ` | عائد: ${escapeHtml(o.expected_roi)}` : ""}${o.details ? ` | ${escapeHtml(o.details)}` : ""})</option>`
             )
             .join("") +
           `<option value="CUSTOM">✨ أخرى (كتابة عرض سريع)</option>`;
@@ -3372,7 +3499,7 @@
               : `team_${u.team || "المعرض"}`;
           const found = (appState.offersByOwner.get(ownerKey) || []).find((o) => o.id === offerVal);
           if (found) {
-            offerSummary = `${found.project_name} (${found.unit_type || "-"} - ${found.area || "-"}) | الإجمالي: ${found.total_price || "-"} | مقدم: ${found.downpayment || "-"} | ${found.installment || "-"} / ${found.years || "-"}${found.expected_roi ? ` | عائد: ${found.expected_roi}` : ""}`;
+            offerSummary = `${found.project_name} (${found.unit_type || "-"} - ${found.area || "-"}) | الإجمالي: ${found.total_price || "-"} | مقدم: ${found.downpayment || "-"} | ${found.installment || "-"} / ${found.years || "-"}${found.expected_roi ? ` | عائد: ${found.expected_roi}` : ""}${found.details ? ` | تفاصيل: ${found.details}` : ""}`;
           }
         }
 
@@ -3737,55 +3864,180 @@
           .join("");
       }
 
-      // ==================== EDIT & DELETE CHECK-INS / DEALS / COMMISSIONS ====================
+      // ==================== EDIT & DELETE CHECK-INS / DEALS / COMMISSIONS (FULL EDITABLE) ====================
+      let editingStopsDraft = [];
+
+      function buildAllPeopleOptionsHtml(selectedVal, includeSpecial = true) {
+        let html = "";
+        if (includeSpecial) {
+          html += `<option value="__COMPANY__" ${selectedVal === "__COMPANY__" ? "selected" : ""}>🏢 عميل شركة (BM)</option>`;
+          html += `<option value="__OFFLINE__" ${selectedVal === "__OFFLINE__" ? "selected" : ""}>📄 أوفلاين (ورق الشارع)</option>`;
+        } else {
+          html += `<option value="">-- غير محدد / توجيه عام --</option>`;
+        }
+        const candidates = appState.accounts.filter((a) =>
+          ["sales", "team_leader", "broker", "developer", "dev_sales", "influencer"].includes(a.role)
+        );
+        html += candidates
+          .map(
+            (a) =>
+              `<option value="${a.id}" ${selectedVal === a.id ? "selected" : ""}>${escapeHtml(getRoleName(a.role))} — ${escapeHtml(a.name)} (${escapeHtml(a.code)})</option>`
+          )
+          .join("");
+        return html;
+      }
+
+      function renderEditableStopsDraft() {
+        const wrap = document.getElementById("editChkStopsWrap");
+        if (!wrap) return;
+        if (editingStopsDraft.length === 0) {
+          wrap.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:10px; font-size:0.8rem;">لا توجد محطات — اضغط "➕ إضافة محطة"</div>`;
+          return;
+        }
+        wrap.innerHTML = editingStopsDraft
+          .map((st, idx) => {
+            const selId = st.sales_id || st.developer_id || "";
+            return `
+            <div style="padding:10px; background:var(--bg-input); border:1px solid var(--border-strong); border-radius:11px; margin-bottom:8px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-bottom:7px;">
+                <strong style="font-size:0.8rem; color:var(--primary-bright);">محطة #${idx + 1}</strong>
+                <button type="button" class="btn btn-danger btn-sm" style="padding:3px 8px; min-height:26px;" onclick="removeEditableStopRow(${idx})">🗑️ حذف المحطة</button>
+              </div>
+              <div style="display:grid; grid-template-columns: 1.4fr 1fr; gap:6px; margin-bottom:6px;">
+                <div>
+                  <label style="font-size:0.7rem; color:var(--text-muted);">السيلز / المطور / البروكر</label>
+                  <select id="editStopAcc_${idx}" class="form-control" style="padding:6px; font-size:0.8rem;">${buildAllPeopleOptionsHtml(selId, false)}</select>
+                </div>
+                <div>
+                  <label style="font-size:0.7rem; color:var(--text-muted);">حالة المحطة</label>
+                  <select id="editStopStatus_${idx}" class="form-control" style="padding:6px; font-size:0.8rem;">
+                    <option value="PENDING" ${st.status === "PENDING" ? "selected" : ""}>⏳ قادم (PENDING)</option>
+                    <option value="IN_TRANSIT" ${st.status === "IN_TRANSIT" ? "selected" : ""}>🚶 في الطريق</option>
+                    <option value="LIVE" ${st.status === "LIVE" ? "selected" : ""}>🟢 في قعدة الآن</option>
+                    <option value="DONE" ${st.status === "DONE" ? "selected" : ""}>✅ منتهي (DONE)</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display:grid; grid-template-columns: 1.2fr 1fr 0.75fr 0.75fr; gap:6px; margin-bottom:6px;">
+                <div>
+                  <label style="font-size:0.7rem; color:var(--text-muted);">النتيجة</label>
+                  <select id="editStopOutcome_${idx}" class="form-control" style="padding:6px; font-size:0.78rem;">
+                    <option value="" ${!st.outcome ? "selected" : ""}>-- بدون --</option>
+                    <option value="💰 اشترى / تعاقد" ${st.outcome?.includes("اشترى") ? "selected" : ""}>💰 اشترى / تعاقد</option>
+                    <option value="🔒 حجز مبدئي" ${st.outcome?.includes("حجز") ? "selected" : ""}>🔒 حجز مبدئي</option>
+                    <option value="✨ عرض مناسب لديه" ${st.outcome?.includes("عرض مناسب") ? "selected" : ""}>✨ عرض مناسب لديه</option>
+                    <option value="🤔 متردد / محتاج وقت" ${st.outcome?.includes("متردد") ? "selected" : ""}>🤔 متردد / محتاج وقت</option>
+                    <option value="❌ لم يناسبه" ${st.outcome?.includes("لم يناسبه") ? "selected" : ""}>❌ لم يناسبه</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:0.7rem; color:var(--text-muted);">توتال العقد (ج.م)</label>
+                  <input type="number" id="editDealVal_${idx}" class="form-control" style="padding:6px; font-size:0.8rem;" value="${Number(st.deal_value || 0)}" />
+                </div>
+                <div>
+                  <label style="font-size:0.7rem; color:var(--text-muted);">الدعوة %</label>
+                  <input type="number" step="0.1" id="editFirstPct_${idx}" class="form-control" style="padding:6px; font-size:0.8rem;" value="${Number(st.first_pct ?? 0.5)}" />
+                </div>
+                <div>
+                  <label style="font-size:0.7rem; color:var(--text-muted);">الترابيزة %</label>
+                  <input type="number" step="0.1" id="editTablePct_${idx}" class="form-control" style="padding:6px; font-size:0.8rem;" value="${Number(st.table_pct ?? 1.0)}" />
+                </div>
+              </div>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
+                <input type="text" id="editStopOffer_${idx}" class="form-control" style="padding:6px; font-size:0.78rem;" placeholder="ملخص العرض..." value="${escapeHtml(st.offer_summary || "")}" />
+                <input type="text" id="editStopNotes_${idx}" class="form-control" style="padding:6px; font-size:0.78rem;" placeholder="ملاحظات الجلسة..." value="${escapeHtml(st.notes || "")}" />
+              </div>
+            </div>`;
+          })
+          .join("");
+      }
+
+      function syncDraftFromEditInputs() {
+        editingStopsDraft = editingStopsDraft.map((st, idx) => {
+          const accId = document.getElementById(`editStopAcc_${idx}`)?.value || "";
+          const acc = accId ? getAccountById(accId) : null;
+          const nextSt = {
+            ...st,
+            status: document.getElementById(`editStopStatus_${idx}`)?.value || st.status || "PENDING",
+            outcome: document.getElementById(`editStopOutcome_${idx}`)?.value || "",
+            deal_value: Number(document.getElementById(`editDealVal_${idx}`)?.value || 0),
+            first_pct: Number(document.getElementById(`editFirstPct_${idx}`)?.value ?? 0.5),
+            table_pct: Number(document.getElementById(`editTablePct_${idx}`)?.value ?? 1.0),
+            offer_summary: (document.getElementById(`editStopOffer_${idx}`)?.value || "").trim(),
+            notes: (document.getElementById(`editStopNotes_${idx}`)?.value || "").trim(),
+          };
+          if (acc) {
+            nextSt.sales_id = acc.role === "developer" ? null : acc.id;
+            nextSt.developer_id = acc.role === "developer" ? acc.id : acc.role === "dev_sales" ? acc.parent_admin_id : null;
+            nextSt.sales_code = acc.code;
+            nextSt.sales_name = acc.name;
+            nextSt.stop_type = acc.role === "developer" || acc.role === "dev_sales" ? "DEVELOPER" : acc.role === "broker" ? "BROKER" : "BALMETR";
+            nextSt.stop_name = `${getRoleName(acc.role)} — ${acc.name} (${acc.code})`;
+          }
+          return nextSt;
+        });
+      }
+
+      function addEditableStopRow() {
+        syncDraftFromEditInputs();
+        editingStopsDraft.push({
+          stop_id: `st_${Date.now()}_add`,
+          stop_name: "محطة جديدة",
+          stop_type: "BALMETR",
+          sales_id: null,
+          sales_code: "",
+          sales_name: "",
+          status: "PENDING",
+          deal_value: 0,
+          first_pct: 0.5,
+          table_pct: 1.0,
+        });
+        renderEditableStopsDraft();
+      }
+
+      function removeEditableStopRow(idx) {
+        syncDraftFromEditInputs();
+        editingStopsDraft.splice(idx, 1);
+        renderEditableStopsDraft();
+      }
+
       function openEditCheckinModal(checkinId) {
         const c = appState.checkins.find((x) => x.id === checkinId);
         if (!c) return;
         document.getElementById("editChkId").value = c.id;
         document.getElementById("editChkName").value = c.client_name || "";
         document.getElementById("editChkPhone").value = c.client_phone || "";
-        document.getElementById("editChkFirstSplit").value = c.first_split_name || "";
+        document.getElementById("editChkSeq").value = c.seq_number || 0;
+        document.getElementById("editChkStatus").value = c.journey_status || "ACTIVE";
+        document.getElementById("editChkArea").value = c.interested_area || "";
+        document.getElementById("editChkSystem").value = c.preferred_system || "";
+        document.getElementById("editChkNotes").value = c.reception_notes || "";
 
-        const ushers = filterAccountsForActiveExh(appState.accounts.filter((a) => accountHasRole(a, "usher")));
+        // Dropdown for First Split (NO free-text typing!)
+        let curFirstVal = "__COMPANY__";
+        if (c.first_split_code === "OFFLINE") curFirstVal = "__OFFLINE__";
+        else if (c.original_sales_id && getAccountById(c.original_sales_id)) curFirstVal = c.original_sales_id;
+        else if (c.first_split_code) {
+          const byCode = appState.accounts.find((a) => a.code === c.first_split_code);
+          if (byCode) curFirstVal = byCode.id;
+        }
+        document.getElementById("editChkFirstSplit").innerHTML = buildAllPeopleOptionsHtml(curFirstVal, true);
+
+        // Dropdown for Usher
+        const ushers = appState.accounts.filter((a) => accountHasRole(a, "usher"));
         const uSel = document.getElementById("editChkUsher");
-        uSel.innerHTML = `<option value="">-- بدون تغيير --</option>` + ushers
-          .map((u) => `<option value="${u.id}" ${u.id === c.assigned_usher_id ? "selected" : ""}>${escapeHtml(u.name)}</option>`)
+        uSel.innerHTML = `<option value="">-- بدون أشر --</option>` + ushers
+          .map((u) => `<option value="${u.id}" ${u.id === c.assigned_usher_id ? "selected" : ""}>🚶 ${escapeHtml(u.name)} (${escapeHtml(u.code)})</option>`)
           .join("");
 
-        const dealsWrap = document.getElementById("editChkDealsWrap");
-        const dealStops = (c.journey_logs || [])
-          .map((st, idx) => ({ st, idx }))
-          .filter(({ st }) => st.outcome?.includes("اشترى") || st.outcome?.includes("حجز") || st.deal_value > 0);
+        // Dropdown for Team
+        const teams = [...new Set([...(appState.teamsList || []), "البروكر", c.assigned_team || "المعرض"])];
+        document.getElementById("editChkTeam").innerHTML = teams
+          .map((t) => `<option value="${escapeHtml(t)}" ${t === c.assigned_team ? "selected" : ""}>🏷️ ${escapeHtml(t)}</option>`)
+          .join("");
 
-        if (dealStops.length > 0) {
-          dealsWrap.innerHTML =
-            `<div style="font-size:0.8rem; font-weight:900; color:#fcd34d; margin-bottom:6px;">💰 تعديل قيمة العقد ونسب العمولات:</div>` +
-            dealStops
-              .map(
-                ({ st, idx }) => `
-              <div style="padding:9px; background:var(--bg-input); border:1px solid var(--gold); border-radius:10px; margin-bottom:7px;">
-                <div style="font-size:0.78rem; font-weight:800; margin-bottom:6px;">${escapeHtml(st.stop_name)} (${escapeHtml(st.outcome || "")})</div>
-                <div style="display:grid; grid-template-columns: 1.4fr 1fr 1fr; gap:6px;">
-                  <div>
-                    <label style="font-size:0.7rem; color:var(--text-muted);">توتال العقد (ج.م)</label>
-                    <input type="number" id="editDealVal_${idx}" class="form-control" style="padding:6px; font-size:0.84rem;" value="${Number(st.deal_value || 0)}" />
-                  </div>
-                  <div>
-                    <label style="font-size:0.7rem; color:var(--text-muted);">نسبة الدعوة %</label>
-                    <input type="number" step="0.1" id="editFirstPct_${idx}" class="form-control" style="padding:6px; font-size:0.84rem;" value="${Number(st.first_pct ?? 0.5)}" />
-                  </div>
-                  <div>
-                    <label style="font-size:0.7rem; color:var(--text-muted);">نسبة الترابيزة %</label>
-                    <input type="number" step="0.1" id="editTablePct_${idx}" class="form-control" style="padding:6px; font-size:0.84rem;" value="${Number(st.table_pct ?? 1.0)}" />
-                  </div>
-                </div>
-              </div>`
-              )
-              .join("");
-        } else {
-          dealsWrap.innerHTML = "";
-        }
-
+        editingStopsDraft = JSON.parse(JSON.stringify(c.journey_logs || []));
+        renderEditableStopsDraft();
         document.getElementById("editCheckinModal").style.display = "flex";
       }
 
@@ -3793,33 +4045,46 @@
         const id = document.getElementById("editChkId").value;
         const c = appState.checkins.find((x) => x.id === id);
         if (!c) return;
+        syncDraftFromEditInputs();
+
         const name = (document.getElementById("editChkName").value || "").trim();
         const phone = normalizePhone(document.getElementById("editChkPhone").value || "");
-        const firstName = (document.getElementById("editChkFirstSplit").value || "").trim();
+        const seqVal = parseInt(document.getElementById("editChkSeq").value, 10);
+        const firstSel = document.getElementById("editChkFirstSplit").value;
+        let firstCode = "COMPANY", firstName = "عميل شركة (BM)", origId = null;
+        if (firstSel === "__OFFLINE__") {
+          firstCode = "OFFLINE";
+          firstName = "📄 أوفلاين (ورق الشارع)";
+        } else if (firstSel && firstSel !== "__COMPANY__") {
+          const acc = getAccountById(firstSel);
+          if (acc) {
+            firstCode = acc.code;
+            firstName = acc.name;
+            origId = acc.id;
+          }
+        }
         const usherId = document.getElementById("editChkUsher").value;
         const usherAcc = usherId ? getAccountById(usherId) : null;
-
-        const logs = (c.journey_logs || []).map((st, idx) => {
-          const vEl = document.getElementById(`editDealVal_${idx}`);
-          if (!vEl) return st;
-          return {
-            ...st,
-            deal_value: Number(vEl.value || 0),
-            first_pct: Number(document.getElementById(`editFirstPct_${idx}`)?.value ?? 0.5),
-            table_pct: Number(document.getElementById(`editTablePct_${idx}`)?.value ?? 1.0),
-          };
-        });
 
         const upd = {
           client_name: name || c.client_name,
           client_phone: phone || c.client_phone,
-          first_split_name: firstName || c.first_split_name,
-          assigned_usher_id: usherAcc ? usherAcc.id : c.assigned_usher_id,
-          assigned_usher_name: usherAcc ? usherAcc.name : c.assigned_usher_name,
-          journey_logs: logs,
+          seq_number: !isNaN(seqVal) && seqVal > 0 ? seqVal : c.seq_number,
+          original_sales_id: origId,
+          first_split_code: firstCode,
+          first_split_name: firstName,
+          assigned_usher_id: usherAcc ? usherAcc.id : null,
+          assigned_usher_name: usherAcc ? usherAcc.name : "غير معين",
+          assigned_team: document.getElementById("editChkTeam").value || c.assigned_team,
+          journey_status: document.getElementById("editChkStatus").value || c.journey_status,
+          interested_area: (document.getElementById("editChkArea").value || "").trim() || c.interested_area,
+          preferred_system: (document.getElementById("editChkSystem").value || "").trim() || c.preferred_system,
+          reception_notes: (document.getElementById("editChkNotes").value || "").trim(),
+          journey_logs: editingStopsDraft,
+          target_stops: editingStopsDraft,
         };
         const { error } = await sb.from("exhibition_checkins").update(upd).eq("id", id);
-        if (error) return alert("❌ تعذر حفظ التعديل!");
+        if (error) return alert("❌ تعذر حفظ التعديل: " + (error.message || ""));
         Object.assign(c, upd);
         closeModal("editCheckinModal");
         renderAdminRadarView();
