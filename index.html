@@ -1,3 +1,8 @@
+
+
+
+رمز HTML
+expo_live_v2
 <!doctype html>
 <html lang="ar" dir="rtl">
   <head>
@@ -873,9 +878,8 @@
         .hover-sidebar:hover {
           width: 242px;
         }
-        body.has-hover-sidebar .app-shell,
-        body.has-hover-sidebar .app-container {
-          padding-right: 78px;
+        body.has-hover-sidebar {
+          padding-right: 76px;
         }
       }
       .hs-brand {
@@ -1008,7 +1012,7 @@
         </div>
       </div>
       <nav class="hs-nav">
-        <button type="button" class="hs-item active" data-adm-pane="admTabRadar" data-adm-pane="admTabRadar" onclick="switchAdmTab('admTabRadar', this)">
+        <button type="button" class="hs-item active" data-adm-pane="admTabLiveRadar" onclick="switchAdmTab('admTabLiveRadar', this)">
           <span class="s-ic">📡</span><span class="s-lbl">الرادار اللايف</span>
         </button>
         <button type="button" class="hs-item" data-adm-pane="admTabDeals" onclick="switchAdmTab('admTabDeals', this)">
@@ -1025,6 +1029,9 @@
         </button>
         <button type="button" class="hs-item" id="hsAdmDistBtn" data-adm-pane="admTabDistribution" onclick="switchAdmTab('admTabDistribution', this)">
           <span class="s-ic">⚖️</span><span class="s-lbl">نسب التوزيع لايف</span>
+        </button>
+        <button type="button" class="hs-item" data-adm-pane="admTabExport" onclick="switchAdmTab('admTabExport', this)">
+          <span class="s-ic">📥</span><span class="s-lbl">التصدير (Excel/واتساب)</span>
         </button>
         <button type="button" class="hs-item" id="hsAdmDevOnlyBtn" data-adm-pane="admTabDevOnly" onclick="switchAdmTab('admTabDevOnly', this)">
           <span class="s-ic">🔒</span><span class="s-lbl">Devolepor_only</span>
@@ -1276,11 +1283,21 @@
             <div id="sitSearchMatches" class="search-list" style="display: none"></div>
           </div>
 
+          <!-- Broker Continuous Follow-Up Until Exit -->
+          <div id="brokerFollowupWrap" style="display: none; margin-top: 10px; padding: 10px; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 12px">
+            <div style="font-size: 0.8rem; font-weight: 900; color: #7dd3fc; margin-bottom: 6px">👁️ متابعة عملائك داخل المعرض (حتى الخروج):</div>
+            <div id="brokerFollowupList" class="search-list"></div>
+          </div>
+
           <!-- Active Sitting Workspace -->
           <div id="sitActiveWorkspace" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border)">
             <div id="sitClientInfoBox" style="padding: 12px; background: var(--bg-input); border-radius: 12px; border: 1.5px solid var(--border-strong); margin-bottom: 12px"></div>
 
             <div id="sitStartSessionWrap" style="margin-bottom: 12px; display: none">
+              <div id="sitCoSalesWrap" style="display: none; margin-bottom: 8px; padding: 9px; background: var(--bg-input); border: 1px dashed var(--border-strong); border-radius: 10px">
+                <div style="font-size: 0.76rem; font-weight: 800; color: var(--primary-bright); margin-bottom: 5px">👥 إضافة سيلز مشارك معك في القعدة (اختياري):</div>
+                <div id="sitCoSalesChips" class="chips-grid"></div>
+              </div>
               <button type="button" class="btn btn-primary btn-block" onclick="startSittingSessionFromSales()">
                 ▶️ العميل وصل — بدء القعدة الآن
               </button>
@@ -1300,7 +1317,7 @@
               <select id="sitOfferSelect" class="form-control" onchange="onSitOfferChange()">
                 <option value="">-- بدون عرض محدد --</option>
               </select>
-              <input type="text" id="sitCustomOfferInput" class="form-control" style="display: none; margin-top: 8px" placeholder="اكتب تفاصيل العرض السريع..." />
+              <input type="text" id="sitCustomOfferInput" maxlength="140" class="form-control" style="display: none; margin-top: 8px" placeholder="اكتب تفاصيل العرض السريع..." />
             </div>
 
             <div class="form-group">
@@ -1322,7 +1339,7 @@
 
             <div class="form-group">
               <label class="form-label">📝 ملاحظاتك:</label>
-              <textarea id="sitNotesInput" class="form-control" rows="3" placeholder="اكتب ملاحظاتك باختصار..."></textarea>
+              <textarea id="sitNotesInput" maxlength="220" class="form-control" rows="3" placeholder="اكتب ملاحظاتك باختصار..."></textarea>
             </div>
 
             <button type="button" id="sitSaveBtn" class="btn btn-success btn-block" onclick="submitSalesSittingResult()">
@@ -1532,7 +1549,7 @@
           </div>
         </div>
 
-        <!-- Pane 7: Devolepor_only (Locked with M-A-L-L-A-M) -->
+        <!-- Pane 7: Devolepor_only (Locked with SERVER_VERIFIED) -->
         <div id="admTabDevOnly" class="adm-pane" style="display: none">
           <div id="expoDevLockCard" class="card mobile-wrap" style="text-align: center; padding: 26px 18px">
             <div style="font-size: 2.2rem; margin-bottom: 8px">🔒</div>
@@ -1750,7 +1767,6 @@
       const PUBLIC_ACCOUNT_COLS =
         "id,role,name,code,team,phone,show_phone_in_report,active_exhibition_ids,expo_roles,managed_teams,can_edit_request,first_split_pct,table_split_pct,dev_inventory,dev_systems,parent_admin_id,hide_in_sitting,dev_activities,dev_areas,dev_min_downpayment,created_at";
 
-      const DEV_PANEL_PASS = "M-A-L-L-A-M";
       const ALL_ACTIVITIES = ["سكني", "تجاري", "إداري", "فندقي", "طبي"];
       const ALL_AREAS = [
         "العاصمة الإدارية",
@@ -1819,7 +1835,21 @@
         } catch (e) {}
       }
 
+      function getClientRateLimitKey() {
+        try {
+          let k = localStorage.getItem("balmetr_client_key");
+          if (!k) {
+            k = "dev_" + Math.random().toString(36).slice(2, 12) + "_" + Date.now().toString(36);
+            localStorage.setItem("balmetr_client_key", k);
+          }
+          return k;
+        } catch (e) {
+          return "web";
+        }
+      }
+
       let appState = {
+        sessionToken: null,
         currentUser: null,
         activeRole: null,
         activeLeaderTeam: null,
@@ -1927,14 +1957,19 @@
       async function loadInitialMetadata() {
         setSyncBadge("syncing");
         try {
-          const [exhRes, accRes, setRes] = await Promise.all([
+          const [exhRes, accRpcRes, setRes] = await Promise.all([
             sb.from("exhibitions").select("*").order("created_at", { ascending: true }),
-            sb.from("accounts").select(PUBLIC_ACCOUNT_COLS).order("created_at", { ascending: true }),
+            sb.rpc("get_public_accounts"),
             sb.from("system_settings").select("*"),
           ]);
           if (exhRes.error) throw exhRes.error;
           appState.exhibitions = exhRes.data || [];
-          appState.accounts = accRes.data || [];
+          if (!accRpcRes.error && Array.isArray(accRpcRes.data)) {
+            appState.accounts = accRpcRes.data;
+          } else {
+            const fbAcc = await sb.from("accounts").select(PUBLIC_ACCOUNT_COLS).order("created_at", { ascending: true });
+            appState.accounts = fbAcc.data || [];
+          }
           rebuildAccountsMap();
           applySettingsRows(setRes.data || []);
           ensureAllowedExhibition();
@@ -1958,26 +1993,17 @@
 
       async function loadCheckinsForActiveExh() {
         const exh = getActiveExhibition();
-        if (!exh) {
+        const u = appState.currentUser;
+        if (!exh || !u || !appState.sessionToken) {
           appState.checkins = [];
           return;
         }
-        const { data, error } = await sb
-          .from("exhibition_checkins")
-          .select("*")
-          .order("created_at_ms", { ascending: false })
-          .limit(2500);
-        if (!error && data) {
-          if (exh.id === "ALL") {
-            appState.checkins = data;
-          } else {
-            const targetNorm = normArName(exh.name);
-            appState.checkins = data.filter(
-              (c) =>
-                c.exhibition_id === exh.id ||
-                (targetNorm && c.exhibition_name && normArName(c.exhibition_name) === targetNorm)
-            );
-          }
+        const { data, error } = await sb.rpc("get_scoped_checkins", {
+          p_token: appState.sessionToken,
+          p_exhibition_id: exh.id === "ALL" ? null : exh.id,
+        });
+        if (!error && Array.isArray(data)) {
+          appState.checkins = data;
         }
       }
 
@@ -2056,16 +2082,34 @@
         try {
           realtimeCh = sb
             .channel("balmetr-expo-v3-realtime")
-            .on("postgres_changes", { event: "*", schema: "public", table: "exhibition_checkins" }, (payload) => {
+            .on("postgres_changes", { event: "*", schema: "public", table: "exhibition_checkins" }, async (payload) => {
               const exhId = appState.activeExhibitionId;
               const { eventType, new: newRow, old: oldRow } = payload;
-              if (eventType === "INSERT" && newRow && newRow.exhibition_id === exhId) {
+              const matchesExh = exhId === "ALL" || (newRow && newRow.exhibition_id === exhId) || eventType === "DELETE";
+              if (!matchesExh) return;
+
+              const u = appState.currentUser;
+              const isPrivileged = u && (
+                ["manager", "exh_manager", "reception", "usher", "team_leader", "broker"].includes(u.role) ||
+                (Array.isArray(u.expo_roles) && u.expo_roles.some((r) => ["manager", "exh_manager", "reception", "usher", "team_leader", "broker"].includes(r)))
+              );
+
+              if (!isPrivileged) {
+                // Restricted roles (Developer / Dev Sales / Sales): re-fetch scoped data from server (zero competitor leak)
+                const prevMap = new Map(appState.checkins.map((c) => [c.id, c]));
+                await loadCheckinsForActiveExh();
+                appState.checkins.forEach((c) => checkAndTriggerSoundForCheckinChange(c, prevMap.get(c.id) || null));
+                renderActiveRoleView();
+                return;
+              }
+
+              if (eventType === "INSERT" && newRow) {
                 if (!appState.checkins.some((c) => c.id === newRow.id)) {
                   appState.checkins.unshift(newRow);
                 }
                 checkAndTriggerSoundForCheckinChange(newRow, null);
                 renderActiveRoleView();
-              } else if (eventType === "UPDATE" && newRow && newRow.exhibition_id === exhId) {
+              } else if (eventType === "UPDATE" && newRow) {
                 const idx = appState.checkins.findIndex((c) => c.id === newRow.id);
                 const prev = idx >= 0 ? appState.checkins[idx] : null;
                 if (idx >= 0) appState.checkins[idx] = newRow;
@@ -2074,6 +2118,13 @@
                 renderActiveRoleView();
               } else if (eventType === "DELETE" && oldRow) {
                 appState.checkins = appState.checkins.filter((c) => c.id !== oldRow.id);
+                renderActiveRoleView();
+              }
+            })
+            .on("postgres_changes", { event: "*", schema: "public", table: "offers" }, async () => {
+              appState.offersByOwner.clear();
+              if (appState.currentUser) {
+                await ensureOffersLoadedForUser(appState.currentUser);
                 renderActiveRoleView();
               }
             })
@@ -2195,9 +2246,13 @@
         btn.disabled = true;
         btn.textContent = "⏳ جاري التحقق...";
         try {
-          const { data, error } = await sb.rpc("smart_login", { p_password: pass });
+          const { data, error } = await sb.rpc("smart_login", {
+            p_password: pass,
+            p_client_key: getClientRateLimitKey(),
+          });
           if (error) throw error;
           if (data?.status === "ACCOUNT" && data.account) {
+            appState.sessionToken = data.session_token || null;
             const freshAcc = appState.accountsById.get(data.account.id) || data.account;
             appState.currentUser = { ...freshAcc, ...data.account };
             const roles = getUserRoles(appState.currentUser);
@@ -2212,6 +2267,8 @@
             ]);
             setupRealtime();
             renderChromeAndRoute();
+          } else if (data?.status === "RATE_LIMITED") {
+            alert("🚫 " + (data.message || "محاولات كثيرة خاطئة، انتظر دقيقة."));
           } else {
             alert("❌ كلمة السر غير صحيحة!");
           }
@@ -2227,6 +2284,9 @@
       function handleAuthBtn() {
         if (appState.currentUser) {
           if (confirm("هل تريد تسجيل الخروج؟")) {
+            const tok = appState.sessionToken;
+            if (tok) sb.rpc("logout_session", { p_token: tok }).catch(() => {});
+            appState.sessionToken = null;
             appState.currentUser = null;
             appState.activeRole = null;
             appState.activeExhibitionId = null;
@@ -2234,6 +2294,9 @@
             appState.invitationsCache = [];
             appState.absentInvitationsLoadedForExh = null;
             appState.expoDevUnlocked = false;
+            appState.offersByOwner.clear();
+            activeSitCheckinId = null;
+            resetReceptionForm();
             if (realtimeCh) {
               try { sb.removeChannel(realtimeCh); } catch (e) {}
               realtimeCh = null;
@@ -2317,8 +2380,12 @@
           const isMaster = u.role === "manager";
           const distBtn = document.getElementById("admDistTabBtn");
           const devBtn = document.getElementById("admDevOnlyTabBtn");
+          const hsDistBtn = document.getElementById("hsAdmDistBtn");
+          const hsDevBtn = document.getElementById("hsAdmDevOnlyBtn");
           if (distBtn) distBtn.style.display = isMaster ? "inline-flex" : "none";
           if (devBtn) devBtn.style.display = isMaster ? "inline-flex" : "none";
+          if (hsDistBtn) hsDistBtn.style.display = isMaster ? "flex" : "none";
+          if (hsDevBtn) hsDevBtn.style.display = isMaster ? "flex" : "none";
         } else if (r === "developer" || r === "dev_manager") showView("developerCompanyView");
         else showView("salesSitView");
 
@@ -2390,7 +2457,7 @@
           .replace(/&/g, "&amp;")
           .replace(/</g, "&lt;")
           .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;");
+          .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
       }
 
       function normalizePhone(raw) {
@@ -2480,6 +2547,7 @@
         for (let i = 0; i < logs.length; i++) {
           const st = logs[i];
           if (st.status !== "PENDING") continue;
+          if ((st.needs_manual_routing || st.needs_dev_manual_routing) && !st.sales_id) continue;
           if (firstPending < 0) firstPending = i;
           if (!isStopCurrentlyBusy(st)) {
             return i;
@@ -2499,7 +2567,7 @@
       function formatElapsedMinutes(startMs) {
         if (!startMs) return "";
         const mins = Math.max(1, Math.round((Date.now() - startMs) / 60000));
-        return `${mins} د`;
+        return `<span class="live-elapsed-min" data-start-ms="${startMs}">${mins} د</span>`;
       }
 
       function renderActiveRoleView() {
@@ -2548,7 +2616,7 @@
       function handleQrScanSuccess(text) {
         const raw = String(text || "");
         // Detect Offline Street Flyer QR: BM|OFFLINE|EXH:...
-        if (raw.includes("|OFFLINE|") && qrTargetContext === "RECEPTION") {
+        if ((raw.includes("|OFFLINE|") || raw.startsWith("OFFLINE|")) && qrTargetContext === "RECEPTION") {
           activateWalkinClient(true);
           return;
         }
@@ -2830,7 +2898,7 @@
       function onRecSplitModeChange() {}
 
       function toggleFreeViewerMode() {
-        const isFree = document.getElementById("recFreeViewerCheck").checked;
+        const isFree = document.getElementById("recFreeViewerCheck").checked || (recState.isWalkin && Object.keys(recState.specInventory || {}).length === 0 && (recState.systems || []).length === 0);
         document.getElementById("recRequestFieldsWrap").style.display = isFree ? "none" : "block";
         updateRoutingPreview();
       }
@@ -2957,7 +3025,8 @@
               const w = Math.max(1, Number(dist[t]?.weight ?? 1));
               for (let i = 0; i < w; i++) weightedList.push(t);
             });
-            assignedTeam = weightedList[appState.checkins.length % weightedList.length] || pool[0] || "المعرض";
+            const distributedCount = appState.checkins.filter((x) => !x.is_free_viewer && x.assigned_team && x.assigned_team !== "البروكر").length;
+            assignedTeam = weightedList[distributedCount % weightedList.length] || pool[0] || "المعرض";
             teamReps = getOrderedTeamSales(assignedTeam);
           }
 
@@ -3062,7 +3131,7 @@
       function updateRoutingPreview() {
         const box = document.getElementById("recRoutingPreviewBox");
         if (!box) return;
-        const isFree = document.getElementById("recFreeViewerCheck")?.checked;
+        const isFree = Boolean(document.getElementById("recFreeViewerCheck")?.checked) || (recState.isWalkin && Object.keys(recState.specInventory || {}).length === 0 && (recState.systems || []).length === 0);
         const owner = recState.selectedInv
           ? getAccountById(recState.selectedInv.owner_account_id)
           : null;
@@ -3148,7 +3217,7 @@
           firstType = "صاحب الدعوة";
         }
 
-        const isFree = document.getElementById("recFreeViewerCheck").checked;
+        const isFree = document.getElementById("recFreeViewerCheck").checked || (recState.isWalkin && Object.keys(recState.specInventory || {}).length === 0 && (recState.systems || []).length === 0);
         const { stops, assignedTeam } = computeTargetStopsAndTeam(
           origOwner,
           isFree,
@@ -3158,7 +3227,18 @@
         const summary = formatSpecRequestSummary(recState.specInventory, recState.systems, isFree);
         const usherId = document.getElementById("recUsherSelect").value || null;
         const usherAcc = usherId ? getAccountById(usherId) : null;
+        const availableUshers = filterAccountsForActiveExh(appState.accounts.filter((a) => accountHasRole(a, "usher")));
+        if (availableUshers.length > 0 && !usherAcc) {
+          return alert("⚠️ اختر الأشر المسؤول عن استلام العميل أولاً!");
+        }
 
+        if (recState.isWalkin) {
+          const { data: atomicSeq } = await sb.rpc("next_exhibition_seq", {
+            p_token: appState.sessionToken,
+            p_exhibition_id: exh.id,
+          });
+          if (atomicSeq) seqNumber = Number(atomicSeq);
+        }
         const payload = {
           id: `chk_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
           exhibition_id: exh.id,
@@ -3196,9 +3276,7 @@
         try {
           const { error } = await sb.from("exhibition_checkins").insert(payload);
           if (error) throw error;
-          if (recState.isWalkin) {
-            await sb.from("exhibitions").update({ next_seq: seqNumber + 1 }).eq("id", exh.id);
-          }
+          // Sequence already incremented atomically via next_exhibition_seq RPC
           if (!appState.checkins.some((c) => c.id === payload.id)) {
             appState.checkins.unshift(payload);
           }
@@ -3354,80 +3432,59 @@
         if (!chk) return;
         const logs = [...(chk.journey_logs || [])];
         const nextIdx = pickNextAvailableStopIndex(logs);
-        const destName = nextIdx >= 0 ? logs[nextIdx].stop_name : "التوجيه اليدوي";
-        if (!confirm(`تأكيد استلام العميل (${chk.client_name}) من الريسبشن والتوجه إلى: ${destName}؟`)) return;
-        const nowStr = new Date().toLocaleTimeString("ar-EG");
-        if (nextIdx >= 0) {
-          logs[nextIdx] = { ...logs[nextIdx], status: "IN_TRANSIT", transit_at: nowStr };
+        if (nextIdx < 0 && logs.some((st) => st.status === "PENDING" && (st.needs_manual_routing || st.needs_dev_manual_routing) && !st.sales_id)) {
+          return alert("⏳ هذا العميل بانتظار التوجيه اليدوي من المدير أولاً قبل نقله للمحطة.");
         }
-        const { error } = await sb
-          .from("exhibition_checkins")
-          .update({ journey_status: "ACTIVE", journey_logs: logs })
-          .eq("id", checkinId);
-        if (error) return alert("❌ تعذر التحديث!");
-        chk.journey_status = "ACTIVE";
-        chk.journey_logs = logs;
+        const destName = nextIdx >= 0 ? logs[nextIdx].stop_name : "المعرض";
+        if (!confirm(`تأكيد استلام العميل (${chk.client_name}) من الريسبشن والتوجه إلى: ${destName}؟`)) return;
+        const { data, error } = await sb.rpc("usher_action_atomic", {
+          p_token: appState.sessionToken,
+          p_checkin_id: checkinId,
+          p_action: "ACCEPT_RECEPTION",
+        });
+        if (error || !data?.ok) return alert("❌ " + (data?.message || error?.message || "تعذر التحديث!"));
+        await loadCheckinsForActiveExh();
         renderUsherView();
       }
 
       async function usherAcknowledgeHandoff(checkinId, stopIdx) {
         const chk = appState.checkins.find((c) => c.id === checkinId);
         if (!chk) return;
+        const stopId = chk.journey_logs?.[stopIdx]?.stop_id || null;
+        if (!stopId) return;
         if (!confirm(`تأكيد استلام العميل (${chk.client_name}) ونقله للمحطة التالية؟`)) return;
-        const logs = [...(chk.journey_logs || [])];
-        if (logs[stopIdx]) logs[stopIdx] = { ...logs[stopIdx], handoff_ack: true };
-        const { error } = await sb
-          .from("exhibition_checkins")
-          .update({ journey_logs: logs })
-          .eq("id", checkinId);
-        if (error) return alert("❌ تعذر التحديث!");
-        chk.journey_logs = logs;
+        const { data, error } = await sb.rpc("usher_action_atomic", {
+          p_token: appState.sessionToken,
+          p_checkin_id: checkinId,
+          p_action: "ACK_HANDOFF",
+          p_stop_id: stopId,
+        });
+        if (error || !data?.ok) return alert("❌ " + (data?.message || error?.message || "تعذر التحديث!"));
+        await loadCheckinsForActiveExh();
         renderUsherView();
       }
 
       async function completeClientJourney(checkinId) {
         if (!confirm("تأكيد خروج العميل من المعرض وإنهاء رحلته؟")) return;
-        const chk = appState.checkins.find((c) => c.id === checkinId);
-        if (!chk) return;
-        const nowMs = Date.now();
-        const nowStr = new Date().toLocaleTimeString("ar-EG");
-        const logs = (chk.journey_logs || []).map((st) => {
-          if (st.status === "LIVE") {
-            return {
-              ...st,
-              status: "DONE",
-              handoff_ack: true,
-              ended_at: nowStr,
-              ended_at_ms: nowMs,
-              duration_sec: st.started_at_ms ? Math.round((nowMs - st.started_at_ms) / 1000) : 60,
-            };
-          }
-          return st;
+        const { data, error } = await sb.rpc("usher_action_atomic", {
+          p_token: appState.sessionToken,
+          p_checkin_id: checkinId,
+          p_action: "COMPLETE_EXIT",
         });
-        const { error } = await sb
-          .from("exhibition_checkins")
-          .update({
-            journey_logs: logs,
-            journey_status: "COMPLETED",
-            exited_at: nowStr,
-            exited_at_ms: nowMs,
-          })
-          .eq("id", checkinId);
-        if (error) return alert("❌ تعذر الإنهاء!");
-        chk.journey_logs = logs;
-        chk.journey_status = "COMPLETED";
-        chk.exited_at = nowStr;
-        chk.exited_at_ms = nowMs;
+        if (error || !data?.ok) return alert("❌ " + (data?.message || error?.message || "تعذر الإنهاء!"));
+        await loadCheckinsForActiveExh();
         renderUsherView();
         openPrintableClientJourney(checkinId);
       }
 
       // ==================== OFFICIAL COLORFUL JOURNEY REPORT ====================
       function resolveStopPhoneForReport(st, cfg) {
+        if (cfg && cfg.showRepPhone === false) return "";
+        if (st && st.stop_type === "DEVELOPER") return "";
         const rep = st.sales_id ? getAccountById(st.sales_id) : null;
         if (!rep || !rep.phone || !rep.show_phone_in_report) return "";
         if (st.stop_type === "DEVELOPER") return cfg.showDevPhones ? rep.phone : "";
-        if (st.stop_type === "BROKER") return cfg.showBrokerPhones ? rep.phone : "";
+        if (st.stop_type === "BROKER") return cfg.showBrokerPhones !== false ? rep.phone : "";
         return cfg.showBalmetrPhones !== false ? rep.phone : "";
       }
 
@@ -3483,44 +3540,41 @@
                 .join("");
 
         document.getElementById("printJourneySheetContainer").innerHTML = `
-          <div class="journey-print-sheet">
-            <div class="jp-header">
-              <div style="display:flex; align-items:center; gap:12px;">
-                <img src="Logo_White.png" alt="B.almetr" style="height:36px; width:auto; object-fit:contain;" onerror="this.style.display='none';" />
-                <div>
-                  <div style="font-size:17px; font-weight:900; color:#2dd4bf;">${escapeHtml(cfg.brandTitle || DEFAULT_REPORT_CONFIG.brandTitle)}</div>
-                  <div style="font-size:12px; color:#cbd5e1;">📍 ${escapeHtml(c.exhibition_name || "")} — ${escapeHtml(c.date_iso || "")}</div>
+          <div class="journey-print-sheet" style="position:relative; overflow:hidden; -webkit-print-color-adjust:exact; print-color-adjust:exact;">
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; opacity:0.065; z-index:0;">
+              <img src="Logo_White.png" alt="B.almetr" style="width:360px; filter:invert(1) brightness(0.15); transform:rotate(-16deg);" onerror="this.style.display='none';" />
+            </div>
+            <div style="position:relative; z-index:1;">
+              <div class="jp-header" style="background:#051224; color:#ffffff; padding:14px 16px; border-radius:10px; border-bottom:3px solid #2dd4bf; margin-bottom:14px;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                  <img src="Logo_White.png" alt="B.almetr" style="height:40px; width:auto; object-fit:contain;" onerror="this.style.display='none';" />
+                  <div>
+                    <div style="font-size:17px; font-weight:900; color:#2dd4bf;">${escapeHtml(cfg.title || "تقرير رحلتك الاستثمارية — B.almetr VIP")}</div>
+                    ${cfg.subtitle ? `<div style="font-size:11px; color:#cbd5e1; font-weight:700;">${escapeHtml(cfg.subtitle)}</div>` : ""}
+                  </div>
+                </div>
+                <div style="text-align:left; font-size:11px; color:#fcd34d; font-weight:800;">
+                  <div>كود العميل: #${c.seq_number}</div>
+                  ${cfg.showDate !== false ? `<div style="color:#94a3b8;">${escapeHtml(c.date_iso || new Date().toLocaleDateString("ar-EG"))}</div>` : ""}
                 </div>
               </div>
-              <div style="text-align:left;">
-                <span style="background:rgba(245,176,65,0.22); border:1px solid #f5b041; color:#fcd34d; padding:4px 12px; border-radius:8px; font-size:15px; font-weight:900;">#${c.seq_number}</span>
+              ${cfg.headerMessage ? `<div style="background:#f0fdfa; border-right:3px solid #14b8a6; padding:9px 12px; border-radius:7px; font-size:11.5px; margin-bottom:12px; color:#134e4a; font-weight:700;">${escapeHtml(cfg.headerMessage)}</div>` : ""}
+              <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:10px 12px; margin-bottom:12px; font-size:12.5px; color:#051224;">
+                <strong>👤 العميل:</strong> ${escapeHtml(c.client_name)}
+                ${cfg.showClientPhone !== false && c.client_phone ? `<span dir="ltr" style="color:#475569; margin-right:8px;">(${escapeHtml(c.client_phone)})</span>` : ""}
+                <div style="font-size:11px; color:#475569; margin-top:4px;">📍 ${escapeHtml(c.interested_area || "-")} • ${escapeHtml(c.investment_type || "-")} • ${escapeHtml(c.preferred_system || "-")}${c.attended_at ? ` • 🟢 دخول: ${escapeHtml(c.attended_at)}` : ""}${c.exited_at ? ` • 🏁 خروج: ${escapeHtml(c.exited_at)}` : ""}${totalMin ? ` • ⏱️ المدة: ${totalMin} د` : ""}</div>
               </div>
-            </div>
-
-            <div class="jp-client-box">
-              <div><strong>👤 العميل:</strong> ${escapeHtml(c.client_name)}</div>
-              ${
-                cfg.showEntryExit !== false
-                  ? `<div><strong>🕒 الدخول:</strong> ${escapeHtml(c.attended_at || "-")}</div>
-                     <div><strong>🏁 الخروج:</strong> ${escapeHtml(c.exited_at || "داخل المعرض")}${totalMin ? ` (${totalMin} د)` : ""}</div>`
-                  : ""
-              }
-              <div><strong>📍 الطلب:</strong> ${escapeHtml(c.interested_area)}</div>
-              <div><strong>⚙️ النظام:</strong> ${escapeHtml(c.preferred_system)}</div>
-            </div>
-
-            <div style="font-size:13px; font-weight:900; color:#051224; margin-bottom:8px;">🗺️ تفاصيل الجلسات والعروض المرشحة لك:</div>
-            ${stopsHtml}
-
-            <div class="jp-footer">
-              <div style="display:flex; align-items:center; gap:10px;">
-                <img src="Logo_White.png" alt="B.almetr" style="height:24px; width:auto; object-fit:contain;" onerror="this.style.display='none';" />
-                <span style="font-size:12px; font-weight:700; color:#e2e8f0;">${escapeHtml(cfg.footerMsg || DEFAULT_REPORT_CONFIG.footerMsg)}</span>
+              ${stopsHtml}
+              ${cfg.footerMessage ? `<div style="text-align:center; font-size:11.5px; color:#334155; padding:8px; border-top:1px dashed #cbd5e1; margin-top:10px; font-weight:700;">${escapeHtml(cfg.footerMessage)}</div>` : ""}
+              <div class="jp-footer" style="background:#051224; color:#ffffff; padding:10px 14px; border-radius:8px; border-top:2px solid #f5b041; margin-top:10px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <img src="Logo_White.png" alt="B.almetr" style="height:22px; width:auto;" onerror="this.style.display='none';" />
+                  <span style="color:#2dd4bf; font-weight:900;">B.almetr VIP</span>
+                </div>
+                <span dir="ltr" style="font-size:11px; font-weight:800;">${[cfg.hotline ? `📞 ${cfg.hotline}` : "", cfg.whatsapp ? `💬 ${cfg.whatsapp}` : "", cfg.website ? `🌐 ${cfg.website}` : ""].filter(Boolean).join("  |  ") || "📞 19000"}</span>
               </div>
-              <span dir="ltr" style="background:#00b8ac; color:#031a1f; padding:4px 12px; border-radius:999px; font-weight:900; font-size:12.5px;">📞 ${escapeHtml(cfg.hotline || DEFAULT_REPORT_CONFIG.hotline)}</span>
             </div>
           </div>`;
-
         document.body.classList.add("printing-journey-mode");
         setTimeout(() => window.print(), 250);
       }
@@ -3587,6 +3641,41 @@
                 })
                 .join("");
 
+        // Broker Continuous Follow-Up Until Exit
+        const brkWrap = document.getElementById("brokerFollowupWrap");
+        const brkList = document.getElementById("brokerFollowupList");
+        if (brkWrap && brkList) {
+          if (appState.activeRole === "broker") {
+            const myActiveTracked = appState.checkins.filter(
+              (c) =>
+                c.journey_status !== "COMPLETED" &&
+                (c.journey_logs || []).some((st) => st.sales_id === u.id && st.status === "DONE")
+            );
+            if (myActiveTracked.length > 0) {
+              brkWrap.style.display = "block";
+              brkList.innerHTML = myActiveTracked
+                .map((c) => {
+                  const curLive = (c.journey_logs || []).find((st) => st.status === "LIVE");
+                  const curTr = (c.journey_logs || []).find((st) => st.status === "IN_TRANSIT");
+                  const stLbl = curLive
+                    ? `🟢 قاعد مع ${escapeHtml(curLive.sales_name || curLive.stop_name)}`
+                    : curTr
+                    ? `🚶 في الطريق لـ ${escapeHtml(curTr.stop_name)}`
+                    : "⏳ داخل المعرض";
+                  return `<div class="search-item" onclick="openClientForSitting('${c.id}')">
+                    <div><strong style="color:#fcd34d;">#${c.seq_number}</strong> <strong>${escapeHtml(c.client_name)}</strong> <span style="font-size:0.75rem; color:var(--text-muted);">(${stLbl})</span></div>
+                    <span class="badge badge-info">متابعة</span>
+                  </div>`;
+                })
+                .join("");
+            } else {
+              brkWrap.style.display = "none";
+            }
+          } else {
+            brkWrap.style.display = "none";
+          }
+        }
+
         if (activeSitCheckinId) renderActiveSitWorkspace();
       }
 
@@ -3597,12 +3686,16 @@
           box.style.display = "none";
           return;
         }
-        const matches = appState.checkins.filter(
-          (c) =>
+        const _u = appState.currentUser;
+        const _canSeeAll = ["manager", "exh_manager", "broker", "team_leader"].includes(appState.activeRole);
+        const matches = appState.checkins.filter((c) => {
+          if (!_canSeeAll && _u && !findMatchingStopForUser(c, _u)) return false;
+          return (
             String(c.seq_number).includes(q) ||
             (c.client_name || "").toLowerCase().includes(q) ||
             normalizePhone(c.client_phone).includes(normalizePhone(q))
-        );
+          );
+        });
         box.style.display = "flex";
         box.innerHTML =
           matches.length === 0
@@ -3656,15 +3749,51 @@
 
         const myStop = findMatchingStopForUser(c, u);
         const startWrap = document.getElementById("sitStartSessionWrap");
-        if (startWrap) startWrap.style.display = myStop && myStop.status !== "LIVE" ? "block" : "none";
+        const needsStart = Boolean(myStop && myStop.status !== "LIVE");
+        if (startWrap) startWrap.style.display = needsStart ? "block" : "none";
+        const coWrap = document.getElementById("sitCoSalesWrap");
+        const coChips = document.getElementById("sitCoSalesChips");
+        if (coWrap && coChips && needsStart) {
+          const peers = appState.accounts.filter((a) =>
+            a.id !== u.id &&
+            isAccountInActiveExhibition(a) &&
+            (u.role === "dev_sales"
+              ? a.role === "dev_sales" && a.parent_admin_id === u.parent_admin_id
+              : accountHasRole(a, "sales") && (a.team || "المعرض") === (u.team || "المعرض"))
+          );
+          if (peers.length > 0) {
+            coWrap.style.display = "block";
+            coChips.innerHTML = peers
+              .map((p) => `<label class="chip-btn" style="padding:4px 9px; font-size:0.74rem; display:inline-flex; align-items:center; gap:5px;"><input type="checkbox" class="co-sales-chk" value="${p.id}" /> ${escapeHtml(p.name)}</label>`)
+              .join("");
+          } else {
+            coWrap.style.display = "none";
+          }
+        }
+        const sitSaveBtn = document.getElementById("sitSaveBtn");
+        if (sitSaveBtn) {
+          sitSaveBtn.disabled = needsStart;
+          sitSaveBtn.title = needsStart ? "اضغط «بدء القعدة الآن» أولاً قبل إنهاء القعدة" : "";
+        }
 
         // Individual Permission: can_edit_request
         const editBox = document.getElementById("sitEditRequestBox");
         const canEdit = (Boolean(u.can_edit_request) || ["manager", "exh_manager", "broker"].includes(appState.activeRole) || u.role === "manager") && u.role !== "dev_sales" && u.role !== "developer";
         if (canEdit) {
           editBox.style.display = "block";
+          const parsedSpec = {};
+          if (c.interested_area && c.interested_area !== "غير محدد" && !c.interested_area.includes("جاي يتفرج")) {
+            c.interested_area.split("|").forEach((part) => {
+              const m = part.trim().match(/^([^(]+)\(([^)]+)\)$/);
+              if (m) {
+                const act = m[1].trim();
+                const areas = m[2].split(/[،,]/).map((a) => a.trim()).filter(Boolean);
+                if (act && areas.length) parsedSpec[act] = areas;
+              }
+            });
+          }
           sitEditReq = {
-            specInventory: {},
+            specInventory: parsedSpec,
             systems: c.preferred_system && c.preferred_system !== "-" && c.preferred_system !== "غير محدد" ? c.preferred_system.split(" ، ") : [],
           };
           renderSitEditMatrix();
@@ -3746,36 +3875,39 @@
         if (!c) return;
         const summary = formatSpecRequestSummary(sitEditReq.specInventory, sitEditReq.systems, false);
         const allDevs = filterAccountsForActiveExh(appState.accounts.filter((a) => a.role === "developer"));
-        // Keep ALL completed, live, in-transit, B.almetr, AND mandatory_developer stops untouched!
-        const updatedLogs = (c.journey_logs || []).filter(
-          (st) => st.status !== "PENDING" || st.stop_type !== "DEVELOPER" || st.mandatory_developer
-        );
+        const newDevStops = [];
         allDevs.forEach((d) => {
-          if (updatedLogs.some((st) => st.developer_id === d.id)) return;
           if (doesDeveloperMatchSpec(d, sitEditReq.specInventory, sitEditReq.systems)) {
-            updatedLogs.push({
-              stop_id: `st_${Date.now()}_${d.code}`,
-              stop_name: `🏗️ ${d.name}`,
+            const isDevManual = appState.devRoutingMode?.[d.id] === "MANUAL";
+            const chosenDevRep = isDevManual ? null : pickAutoDeveloperRep(d.id);
+            newDevStops.push({
+              stop_id: `st_${Date.now()}_${d.code}_${Math.random().toString(36).slice(2, 5)}`,
+              stop_name: isDevManual
+                ? `🏗️ ${d.name} (بانتظار توجيه مدير المطور)`
+                : chosenDevRep
+                ? `🏗️ ${d.name} ← ${chosenDevRep.name} (${chosenDevRep.code})`
+                : `🏗️ ${d.name}`,
               stop_type: "DEVELOPER",
               developer_id: d.id,
-              sales_id: null,
-              sales_code: d.code,
-              sales_name: d.name,
+              needs_dev_manual_routing: isDevManual,
+              sales_id: chosenDevRep?.id || null,
+              sales_code: chosenDevRep?.code || d.code,
+              sales_name: isDevManual ? `${d.name} (بانتظار التوجيه)` : chosenDevRep?.name || d.name,
               status: "PENDING",
             });
           }
         });
 
-        const upd = {
-          interested_area: summary.areaText,
-          investment_type: summary.typeText,
-          preferred_system: summary.sysText,
-          is_free_viewer: false,
-          journey_logs: updatedLogs,
-        };
-        const { error } = await sb.from("exhibition_checkins").update(upd).eq("id", c.id);
-        if (error) return alert("❌ تعذر التحديث!");
-        Object.assign(c, upd);
+        const { data, error } = await sb.rpc("update_client_request_atomic", {
+          p_token: appState.sessionToken,
+          p_checkin_id: c.id,
+          p_interested_area: summary.areaText,
+          p_investment_type: summary.typeText,
+          p_preferred_system: summary.sysText,
+          p_new_dev_stops: newDevStops,
+        });
+        if (error || !data?.ok) return alert("❌ " + (data?.message || error?.message || "تعذر التحديث!"));
+        await loadCheckinsForActiveExh();
         renderActiveSitWorkspace();
         alert("✅ تم تحديث الريكويست وتحديث الشركات المناسبة (مع تثبيت المطور الداعي)!");
       }
@@ -3784,28 +3916,17 @@
         const u = appState.currentUser;
         const c = appState.checkins.find((x) => x.id === activeSitCheckinId);
         if (!u || !c) return;
-        const nowMs = Date.now();
-        const nowStr = new Date().toLocaleTimeString("ar-EG");
-        const logs = [...(c.journey_logs || [])];
-        const idx = logs.findIndex((st) => st.status !== "DONE" && stopBelongsToUser(st, u));
-        if (idx >= 0) {
-          logs[idx] = {
-            ...logs[idx],
-            sales_id: u.id,
-            sales_code: u.code,
-            sales_name: u.name,
-            status: "LIVE",
-            started_at: nowStr,
-            started_at_ms: nowMs,
-          };
-        }
-        const { error } = await sb
-          .from("exhibition_checkins")
-          .update({ journey_status: "ACTIVE", journey_logs: logs })
-          .eq("id", c.id);
-        if (error) return alert("❌ تعذر بدء القعدة!");
-        c.journey_status = "ACTIVE";
-        c.journey_logs = logs;
+        const myStop = findMatchingStopForUser(c, u);
+        if (!myStop) return alert("⚠️ لا توجد محطة نشطة مخصصة لك لهذا العميل.");
+        const coIds = Array.from(document.querySelectorAll("#sitCoSalesChips .co-sales-chk:checked")).map((el) => el.value);
+        const { data, error } = await sb.rpc("start_checkin_stop_atomic", {
+          p_token: appState.sessionToken,
+          p_checkin_id: c.id,
+          p_stop_id: myStop.stop_id,
+          p_co_sales_ids: coIds.length > 0 ? coIds : null,
+        });
+        if (error || !data?.ok) return alert("❌ " + (data?.message || error?.message || "تعذر بدء القعدة!"));
+        await loadCheckinsForActiveExh();
         renderSalesSitView();
       }
 
@@ -3839,78 +3960,31 @@
           }
         }
 
-        // Resolve default commission percentages (0.5% first split, 1.0% table split)
-        const firstAcc = c.original_sales_id ? getAccountById(c.original_sales_id) : null;
-        const firstPct = firstAcc?.first_split_pct ?? 0.5;
-        const tablePct = u.table_split_pct ?? 1.0;
-
-        const logs = [...(c.journey_logs || [])];
-        const nowMs = Date.now();
-        const nowStr = new Date().toLocaleTimeString("ar-EG");
-
-        let idx = logs.findIndex((st) => st.status !== "DONE" && stopBelongsToUser(st, u));
-        if (idx >= 0) {
-          logs[idx] = {
-            ...logs[idx],
-            sales_id: u.id,
-            sales_code: u.code,
-            sales_name: u.name,
-            status: "DONE",
-            handoff_ack: false,
-            ended_at: nowStr,
-            ended_at_ms: nowMs,
-            duration_sec: logs[idx].started_at_ms ? Math.round((nowMs - logs[idx].started_at_ms) / 1000) : 300,
-            outcome,
-            offer_id: offerVal || null,
-            offer_summary: offerSummary,
-            notes,
-            deal_value: dealValue,
-            first_pct: firstPct,
-            table_pct: tablePct,
-          };
-        } else {
-          logs.push({
-            stop_id: `st_${nowMs}`,
-            stop_name: `${getRoleName(appState.activeRole)}: ${u.name}`,
-            stop_type: u.role === "dev_sales" ? "DEVELOPER" : appState.activeRole === "broker" ? "BROKER" : "BALMETR",
-            developer_id: u.role === "dev_sales" ? u.parent_admin_id : null,
-            team: u.team || null,
-            sales_id: u.id,
-            sales_code: u.code,
-            sales_name: u.name,
-            status: "DONE",
-            handoff_ack: false,
-            started_at: nowStr,
-            ended_at: nowStr,
-            duration_sec: 300,
-            outcome,
-            offer_id: offerVal || null,
-            offer_summary: offerSummary,
-            notes,
-            deal_value: dealValue,
-            first_pct: firstPct,
-            table_pct: tablePct,
+        const myStop = findMatchingStopForUser(c, u);
+        if (!myStop) return alert("⚠️ لا توجد محطة مفتوحة لك لإغلاقها.");
+        const saveBtn = document.getElementById("sitSaveBtn");
+        if (saveBtn) saveBtn.disabled = true;
+        try {
+          const { data, error } = await sb.rpc("complete_checkin_stop_atomic", {
+            p_token: appState.sessionToken,
+            p_checkin_id: c.id,
+            p_stop_id: myStop.stop_id,
+            p_outcome: outcome,
+            p_offer_id: offerVal || null,
+            p_offer_summary: offerSummary,
+            p_notes: notes,
+            p_deal_value: dealValue,
           });
+          if (error || !data?.ok) return alert("❌ " + (data?.message || error?.message || "تعذر حفظ القعدة!"));
+          document.getElementById("sitNotesInput").value = "";
+          if (document.getElementById("sitDealValueInput")) document.getElementById("sitDealValueInput").value = "";
+          clearActiveSitClient();
+          await loadCheckinsForActiveExh();
+          renderSalesSitView();
+          alert(`✅ تم إنهاء القعدة (${outcome}) وتوجيه العميل تلقائياً للمحطة الفاضية التالية!`);
+        } finally {
+          if (saveBtn) saveBtn.disabled = false;
         }
-
-        // AUTO-LOOP: System automatically picks the next FREE pending stop (skipping busy ones & looping back!)
-        const nextFreeIdx = pickNextAvailableStopIndex(logs);
-        if (nextFreeIdx >= 0) {
-          logs[nextFreeIdx] = { ...logs[nextFreeIdx], status: "IN_TRANSIT", transit_at: nowStr };
-        }
-
-        const { error } = await sb
-          .from("exhibition_checkins")
-          .update({ journey_status: "ACTIVE", journey_logs: logs })
-          .eq("id", c.id);
-        if (error) return alert("❌ تعذر حفظ القعدة!");
-        c.journey_status = "ACTIVE";
-        c.journey_logs = logs;
-        document.getElementById("sitNotesInput").value = "";
-        if (document.getElementById("sitDealValueInput")) document.getElementById("sitDealValueInput").value = "";
-        clearActiveSitClient();
-        renderSalesSitView();
-        alert(`✅ تم إنهاء القعدة (${outcome}) وتوجيه العميل تلقائياً للمحطة الفاضية التالية!`);
       }
 
       // ==================== 4. TEAM LEADER VIEW (LIVE READ-ONLY MONITORING) ====================
@@ -3996,27 +4070,28 @@
       async function setExhibitionRoutingMode(mode) {
         const exh = getActiveExhibition();
         if (!exh) return;
-        await sb.from("system_settings").upsert({ key: `exh_routing_mode::${exh.id}`, value: mode });
+        if (exh.id === "ALL") {
+          return alert("⚠️ اختر معرضاً محدداً من الشريط العلوي أولاً لتغيير وضع التوزيع الخاص به.");
+        }
+        const { error } = await sb.from("system_settings").upsert({ key: `exh_routing_mode::${exh.id}`, value: mode });
+        if (error) return alert("❌ تعذر حفظ وضع التوزيع!");
         appState.exhRoutingMode[exh.id] = mode;
         renderAdminRadarView();
       }
 
       async function assignManualStopByManager(checkinId, stopIdx) {
         const repId = document.getElementById(`mgrManualSel_${checkinId}_${stopIdx}`)?.value;
-        const rep = getAccountById(repId);
         const chk = appState.checkins.find((c) => c.id === checkinId);
-        if (!rep || !chk) return;
-        const logs = [...(chk.journey_logs || [])];
-        logs[stopIdx] = {
-          ...logs[stopIdx],
-          stop_name: `🏷️ ${logs[stopIdx].team || "المعرض"} ← ${rep.name}`,
-          sales_id: rep.id,
-          sales_code: rep.code,
-          sales_name: rep.name,
-          needs_manual_routing: false,
-        };
-        await sb.from("exhibition_checkins").update({ journey_logs: logs }).eq("id", checkinId);
-        chk.journey_logs = logs;
+        const stopId = chk?.journey_logs?.[stopIdx]?.stop_id;
+        if (!repId || !stopId) return;
+        const { data, error } = await sb.rpc("assign_stop_rep_atomic", {
+          p_token: appState.sessionToken,
+          p_checkin_id: checkinId,
+          p_stop_id: stopId,
+          p_rep_id: repId,
+        });
+        if (error || !data?.ok) return alert("❌ " + (data?.message || error?.message || "تعذر التوجيه!"));
+        await loadCheckinsForActiveExh();
         renderAdminRadarView();
       }
 
@@ -4105,6 +4180,11 @@
         );
         if (waitingPickup.length > 0) {
           alerts.push(`⚠️ يوجد ${waitingPickup.length} عميل خلصوا قعدتهم ومستنيين الأشر ينقلهم للمحطة التالية!`);
+        }
+        const activeExhSales = filterAccountsForActiveExh(appState.accounts.filter((a) => accountHasRole(a, "sales")));
+        const busySalesCnt = activeExhSales.filter((s) => getRepLiveState(s.id) === "LIVE").length;
+        if (activeExhSales.length > 0 && busySalesCnt === activeExhSales.length) {
+          alerts.push("🚨 تنبيه زحمة: جميع سيلز المعرض مشغولين في قعدات لايف حالياً!");
         }
         document.getElementById("congestionAlertsContainer").innerHTML = alerts
           .map((a) => `<div class="alert-banner-red"><span>${a}</span></div>`)
@@ -4273,11 +4353,11 @@
                   <label style="font-size:0.7rem; color:var(--text-muted);">النتيجة</label>
                   <select id="editStopOutcome_${idx}" class="form-control" style="padding:6px; font-size:0.78rem;">
                     <option value="" ${!st.outcome ? "selected" : ""}>-- بدون --</option>
-                    <option value="💰 اشترى / تعاقد" ${st.outcome?.includes("اشترى") ? "selected" : ""}>💰 اشترى / تعاقد</option>
-                    <option value="🔒 حجز مبدئي" ${st.outcome?.includes("حجز") ? "selected" : ""}>🔒 حجز مبدئي</option>
+                    <option value="💰 اشترى (تعاقد)" ${st.outcome?.includes("اشترى") ? "selected" : ""}>💰 اشترى (تعاقد)</option>
+                    <option value="💳 دفع حجز" ${st.outcome?.includes("حجز") ? "selected" : ""}>💳 دفع حجز</option>
                     <option value="✨ عرض مناسب لديه" ${st.outcome?.includes("عرض مناسب") ? "selected" : ""}>✨ عرض مناسب لديه</option>
-                    <option value="🤔 متردد / محتاج وقت" ${st.outcome?.includes("متردد") ? "selected" : ""}>🤔 متردد / محتاج وقت</option>
-                    <option value="❌ لم يناسبه" ${st.outcome?.includes("لم يناسبه") ? "selected" : ""}>❌ لم يناسبه</option>
+                    <option value="🔥 مهتم وعاوز متابعة" ${(st.outcome?.includes("مهتم") || st.outcome?.includes("متردد")) ? "selected" : ""}>🔥 مهتم وعاوز متابعة</option>
+                    <option value="❌ غير مناسب / استفسار فقط" ${(st.outcome?.includes("غير مناسب") || st.outcome?.includes("لم يناسبه")) ? "selected" : ""}>❌ غير مناسب / استفسار فقط</option>
                   </select>
                 </div>
                 <div>
@@ -4572,6 +4652,11 @@
       async function loadAbsentInvitationsLazy() {
         const exh = getActiveExhibition();
         if (!exh) return;
+        if (exh.id === "ALL") {
+          document.getElementById("admAbsentTbody").innerHTML =
+            `<tr><td colspan="5" style="text-align:center; padding:18px; color:#fcd34d;">⚠️ اختر معرضاً محدداً من الأعلى لعرض قائمة العملاء الغائبين.</td></tr>`;
+          return;
+        }
         if (appState.absentInvitationsLoadedForExh === exh.id) {
           renderAdminAbsentPane();
           return;
@@ -4664,10 +4749,15 @@
           .join("");
       }
 
-      // ==================== DEVOLEPOR_ONLY (LOCKED WITH M-A-L-L-A-M) ====================
-      function unlockExpoDevPanel() {
+      // ==================== DEVOLEPOR_ONLY (LOCKED WITH SERVER_VERIFIED) ====================
+      async function unlockExpoDevPanel() {
         const val = (document.getElementById("expoDevPassInput")?.value || "").trim();
-        if (val !== DEV_PANEL_PASS) return alert("❌ كلمة مرور Devolepor_only غير صحيحة!");
+        if (!val || !appState.sessionToken) return;
+        const { data, error } = await sb.rpc("verify_dev_panel_pass", {
+          p_token: appState.sessionToken,
+          p_pass: val,
+        });
+        if (error || !data?.ok) return alert("❌ " + (data?.message || "كلمة مرور غير صحيحة أو غير مصرّح لك!"));
         appState.expoDevUnlocked = true;
         document.getElementById("expoDevPassInput").value = "";
         renderExpoDevPanel();
@@ -5002,27 +5092,19 @@
       }
 
       async function assignDevRepToStop(checkinId, stopIdx) {
-        const devCo = getDevCompanyForUser(appState.currentUser);
-        if (!devCo) return;
         const repId = document.getElementById(`devAssignSel_${checkinId}_${stopIdx}`)?.value;
-        const rep = getAccountById(repId);
         const chk = appState.checkins.find((c) => c.id === checkinId);
-        if (!rep || !chk) return;
-        const logs = [...(chk.journey_logs || [])];
-        if (!logs[stopIdx]) return;
-        const tag = logs[stopIdx].mandatory_developer ? " ⭐" : "";
-        logs[stopIdx] = {
-          ...logs[stopIdx],
-          stop_name: `🏗️ ${devCo.name} ← ${rep.name} (${rep.code})${tag}`,
-          sales_id: rep.id,
-          sales_code: rep.code,
-          sales_name: rep.name,
-          needs_dev_manual_routing: false,
-        };
+        const stopId = chk?.journey_logs?.[stopIdx]?.stop_id;
+        if (!repId || !stopId) return;
         try {
-          const { error } = await sb.from("exhibition_checkins").update({ journey_logs: logs }).eq("id", checkinId);
-          if (error) throw error;
-          chk.journey_logs = logs;
+          const { data, error } = await sb.rpc("assign_stop_rep_atomic", {
+            p_token: appState.sessionToken,
+            p_checkin_id: checkinId,
+            p_stop_id: stopId,
+            p_rep_id: repId,
+          });
+          if (error || !data?.ok) throw new Error(data?.message || error?.message || "تعذر التوجيه");
+          await loadCheckinsForActiveExh();
           renderDeveloperCompanyView();
         } catch (err) {
           console.error(err);
@@ -5302,13 +5384,18 @@
       }
 
       function printSingleDeveloperReport() {
-        const u = appState.currentUser;
+        const u = getDevCompanyForUser(appState.currentUser);
         const cfg = appState.journeyReportConfig || DEFAULT_REPORT_CONFIG;
+        const exh = getActiveExhibition();
         if (!u) return;
         const rows = [];
+        let deals = 0;
         appState.checkins.forEach((c) => {
           (c.journey_logs || []).forEach((st) => {
-            if (st.developer_id === u.id) rows.push({ c, st });
+            if (st.developer_id === u.id) {
+              if (st.outcome?.includes("اشترى") || st.outcome?.includes("حجز")) deals++;
+              rows.push({ c, st });
+            }
           });
         });
         document.getElementById("printJourneySheetContainer").innerHTML = `
@@ -5316,16 +5403,21 @@
             <div class="jp-header">
               <div style="display:flex; align-items:center; gap:10px;">
                 <img src="Logo_White.png" alt="B.almetr" style="height:34px; width:auto;" onerror="this.style.display='none';" />
-                <div style="font-size:17px; font-weight:900; color:#2dd4bf;">تقرير إنجاز شركة: ${escapeHtml(u.name)}</div>
+                <div>
+                  <div style="font-size:17px; font-weight:900; color:#2dd4bf;">تقرير إنجاز شركة: ${escapeHtml(u.name)} (${escapeHtml(u.code)})</div>
+                  <div style="font-size:11px; color:#94a3b8;">${escapeHtml(exh?.name || "")} — ${new Date().toLocaleDateString("ar-EG")}</div>
+                </div>
               </div>
-              <span class="badge badge-gold">إجمالي القعدات: ${rows.length}</span>
+              <span class="badge badge-gold">قعدات: ${rows.length} | تعاقد/حجز: ${deals}</span>
             </div>
             ${rows
               .map(
                 ({ c, st }, i) => `
               <div class="jp-stop-card dev-stop">
-                <strong>${i + 1}. عميل #${c.seq_number} (${escapeHtml(c.client_name)})</strong> — سيلز: ${escapeHtml(st.sales_name || "-")} — النتيجة: <strong>${escapeHtml(st.outcome || st.status)}</strong>
-                ${st.offer_summary ? `<div class="jp-offer-box">${escapeHtml(st.offer_summary)}</div>` : ""}
+                <strong>${i + 1}. عميل #${c.seq_number} (${escapeHtml(c.client_name)})</strong>
+                ${c.client_phone ? `<span dir="ltr" style="font-size:11px; color:#475569; margin-right:6px;">(${escapeHtml(c.client_phone)})</span>` : ""}
+                — سيلز: <strong>${escapeHtml(st.sales_name || "-")}</strong> — النتيجة: <strong>${escapeHtml(st.outcome || st.status)}</strong>
+                ${st.offer_summary ? `<div class="jp-offer-box">🎁 ${escapeHtml(st.offer_summary)}</div>` : ""}
                 ${st.notes ? `<div style="font-size:11px; color:#475569; margin-top:4px;">📝 ${escapeHtml(st.notes)}</div>` : ""}
               </div>`
               )
@@ -5429,6 +5521,25 @@
           alert("✅ تم النسخ!");
         }
       }
+
+      // Live elapsed-minute refresh (every 30s, zero DB queries & zero input wiping!)
+      setInterval(() => {
+        if (!appState.currentUser) return;
+        document.querySelectorAll(".live-elapsed-min[data-start-ms]").forEach((el) => {
+          const ms = Number(el.getAttribute("data-start-ms"));
+          if (ms > 0) el.textContent = `${Math.max(1, Math.round((Date.now() - ms) / 60000))} د`;
+        });
+      }, 30000);
+
+      window.addEventListener("online", async () => {
+        if (!appState.currentUser) return;
+        setSyncBadge("syncing");
+        await loadCheckinsForActiveExh();
+        setupRealtime();
+        setSyncBadge(true);
+        renderActiveRoleView();
+      });
     </script>
   </body>
 </html>
+Preparing patched web files with replacement verification
