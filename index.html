@@ -1017,6 +1017,9 @@
         <button type="button" class="hs-item" data-adm-pane="admTabSalesDevs" onclick="switchAdmTab('admTabSalesDevs', this)">
           <span class="s-ic">📊</span><span class="s-lbl">إحصائيات السيلز والمطورين</span>
         </button>
+        <button type="button" class="hs-item" data-adm-pane="admTabDevReports" onclick="switchAdmTab('admTabDevReports', this)">
+          <span class="s-ic">🏗️</span><span class="s-lbl">تقارير المطورين (طباعة فردية)</span>
+        </button>
         <button type="button" class="hs-item" data-adm-pane="admTabAbsent" onclick="switchAdmTab('admTabAbsent', this)">
           <span class="s-ic">📵</span><span class="s-lbl">العملاء الغائبين</span>
         </button>
@@ -1372,6 +1375,7 @@
           <button type="button" class="nav-tab-btn" id="admDistTabBtn" style="display: none" onclick="switchAdmTab('admTabDistribution', this)">⚖️ نسب التوزيع لايف</button>
           <button type="button" class="nav-tab-btn" onclick="switchAdmTab('admTabDeals', this)">💰 التعاقدات والعمولات</button>
           <button type="button" class="nav-tab-btn" onclick="switchAdmTab('admTabSalesDevs', this)">📊 السيلز والمطورين</button>
+            <button type="button" class="nav-tab-btn" onclick="switchAdmTab('admTabDevReports', this)">🏗️ تقارير المطورين</button>
           <button type="button" class="nav-tab-btn" onclick="switchAdmTab('admTabAbsent', this)">📵 الغائبين</button>
           <button type="button" class="nav-tab-btn" onclick="switchAdmTab('admTabExport', this)">📥 التصدير</button>
           <button type="button" class="nav-tab-btn" id="admDevOnlyTabBtn" style="display: none" onclick="switchAdmTab('admTabDevOnly', this)">🔒 Devolepor_only</button>
@@ -1476,7 +1480,21 @@
         </div>
 
         <!-- Pane 5: Absent Clients -->
-        <div id="admTabAbsent" class="adm-pane" style="display: none">
+                  <!-- Pane: Individual Developer Reports -->
+          <div id="admTabDevReports" class="adm-pane" style="display: none">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">🏗️ تقارير المطورين — طباعة تقرير كل مطور على حدة</div>
+                <button type="button" class="btn btn-gold btn-sm" onclick="printDevelopersSummaryReport()">🖨️ طباعة تقرير شامل لكل المطورين</button>
+              </div>
+              <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px">
+                في نهاية المعرض، اضغط على زر الطباعة جنب أي مطور عشان تطبعله تقريره المستقل بكل عملاءه وقعداته وتعاقداته.
+              </p>
+              <div id="admDevReportsCards"></div>
+            </div>
+          </div>
+
+          <div id="admTabAbsent" class="adm-pane" style="display: none">
           <div class="card">
             <div class="card-header">
               <div class="card-title" style="color: #fda4af">📵 العملاء الغائبين (<span id="admAbsentCount">0</span>)</div>
@@ -3642,7 +3660,7 @@
 
         // Individual Permission: can_edit_request
         const editBox = document.getElementById("sitEditRequestBox");
-        const canEdit = Boolean(u.can_edit_request) && u.role !== "dev_sales" && u.role !== "developer";
+        const canEdit = (Boolean(u.can_edit_request) || ["manager", "exh_manager", "broker"].includes(appState.activeRole) || u.role === "manager") && u.role !== "dev_sales" && u.role !== "developer";
         if (canEdit) {
           editBox.style.display = "block";
           sitEditReq = {
@@ -4022,6 +4040,7 @@
         toggleExpoMobileSidebar(false);
         if (paneId === "admTabAbsent") loadAbsentInvitationsLazy();
         else if (paneId === "admTabDistribution") renderLiveDistributionEditor();
+        else if (paneId === "admTabDevReports") renderAdminDevReportsPane();
         else if (paneId === "admTabDevOnly") renderExpoDevPanel();
       }
 
@@ -4115,6 +4134,7 @@
         renderAdminDealsAndPayoutsPane();
         renderAdminSalesDevsPane();
         if (activeAdmPane === "admTabDistribution") renderLiveDistributionEditor();
+        if (activeAdmPane === "admTabDevReports") renderAdminDevReportsPane();
         if (activeAdmPane === "admTabAbsent") renderAdminAbsentPane();
       }
 
@@ -4501,6 +4521,13 @@
         const exh = getActiveExhibition();
         const container = document.getElementById("admLiveDistList");
         if (!exh || !container) return;
+        if (exh.id === "ALL") {
+          container.innerHTML = `<div class="alert-banner-red">⚠️ أنت واقف حالياً على <strong>«كل المعارض»</strong> — اختر معرضاً محدداً من الشريط بالأعلى لتعديل وحفظ نسب التوزيع الخاصة به:
+            <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
+              ${appState.exhibitions.map((e) => `<button type="button" class="btn btn-outline btn-sm" onclick="switchActiveExhibition('${e.id}')">📍 ${escapeHtml(e.name)}</button>`).join("")}
+            </div></div>`;
+          return;
+        }
         const savedDist = exh.layout_config?.teamDistribution || {};
         container.innerHTML = appState.teamsList
           .map((t, idx) => {
@@ -4523,6 +4550,9 @@
       async function saveLiveDistributionWeights() {
         const exh = getActiveExhibition();
         if (!exh) return;
+        if (exh.id === "ALL") {
+          return alert("⚠️ اختر معرضاً محدداً من الأعلى أولاً (لا يمكن حفظ النسب على «كل المعارض» دفعة واحدة).");
+        }
         const dist = {};
         appState.teamsList.forEach((t, idx) => {
           const active = document.getElementById(`liveDistActive_${idx}`)?.checked !== false;
@@ -5174,6 +5204,101 @@
 
         document.getElementById("devCompSittingsTbody").innerHTML =
           tableRows.join("") || `<tr><td colspan="8" style="text-align:center; padding:18px; color:var(--text-muted);">لا توجد قعدات مسجلة لشركتك بعد.</td></tr>`;
+      }
+
+
+      function renderAdminDevReportsPane() {
+        const wrap = document.getElementById("admDevReportsCards");
+        if (!wrap) return;
+        const allDevs = appState.accounts.filter((a) => a.role === "developer");
+        const devs = appState.activeExhibitionId === "ALL" ? allDevs : filterAccountsForActiveExh(allDevs);
+        if (devs.length === 0) {
+          wrap.innerHTML = `<div style="text-align:center; padding:18px; color:var(--text-muted);">لا توجد شركات مطورة مسجلة في هذا المعرض.</div>`;
+          return;
+        }
+        wrap.innerHTML = devs
+          .map((d) => {
+            let sittings = 0;
+            let deals = 0;
+            let followups = 0;
+            appState.checkins.forEach((c) => {
+              (c.journey_logs || []).forEach((st) => {
+                if (st.developer_id !== d.id) return;
+                sittings++;
+                if (st.outcome?.includes("اشترى") || st.outcome?.includes("حجز")) deals++;
+                else if (st.outcome?.includes("مهتم") || st.outcome?.includes("متابعة")) followups++;
+              });
+            });
+            return `
+            <div class="journey-card" style="padding:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+              <div>
+                <div style="font-weight:900; font-size:0.95rem; color:var(--primary-bright);">
+                  🏗️ ${escapeHtml(d.name)} <span class="badge badge-mint" style="margin-right:4px;">${escapeHtml(d.code)}</span>
+                </div>
+                <div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">
+                  إجمالي القعدات: <strong style="color:#fff;">${sittings}</strong> &nbsp;|&nbsp;
+                  تعاقد / حجز: <strong style="color:#34d399;">${deals}</strong> &nbsp;|&nbsp;
+                  متابعة: <strong style="color:#fcd34d;">${followups}</strong>
+                </div>
+              </div>
+              <button type="button" class="btn btn-gold btn-sm" onclick="printDeveloperReportById('${d.id}')">
+                🖨️ طباعة تقرير ${escapeHtml(d.name)}
+              </button>
+            </div>`;
+          })
+          .join("");
+      }
+
+      function printDeveloperReportById(devId) {
+        const dev = getAccountById(devId);
+        if (!dev) return;
+        const cfg = appState.journeyReportConfig || DEFAULT_REPORT_CONFIG;
+        const exh = getActiveExhibition();
+        const rows = [];
+        let deals = 0;
+        appState.checkins.forEach((c) => {
+          (c.journey_logs || []).forEach((st) => {
+            if (st.developer_id === dev.id) {
+              if (st.outcome?.includes("اشترى") || st.outcome?.includes("حجز")) deals++;
+              rows.push({ c, st });
+            }
+          });
+        });
+        document.getElementById("printJourneySheetContainer").innerHTML = `
+          <div class="journey-print-sheet">
+            <div class="jp-header">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <img src="Logo_White.png" alt="B.almetr" style="height:34px; width:auto;" onerror="this.style.display='none';" />
+                <div>
+                  <div style="font-size:17px; font-weight:900; color:#2dd4bf;">تقرير إنجاز شركة: ${escapeHtml(dev.name)} (${escapeHtml(dev.code)})</div>
+                  <div style="font-size:11px; color:#94a3b8;">${escapeHtml(exh?.name || "")} — ${new Date().toLocaleDateString("ar-EG")}</div>
+                </div>
+              </div>
+              <span class="badge badge-gold">قعدات: ${rows.length} | تعاقد/حجز: ${deals}</span>
+            </div>
+            ${
+              rows.length === 0
+                ? `<div style="text-align:center; padding:24px; color:#64748b;">لا توجد قعدات مسجلة لهذه الشركة في المعرض المحدد.</div>`
+                : rows
+                    .map(
+                      ({ c, st }, i) => `
+                  <div class="jp-stop-card dev-stop">
+                    <strong>${i + 1}. عميل #${c.seq_number} (${escapeHtml(c.client_name)})</strong>
+                    ${c.client_phone ? `<span dir="ltr" style="font-size:11px; color:#475569; margin-right:6px;">(${escapeHtml(c.client_phone)})</span>` : ""}
+                    — سيلز: <strong>${escapeHtml(st.sales_name || "-")}</strong> — النتيجة: <strong>${escapeHtml(st.outcome || st.status)}</strong>
+                    ${st.offer_summary ? `<div class="jp-offer-box">🎁 ${escapeHtml(st.offer_summary)}</div>` : ""}
+                    ${st.notes ? `<div style="font-size:11px; color:#475569; margin-top:4px;">📝 ${escapeHtml(st.notes)}</div>` : ""}
+                  </div>`
+                    )
+                    .join("")
+            }
+            <div class="jp-footer">
+              <span>B.almetr VIP</span>
+              <span dir="ltr">📞 ${escapeHtml(cfg.hotline || "19000")}</span>
+            </div>
+          </div>`;
+        document.body.classList.add("printing-journey-mode");
+        setTimeout(() => window.print(), 250);
       }
 
       function printSingleDeveloperReport() {
