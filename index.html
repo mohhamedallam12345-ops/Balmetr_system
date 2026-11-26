@@ -2280,7 +2280,7 @@
         if (appState.currentUser) {
           if (confirm("هل تريد تسجيل الخروج؟")) {
             const tok = appState.sessionToken;
-            if (tok) sb.rpc("logout_session", { p_token: tok }).catch(() => {});
+            if (tok) try { sb.rpc("logout_session", { p_token: tok }).then(() => {}, () => {}); } catch (e) {}
             appState.sessionToken = null;
             appState.currentUser = null;
             appState.activeRole = null;
