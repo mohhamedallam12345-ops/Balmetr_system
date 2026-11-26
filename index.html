@@ -1020,8 +1020,8 @@
 
                 <div style="font-size: 0.78rem; font-weight: 800; color: #fcd34d; margin-bottom: 5px">⚙️ النظام المطلوب:</div>
                 <div class="chips-grid" id="recSysChips" style="margin-bottom: 10px">
-                  <div class="chip-btn" onclick="toggleRecSystem('الجمعية', this)">👥 الجمعية (= حصص عقارية)</div>
-                  <div class="chip-btn" onclick="toggleRecSystem('الوديعة', this)">🪙 الوديعة (= عائد بإيجار إلزامي)</div>
+                  <div class="chip-btn" onclick="toggleRecSystem('الجمعية', this)">👥 الجمعية (حصص عقارية)</div>
+                  <div class="chip-btn" onclick="toggleRecSystem('الوديعة', this)">🪙 الوديعة (عائد بإيجار إلزامي)</div>
                   <div class="chip-btn" onclick="toggleRecSystem('الاستلام الفوري', this)">🔑 استلام فوري</div>
                 </div>
               </div>
@@ -1680,10 +1680,10 @@
           el.textContent = text || "⏳ مزامنة...";
         } else if (status === true) {
           el.className = "sync-badge";
-          el.textContent = text || "🟢 لايف";
+          el.textContent = text || "🟢 Live Now";
         } else {
           el.className = "sync-badge offline";
-          el.textContent = text || "🔴 غير متصل";
+          el.textContent = text || "🔴 No Connect";
         }
       }
 
