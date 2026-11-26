@@ -1856,6 +1856,8 @@
         absentInvitationsLoadedForExh: null,
         invitationsCache: [],
         teamsList: ["المعرض", "الجمعية", "الوديعة", "القاهرة"],
+        teamMetaConfig: {},
+        exhRoleOverrides: {},
         teamSalesOrder: {},
         devSalesOrder: {}, // keyed by developerId -> [dev_sales_id, ...]
         devRoutingMode: {}, // keyed by developerId -> "AUTO" | "MANUAL"
@@ -1920,6 +1922,16 @@
             try {
               const p = JSON.parse(row.value);
               if (Array.isArray(p) && p.length > 0) appState.teamsList = p;
+            } catch (e) {}
+          } else if (row.key === "team_meta_config") {
+            try {
+              const p = JSON.parse(row.value);
+              if (p && typeof p === "object") appState.teamMetaConfig = p;
+            } catch (e) {}
+          } else if (row.key === "exh_role_overrides") {
+            try {
+              const p = JSON.parse(row.value);
+              if (p && typeof p === "object") appState.exhRoleOverrides = p;
             } catch (e) {}
           } else if (row.key === "team_sales_order") {
             try {
@@ -2168,9 +2180,31 @@
       }
 
       // ==================== STRICT EXHIBITION LOCK & AUTH ====================
+
+      const NON_SALES_TEAM_HINTS = ["organizing", "manege", "manage", "free", "مطور", "ادارة", "إدارة", "تنظيم", "ريسبشن", "أشر", "اشر"];
+      function isSalesTeamName(teamName) {
+        const cfg = appState.teamMetaConfig?.[teamName];
+        if (cfg && typeof cfg.isSalesTeam === "boolean") return cfg.isSalesTeam;
+        const low = String(teamName || "").trim().toLowerCase();
+        if (!low) return false;
+        return !NON_SALES_TEAM_HINTS.some((h) => low.includes(h));
+      }
+
+      function getSalesTeamsList() {
+        const list = appState.teamsList.filter((t) => isSalesTeamName(t));
+        return list.length > 0 ? list : appState.teamsList;
+      }
+
+      function getExhRoleOverride(acc, exhId = appState.activeExhibitionId) {
+        if (!acc || !exhId || exhId === "ALL") return "";
+        return appState.exhRoleOverrides?.[`${exhId}::${acc.id}`] || "";
+      }
+
       function getUserRoles(u) {
         if (!u) return [];
-        const roles = [u.role];
+        const ovr = getExhRoleOverride(u);
+        const roles = ovr ? [ovr] : [];
+        if (u.role && !roles.includes(u.role)) roles.push(u.role);
         if (Array.isArray(u.expo_roles)) {
           u.expo_roles.forEach((r) => {
             if (r && !roles.includes(r)) roles.push(r);
@@ -2250,12 +2284,11 @@
             appState.sessionToken = data.session_token || null;
             const freshAcc = appState.accountsById.get(data.account.id) || data.account;
             appState.currentUser = { ...freshAcc, ...data.account };
+            document.getElementById("smartLoginPasswordInput").value = "";
+            ensureAllowedExhibition();
             const roles = getUserRoles(appState.currentUser);
             appState.activeRole = roles[0];
             appState.activeLeaderTeam = getLeaderManagedTeams(appState.currentUser)[0] || "المعرض";
-
-            document.getElementById("smartLoginPasswordInput").value = "";
-            ensureAllowedExhibition();
             await Promise.all([
               loadCheckinsForActiveExh(),
               ensureOffersLoadedForUser(appState.currentUser),
@@ -2443,6 +2476,8 @@
 
       function accountHasRole(acc, roleName) {
         if (!acc) return false;
+        const ovr = getExhRoleOverride(acc);
+        if (ovr) return ovr === roleName;
         if (acc.role === roleName) return true;
         return Array.isArray(acc.expo_roles) && acc.expo_roles.includes(roleName);
       }
@@ -3008,8 +3043,9 @@
 
           if (teamReps.length === 0) {
             const dist = exh?.layout_config?.teamDistribution || {};
-            const teamsWithActiveReps = appState.teamsList.filter((t) => getOrderedTeamSales(t).length > 0);
-            const baseTeams = teamsWithActiveReps.length > 0 ? teamsWithActiveReps : appState.teamsList;
+            const salesTeams = getSalesTeamsList();
+            const teamsWithActiveReps = salesTeams.filter((t) => getOrderedTeamSales(t).length > 0);
+            const baseTeams = teamsWithActiveReps.length > 0 ? teamsWithActiveReps : salesTeams;
             const activeTeams = baseTeams.filter((t) => {
               const cfg = dist[t];
               return cfg ? cfg.active !== false && Number(cfg.weight) > 0 : true;
@@ -4604,7 +4640,7 @@
           return;
         }
         const savedDist = exh.layout_config?.teamDistribution || {};
-        container.innerHTML = appState.teamsList
+        container.innerHTML = getSalesTeamsList()
           .map((t, idx) => {
             const cfg = savedDist[t] || { active: true, weight: 1 };
             return `
@@ -4629,7 +4665,7 @@
           return alert("⚠️ اختر معرضاً محدداً من الأعلى أولاً (لا يمكن حفظ النسب على «كل المعارض» دفعة واحدة).");
         }
         const dist = {};
-        appState.teamsList.forEach((t, idx) => {
+        getSalesTeamsList().forEach((t, idx) => {
           const active = document.getElementById(`liveDistActive_${idx}`)?.checked !== false;
           const weight = Math.max(0, parseInt(document.getElementById(`liveDistWeight_${idx}`)?.value || "0", 10) || 0);
           dist[t] = { active, weight };
@@ -5537,4 +5573,3 @@
     </script>
   </body>
 </html>
-
