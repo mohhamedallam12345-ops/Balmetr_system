@@ -1695,6 +1695,17 @@
         }
       }
 
+      function normArName(str) {
+        return String(str || "")
+          .replace(/معرض/g, "")
+          .replace(/[أإآ]/g, "ا")
+          .replace(/ة/g, "ه")
+          .replace(/ى/g, "ي")
+          .replace(/\s+/g, " ")
+          .trim()
+          .toLowerCase();
+      }
+
       async function loadCheckinsForActiveExh() {
         const exh = getActiveExhibition();
         if (!exh) {
@@ -1704,10 +1715,19 @@
         const { data, error } = await sb
           .from("exhibition_checkins")
           .select("*")
-          .eq("exhibition_id", exh.id)
-          .order("created_at_ms", { ascending: false });
+          .order("created_at_ms", { ascending: false })
+          .limit(2500);
         if (!error && data) {
-          appState.checkins = data;
+          if (exh.id === "ALL") {
+            appState.checkins = data;
+          } else {
+            const targetNorm = normArName(exh.name);
+            appState.checkins = data.filter(
+              (c) =>
+                c.exhibition_id === exh.id ||
+                (targetNorm && c.exhibition_name && normArName(c.exhibition_name) === targetNorm)
+            );
+          }
         }
       }
 
@@ -1881,6 +1901,12 @@
       }
 
       function getActiveExhibition() {
+        if (
+          appState.activeExhibitionId === "ALL" &&
+          ["manager", "exh_manager"].includes(appState.activeRole)
+        ) {
+          return { id: "ALL", name: "كل المعارض" };
+        }
         ensureAllowedExhibition();
         return appState.exhibitions.find((e) => e.id === appState.activeExhibitionId) || null;
       }
@@ -2002,12 +2028,17 @@
           document.getElementById("exhPillsContainer").innerHTML =
             `<span class="pill-btn active" style="cursor:default;">🔒 ${escapeHtml(active?.name || "-")}</span>`;
         } else {
-          document.getElementById("exhPillsContainer").innerHTML = allowedExhs
-            .map(
-              (e) =>
-                `<button type="button" class="pill-btn ${e.id === active?.id ? "active" : ""}" onclick="switchActiveExhibition('${e.id}')">📍 ${escapeHtml(e.name)}</button>`
-            )
-            .join("");
+          const showAllBtn = ["manager", "exh_manager"].includes(appState.activeRole)
+            ? `<button type="button" class="pill-btn ${active?.id === "ALL" ? "active-gold" : ""}" onclick="switchActiveExhibition('ALL')">🌍 كل المعارض</button>`
+            : "";
+          document.getElementById("exhPillsContainer").innerHTML =
+            showAllBtn +
+            allowedExhs
+              .map(
+                (e) =>
+                  `<button type="button" class="pill-btn ${e.id === active?.id ? "active" : ""}" onclick="switchActiveExhibition('${e.id}')">📍 ${escapeHtml(e.name)}</button>`
+              )
+              .join("");
         }
         document.querySelectorAll(".active-exh-name").forEach((el) => {
           el.textContent = active ? active.name : "-";
@@ -4347,7 +4378,6 @@
         try {
           const parsed = JSON.parse(await file.text());
 
-          // Detect Invitations-only backup (e.g. system23_11.json)
           if (!parsed.checkins && !Array.isArray(parsed) && (parsed.invitations || parsed.salesTeam)) {
             stEl.textContent =
               "⚠️ هذا الملف نسخة دعوات (مثل system23_11.json) وليس سجلات حضور — ارفعه في سيستم الدعوات (index.html) وسيتزامن تلقائياً هنا.";
@@ -4355,16 +4385,11 @@
             return;
           }
 
-          // Fetch all existing checkin IDs across all exhibitions to avoid duplicates
-          const { data: existingAll } = await sb.from("exhibition_checkins").select("id");
-          const existingIds = new Set((existingAll || []).map((x) => x.id));
-
-          // Helper: find Supabase exhibition by name or ID
-          const exhByName = new Map();
           const exhById = new Map();
+          const exhByNorm = new Map();
           (appState.exhibitions || []).forEach((e) => {
             exhById.set(String(e.id), e);
-            exhByName.set(String(e.name || "").trim(), e);
+            exhByNorm.set(normArName(e.name), e);
           });
           const accByCode = new Map();
           (appState.accounts || []).forEach((a) => {
@@ -4375,15 +4400,18 @@
             parsed.backupType === "BALMETR_VIP_RECEPTION_DB_V11" ||
             (parsed.checkins && !Array.isArray(parsed.checkins) && typeof parsed.checkins === "object");
 
-          let toInsert = [];
-          let skippedDup = 0;
+          const toUpsert = [];
+          const perExhCounts = {};
           let skippedInvalid = 0;
           let totalRaw = 0;
 
           if (isLegacyV11) {
             const entries = Object.entries(parsed.checkins || {});
             totalRaw = entries.length;
-            const fallbackExh = getActiveExhibition() || appState.exhibitions[0] || null;
+            const fallbackExh =
+              appState.exhibitions.find((e) => e.id === appState.activeExhibitionId) ||
+              appState.exhibitions[0] ||
+              null;
 
             for (const [key, item] of entries) {
               if (!item || key === "undefined" || !item.clientName) {
@@ -4395,14 +4423,17 @@
                 skippedInvalid++;
                 continue;
               }
-              if (existingIds.has(rowId)) {
-                skippedDup++;
-                continue;
-              }
-              existingIds.add(rowId);
 
-              const exhNameTrim = String(item.exhibitionName || "").trim();
-              let matchedExh = exhByName.get(exhNameTrim) || exhById.get(String(item.exhibitionId || "")) || fallbackExh;
+              const itemNorm = normArName(item.exhibitionName || "");
+              let matchedExh =
+                exhByNorm.get(itemNorm) ||
+                exhById.get(String(item.exhibitionId || "")) ||
+                (appState.exhibitions || []).find((e) => {
+                  const en = normArName(e.name);
+                  return itemNorm && en && (en.includes(itemNorm) || itemNorm.includes(en));
+                }) ||
+                fallbackExh;
+
               if (!matchedExh) {
                 skippedInvalid++;
                 continue;
@@ -4412,8 +4443,12 @@
               const origAcc = origCode && origCode !== "-" ? accByCode.get(origCode) : null;
               const firstCodeRaw = String(item.firstSplitCode || "COMPANY").trim();
               const firstCode = firstCodeRaw === "COMPANY" ? "COMPANY" : firstCodeRaw.toUpperCase();
-              const firstName = String(item.firstSplitName || (firstCode === "COMPANY" ? "عميل شركة (BM)" : firstCode)).trim();
-              const firstType = String(item.firstSplitType || (firstCode === "COMPANY" ? "شركة مباشر" : "صاحب الدعوة")).trim();
+              const firstName = String(
+                item.firstSplitName || (firstCode === "COMPANY" ? "عميل شركة (BM)" : firstCode)
+              ).trim();
+              const firstType = String(
+                item.firstSplitType || (firstCode === "COMPANY" ? "شركة مباشر" : "صاحب الدعوة")
+              ).trim();
 
               const logs = [];
               const sittingsObj = item.sittings && typeof item.sittings === "object" ? item.sittings : {};
@@ -4422,7 +4457,10 @@
                 const sCode = String(s.salesCode || sKey || "").trim().toUpperCase();
                 const sAcc = accByCode.get(sCode) || null;
                 const sName = String(s.salesName || sAcc?.name || sCode || "سيلز").trim();
-                const offerParts = [String(s.projectName || "").trim(), String(s.projectArea || "").trim()].filter(Boolean);
+                const offerParts = [
+                  String(s.projectName || "").trim(),
+                  String(s.projectArea || "").trim(),
+                ].filter(Boolean);
                 logs.push({
                   stop_id: `st_leg_${rowId}_${sCode || logs.length}`,
                   stop_name: `💼 ${sName}${sCode ? ` (${sCode})` : ""}`,
@@ -4448,7 +4486,9 @@
               if (item.receptionNotes) notesParts.push(String(item.receptionNotes).trim());
               if (item.companionOfName) notesParts.push(`مرافق مع: ${String(item.companionOfName).trim()}`);
 
-              toInsert.push({
+              perExhCounts[matchedExh.name] = (perExhCounts[matchedExh.name] || 0) + 1;
+
+              toUpsert.push({
                 id: rowId,
                 exhibition_id: matchedExh.id,
                 exhibition_name: matchedExh.name,
@@ -4491,12 +4531,9 @@
                 skippedInvalid++;
                 continue;
               }
-              if (existingIds.has(r.id)) {
-                skippedDup++;
-                continue;
-              }
-              existingIds.add(r.id);
-              toInsert.push(r);
+              const eName = r.exhibition_name || "غير محدد";
+              perExhCounts[eName] = (perExhCounts[eName] || 0) + 1;
+              toUpsert.push(r);
             }
           }
 
@@ -4506,37 +4543,39 @@
             return;
           }
 
-          stEl.textContent = `⏳ جاري رفع ${toInsert.length} سجل حضور جديد (من أصل ${totalRaw})...`;
-          let added = 0;
+          stEl.textContent = `⏳ جاري دمج وتحديث ${toUpsert.length} سجل حضور...`;
+          let saved = 0;
           let failed = 0;
           let sampleErr = "";
-          for (let i = 0; i < toInsert.length; i += 50) {
-            const batch = toInsert.slice(i, i + 50);
-            const { error } = await sb.from("exhibition_checkins").upsert(batch);
+          for (let i = 0; i < toUpsert.length; i += 50) {
+            const batch = toUpsert.slice(i, i + 50);
+            const { error } = await sb.from("exhibition_checkins").upsert(batch, { onConflict: "id" });
             if (!error) {
-              added += batch.length;
+              saved += batch.length;
             } else {
               for (const row of batch) {
-                const { error: rowErr } = await sb.from("exhibition_checkins").upsert(row);
-                if (!rowErr) added++;
+                const { error: rowErr } = await sb.from("exhibition_checkins").upsert(row, { onConflict: "id" });
+                if (!rowErr) saved++;
                 else {
                   failed++;
                   if (!sampleErr) sampleErr = rowErr.message || String(rowErr.code || "");
                 }
               }
             }
-            stEl.textContent = `⏳ تم رفع ${added} من ${toInsert.length}...`;
+            stEl.textContent = `⏳ تم حفظ/تحديث ${saved} من ${toUpsert.length}...`;
           }
 
+          appState.activeExhibitionId = "ALL";
           await loadCheckinsForActiveExh();
-          renderAdminRadarView();
-          const summary =
-            `✅ اكتمل الاستيراد (${isLegacyV11 ? "نسخة قديمة V11" : "نسخة حديثة"}): ` +
-            `تمت إضافة ${added} سجل` +
-            (skippedDup ? ` | متكرر: ${skippedDup}` : "") +
-            (skippedInvalid ? ` | تالف/تخطي: ${skippedInvalid}` : "") +
-            (failed ? ` | فشل: ${failed}${sampleErr ? ` (${sampleErr})` : ""}` : "");
-          stEl.textContent = summary;
+          renderChromeAndRoute();
+          const distText = Object.entries(perExhCounts)
+            .map(([n, c]) => `${n}: ${c}`)
+            .join(" | ");
+          stEl.textContent =
+            `✅ تم حفظ وتحديث ${saved} سجل بنجاح` +
+            (skippedInvalid ? ` (تخطي تالف: ${skippedInvalid})` : "") +
+            (failed ? ` | فشل: ${failed}${sampleErr ? ` (${sampleErr})` : ""}` : "") +
+            (distText ? ` — التوزيع: ${distText}` : "");
           event.target.value = "";
         } catch (err) {
           console.error(err);
