@@ -1385,18 +1385,58 @@
       <section id="developerCompanyView" style="display: none">
         <div class="card">
           <div class="card-header">
-            <div class="card-title" id="devCompHeaderTitle">🏗️ لوحة الشركة المطورة</div>
-            <button type="button" class="btn btn-gold btn-sm" onclick="printSingleDeveloperReport()">🖨️ طباعة تقرير شركتي</button>
+            <div class="card-title" id="devCompHeaderTitle">🏗️ لوحة مدير الشركة المطورة</div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center">
+              <button type="button" id="devModeAutoBtn" class="btn btn-success btn-sm" onclick="setDeveloperRoutingMode('AUTO')">
+                ⚡ توزيع تلقائي (حسب القوة)
+              </button>
+              <button type="button" id="devModeManualBtn" class="btn btn-outline btn-sm" onclick="setDeveloperRoutingMode('MANUAL')">
+                🖐️ توزيع يدوي (مدير المطور)
+              </button>
+              <button type="button" class="btn btn-gold btn-sm" onclick="printSingleDeveloperReport()">
+                🖨️ طباعة تقرير شركتي
+              </button>
+            </div>
           </div>
+
           <div class="kpi-grid" id="devCompKpiGrid"></div>
+
+          <!-- Incoming Clients & Manual Routing Queue -->
+          <div class="panel-box" style="margin-bottom: 14px; border-color: rgba(45, 212, 191, 0.35)">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 10px">
+              <div style="font-size: 0.9rem; font-weight: 900; color: #fcd34d">
+                🔔 عملاء جايين لك الآن / في قعدات حالياً (<span id="devCompIncomingCount">0</span>)
+              </div>
+              <span id="devCompModeBadge" class="badge badge-mint">⚡ توزيع تلقائي حسب القوة</span>
+            </div>
+            <div id="devCompIncomingCards"></div>
+          </div>
+
+          <!-- Developer Sales Live Status & Strength Ordering -->
+          <div class="panel-box" style="margin-bottom: 14px">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 8px">
+              <div style="font-size: 0.88rem; font-weight: 900; color: var(--primary-bright)">
+                ⚡ ترتيب قوة سيلز الشركة (من الأقوى للأضعف — للتوزيع التلقائي)
+              </div>
+              <span id="devOrderSaveStatus" style="font-size: 0.76rem; font-weight: 800; color: var(--primary-bright)"></span>
+            </div>
+            <div id="devCompSalesOrderList"></div>
+          </div>
+
+          <!-- Full Detailed Sittings Table -->
+          <div style="font-size: 0.88rem; font-weight: 900; color: var(--primary-bright); margin-bottom: 8px">
+            📋 سجل كل عملاء وقعدات الشركة بالتفاصيل
+          </div>
           <div class="table-responsive">
             <table>
               <thead>
                 <tr>
                   <th>كود العميل</th>
-                  <th>العميل</th>
+                  <th>العميل والتليفون</th>
+                  <th>طلب العميل (الريكويست)</th>
+                  <th>الأشر</th>
                   <th>سيلز الشركة</th>
-                  <th>النتيجة</th>
+                  <th>الحالة / النتيجة</th>
                   <th>العرض</th>
                   <th>الملاحظات</th>
                 </tr>
@@ -1594,6 +1634,8 @@
         invitationsCache: [],
         teamsList: ["المعرض", "الجمعية", "الوديعة", "القاهرة"],
         teamSalesOrder: {},
+        devSalesOrder: {}, // keyed by developerId -> [dev_sales_id, ...]
+        devRoutingMode: {}, // keyed by developerId -> "AUTO" | "MANUAL"
         exhRoutingMode: {}, // keyed by exhId -> "AUTO" | "MANUAL"
         offersByOwner: new Map(),
         journeyReportConfig: { ...DEFAULT_REPORT_CONFIG },
@@ -1667,6 +1709,16 @@
               if (p && typeof p === "object") {
                 appState.journeyReportConfig = { ...DEFAULT_REPORT_CONFIG, ...p };
               }
+            } catch (e) {}
+          } else if (row.key === "dev_sales_order") {
+            try {
+              const p = JSON.parse(row.value);
+              if (p && typeof p === "object") appState.devSalesOrder = p;
+            } catch (e) {}
+          } else if (row.key === "dev_routing_mode") {
+            try {
+              const p = JSON.parse(row.value);
+              if (p && typeof p === "object") appState.devRoutingMode = p;
             } catch (e) {}
           } else if (row.key.startsWith("exh_routing_mode::")) {
             appState.exhRoutingMode[row.key.replace("exh_routing_mode::", "")] = row.value;
@@ -1771,6 +1823,18 @@
             (st) => st.status === "IN_TRANSIT" && stopBelongsToUser(st, u)
           );
           if (isIncomingNow && !wasIncoming) playLoudAlert("INCOMING");
+        } else if (r === "developer") {
+          const devStopsNow = (newRow.journey_logs || []).filter((st) => st.developer_id === u.id && st.status !== "DONE");
+          const devStopsOld = (oldRow?.journey_logs || []).filter((st) => st.developer_id === u.id && st.status !== "DONE");
+          const needsDevManualNow = devStopsNow.some((st) => st.needs_dev_manual_routing && !st.sales_id);
+          const hadDevManual = devStopsOld.some((st) => st.needs_dev_manual_routing && !st.sales_id);
+          if (needsDevManualNow && !hadDevManual) {
+            playLoudAlert("URGENT");
+          } else {
+            const incomingNow = devStopsNow.some((st) => st.status === "IN_TRANSIT" || st.status === "PENDING");
+            const wasIncoming = devStopsOld.some((st) => st.status === "IN_TRANSIT" || st.status === "PENDING");
+            if (incomingNow && !wasIncoming) playLoudAlert("INCOMING");
+          }
         } else if (["exh_manager", "manager"].includes(r)) {
           const needsManual = (newRow.journey_logs || []).some((st) => st.needs_manual_routing && st.status !== "DONE");
           const hadManual = (oldRow?.journey_logs || []).some((st) => st.needs_manual_routing && st.status !== "DONE");
@@ -2224,7 +2288,7 @@
         if (!st || !u) return false;
         if (st.sales_id === u.id) return true;
         if (appState.activeRole === "broker" && st.stop_type === "BROKER") return true;
-        if (u.role === "dev_sales" && st.developer_id === u.parent_admin_id) return true;
+        if (u.role === "dev_sales" && st.developer_id === u.parent_admin_id && !st.sales_id && !st.needs_dev_manual_routing) return true;
         return false;
       }
 
@@ -2718,22 +2782,61 @@
           });
         }
 
+        // Helper: build developer stop with Strength-Based Auto Routing OR Developer Manager Manual Routing
+        const makeDevStop = (dev, forcedDevSalesAcc = null, isMandatory = false) => {
+          const isDevManual = appState.devRoutingMode?.[dev.id] === "MANUAL";
+          const tag = isMandatory ? " ⭐" : "";
+          if (forcedDevSalesAcc && isAccountInActiveExhibition(forcedDevSalesAcc)) {
+            return {
+              stop_id: `st_${Date.now()}_${dev.code}_${Math.random().toString(36).slice(2, 5)}`,
+              stop_name: `🏗️ ${dev.name} ← ${forcedDevSalesAcc.name} (${forcedDevSalesAcc.code})${tag}`,
+              stop_type: "DEVELOPER",
+              developer_id: dev.id,
+              mandatory_developer: isMandatory,
+              needs_dev_manual_routing: false,
+              sales_id: forcedDevSalesAcc.id,
+              sales_code: forcedDevSalesAcc.code,
+              sales_name: forcedDevSalesAcc.name,
+              status: "PENDING",
+            };
+          }
+          if (isDevManual) {
+            return {
+              stop_id: `st_${Date.now()}_${dev.code}_${Math.random().toString(36).slice(2, 5)}`,
+              stop_name: `🏗️ ${dev.name} (بانتظار توجيه مدير المطور)${tag}`,
+              stop_type: "DEVELOPER",
+              developer_id: dev.id,
+              mandatory_developer: isMandatory,
+              needs_dev_manual_routing: true,
+              sales_id: null,
+              sales_code: dev.code,
+              sales_name: `${dev.name} (بانتظار التوجيه)`,
+              status: "PENDING",
+            };
+          }
+          const chosenDevRep = pickAutoDeveloperRep(dev.id);
+          return {
+            stop_id: `st_${Date.now()}_${dev.code}_${Math.random().toString(36).slice(2, 5)}`,
+            stop_name: chosenDevRep
+              ? `🏗️ ${dev.name} ← ${chosenDevRep.name} (${chosenDevRep.code})${tag}`
+              : `🏗️ ${dev.name}${tag}`,
+            stop_type: "DEVELOPER",
+            developer_id: dev.id,
+            mandatory_developer: isMandatory,
+            needs_dev_manual_routing: false,
+            sales_id: chosenDevRep?.id || null,
+            sales_code: chosenDevRep?.code || dev.code,
+            sales_name: chosenDevRep?.name || dev.name,
+            status: "PENDING",
+          };
+        };
+
         // MANDATORY DEVELOPER STOP: If client came from a Developer / Dev_sales, they MUST visit that Developer even if request changes!
         if (ownerAcc && (ownerAcc.role === "developer" || ownerAcc.role === "dev_sales")) {
           const dev =
             ownerAcc.role === "dev_sales" ? getAccountById(ownerAcc.parent_admin_id) : ownerAcc;
           if (dev) {
-            stops.push({
-              stop_id: `st_${Date.now()}_mdev`,
-              stop_name: `🏗️ ${dev.name} (المطور الداعي ⭐)`,
-              stop_type: "DEVELOPER",
-              developer_id: dev.id,
-              mandatory_developer: true,
-              sales_id: ownerAcc.role === "dev_sales" ? ownerAcc.id : null,
-              sales_code: ownerAcc.code,
-              sales_name: ownerAcc.name,
-              status: "PENDING",
-            });
+            stops.push(makeDevStop(dev, ownerAcc.role === "dev_sales" ? ownerAcc : null, true));
           }
         }
 
@@ -2744,16 +2847,7 @@
           activeDevs.forEach((d) => {
             if (stops.some((st) => st.developer_id === d.id)) return;
             if (doesDeveloperMatchSpec(d, specInventory, systems)) {
-              stops.push({
-                stop_id: `st_${Date.now()}_${d.code}`,
-                stop_name: `🏗️ ${d.name}`,
-                stop_type: "DEVELOPER",
-                developer_id: d.id,
-                sales_id: null,
-                sales_code: d.code,
-                sales_name: d.name,
-                status: "PENDING",
-              });
+              stops.push(makeDevStop(d, null, false));
             }
           });
         }
@@ -4584,34 +4678,285 @@
         }
       }
 
-      // ==================== 6. DEVELOPER COMPANY VIEW ====================
+      // ==================== 6. DEVELOPER COMPANY VIEW (MANAGER + STRENGTH ORDER + AUTO/MANUAL) ====================
+      function getOrderedDeveloperSales(developerId) {
+        const allDevReps = appState.accounts.filter(
+          (a) => a.role === "dev_sales" && a.parent_admin_id === developerId
+        );
+        const activeDevReps = filterAccountsForActiveExh(allDevReps, true);
+        const pool = activeDevReps.length > 0 ? activeDevReps : allDevReps;
+        const order = Array.isArray(appState.devSalesOrder?.[developerId])
+          ? appState.devSalesOrder[developerId]
+          : [];
+        const orderMap = new Map(order.map((id, idx) => [id, idx]));
+        return [...pool].sort((a, b) => {
+          const ia = orderMap.has(a.id) ? orderMap.get(a.id) : 9999;
+          const ib = orderMap.has(b.id) ? orderMap.get(b.id) : 9999;
+          if (ia !== ib) return ia - ib;
+          return String(a.code || "").localeCompare(String(b.code || ""));
+        });
+      }
+
+      function pickAutoDeveloperRep(developerId) {
+        const ordered = getOrderedDeveloperSales(developerId);
+        if (ordered.length === 0) return null;
+        const freeRep = ordered.find((r) => getRepLiveState(r.id) === "FREE");
+        if (freeRep) return freeRep;
+        const notLive = ordered.find((r) => getRepLiveState(r.id) !== "LIVE");
+        return notLive || ordered[0];
+      }
+
+      async function setDeveloperRoutingMode(mode) {
+        const u = appState.currentUser;
+        if (!u || u.role !== "developer") return;
+        appState.devRoutingMode = { ...(appState.devRoutingMode || {}), [u.id]: mode };
+        renderDeveloperCompanyView();
+        try {
+          await sb.from("system_settings").upsert({
+            key: "dev_routing_mode",
+            value: JSON.stringify(appState.devRoutingMode),
+          });
+        } catch (err) {
+          console.error(err);
+          alert("❌ تعذر حفظ وضع التوزيع");
+        }
+      }
+
+      async function moveDevSalesOrder(salesId, direction) {
+        const u = appState.currentUser;
+        if (!u || u.role !== "developer") return;
+        const ordered = getOrderedDeveloperSales(u.id);
+        const ids = ordered.map((r) => r.id);
+        const idx = ids.indexOf(salesId);
+        if (idx < 0) return;
+
+        if (direction === "TOP") {
+          if (idx === 0) return;
+          ids.splice(idx, 1);
+          ids.unshift(salesId);
+        } else {
+          const targetIdx = idx + direction;
+          if (targetIdx < 0 || targetIdx >= ids.length) return;
+          const tmp = ids[idx];
+          ids[idx] = ids[targetIdx];
+          ids[targetIdx] = tmp;
+        }
+
+        appState.devSalesOrder = { ...(appState.devSalesOrder || {}), [u.id]: ids };
+        const stEl = document.getElementById("devOrderSaveStatus");
+        if (stEl) stEl.textContent = "⏳ جاري الحفظ...";
+        renderDeveloperCompanyView();
+        try {
+          const { error } = await sb.from("system_settings").upsert({
+            key: "dev_sales_order",
+            value: JSON.stringify(appState.devSalesOrder),
+          });
+          if (error) throw error;
+          if (stEl) stEl.textContent = "✅ تم حفظ ترتيب القوة تلقائياً";
+        } catch (err) {
+          console.error(err);
+          if (stEl) stEl.textContent = "❌ تعذر الحفظ";
+        }
+      }
+
+      async function assignDevRepToStop(checkinId, stopIdx) {
+        const u = appState.currentUser;
+        if (!u || u.role !== "developer") return;
+        const repId = document.getElementById(`devAssignSel_${checkinId}_${stopIdx}`)?.value;
+        const rep = getAccountById(repId);
+        const chk = appState.checkins.find((c) => c.id === checkinId);
+        if (!rep || !chk) return;
+        const logs = [...(chk.journey_logs || [])];
+        if (!logs[stopIdx]) return;
+        const tag = logs[stopIdx].mandatory_developer ? " ⭐" : "";
+        logs[stopIdx] = {
+          ...logs[stopIdx],
+          stop_name: `🏗️ ${u.name} ← ${rep.name} (${rep.code})${tag}`,
+          sales_id: rep.id,
+          sales_code: rep.code,
+          sales_name: rep.name,
+          needs_dev_manual_routing: false,
+        };
+        try {
+          const { error } = await sb.from("exhibition_checkins").update({ journey_logs: logs }).eq("id", checkinId);
+          if (error) throw error;
+          chk.journey_logs = logs;
+          renderDeveloperCompanyView();
+        } catch (err) {
+          console.error(err);
+          alert("❌ تعذر تحديث التوجيه: " + (err.message || ""));
+        }
+      }
+
       function renderDeveloperCompanyView() {
         const u = appState.currentUser;
         if (!u) return;
-        document.getElementById("devCompHeaderTitle").textContent = `🏗️ لوحة شركة: ${u.name} (${u.code})`;
-        const rows = [];
+        document.getElementById("devCompHeaderTitle").textContent = `🏗️ لوحة مدير شركة: ${u.name} (${u.code})`;
+
+        const isManual = appState.devRoutingMode?.[u.id] === "MANUAL";
+        const autoBtn = document.getElementById("devModeAutoBtn");
+        const manBtn = document.getElementById("devModeManualBtn");
+        const badgeEl = document.getElementById("devCompModeBadge");
+        if (autoBtn) autoBtn.className = !isManual ? "btn btn-success btn-sm" : "btn btn-outline btn-sm";
+        if (manBtn) manBtn.className = isManual ? "btn btn-gold btn-sm" : "btn btn-outline btn-sm";
+        if (badgeEl) {
+          badgeEl.className = isManual ? "badge badge-gold" : "badge badge-mint";
+          badgeEl.textContent = isManual ? "🖐️ توزيع يدوي (مدير المطور يختار)" : "⚡ توزيع تلقائي (حسب القوة)";
+        }
+
+        const devReps = getOrderedDeveloperSales(u.id);
+        const incomingItems = [];
+        const tableRows = [];
         let deals = 0;
+        let pendingManualCount = 0;
+
         appState.checkins.forEach((c) => {
-          (c.journey_logs || []).forEach((st) => {
-            if (st.developer_id === u.id) {
-              if (st.outcome?.includes("اشترى") || st.outcome?.includes("حجز")) deals++;
-              rows.push(`<tr>
-                <td><strong>#${c.seq_number}</strong></td>
-                <td>${escapeHtml(c.client_name)}</td>
-                <td>${escapeHtml(st.sales_name || "-")}</td>
-                <td><span class="badge badge-gold">${escapeHtml(st.outcome || st.status)}</span></td>
-                <td style="font-size:0.78rem;">${escapeHtml(st.offer_summary || "-")}</td>
-                <td style="font-size:0.78rem;">${escapeHtml(st.notes || "-")}</td>
-              </tr>`);
+          (c.journey_logs || []).forEach((st, idx) => {
+            if (st.developer_id !== u.id) return;
+            if (st.outcome?.includes("اشترى") || st.outcome?.includes("حجز")) deals++;
+            if (st.needs_dev_manual_routing && !st.sales_id && st.status !== "DONE") pendingManualCount++;
+
+            if (st.status !== "DONE" && c.journey_status !== "COMPLETED") {
+              incomingItems.push({ c, st, idx });
             }
+
+            const reqSummary = [c.interested_area, c.investment_type, c.preferred_system]
+              .filter((x) => x && x !== "غير محدد")
+              .join(" • ") || "-";
+            const statusText =
+              st.outcome ||
+              (st.status === "LIVE"
+                ? "🟢 في القعدة الآن"
+                : st.status === "IN_TRANSIT"
+                ? "🚶 في الطريق لك"
+                : st.needs_dev_manual_routing && !st.sales_id
+                ? "🖐️ بانتظار توجيهك"
+                : "⏳ قادم في خط السير");
+
+            tableRows.push(`<tr>
+              <td><strong>#${c.seq_number}</strong></td>
+              <td>
+                <div style="font-weight:800;">${escapeHtml(c.client_name)}</div>
+                <div dir="ltr" style="font-size:0.74rem; color:var(--primary-bright);">${escapeHtml(c.client_phone || "")}</div>
+              </td>
+              <td style="font-size:0.76rem;">${escapeHtml(reqSummary)}</td>
+              <td style="font-size:0.76rem;">${escapeHtml(c.assigned_usher_name || "-")}</td>
+              <td><span class="badge badge-mint">${escapeHtml(st.sales_name || "غير محدد")}</span></td>
+              <td><span class="badge ${st.status === "LIVE" ? "badge-success" : "badge-gold"}">${escapeHtml(statusText)}</span></td>
+              <td style="font-size:0.78rem;">${escapeHtml(st.offer_summary || "-")}</td>
+              <td style="font-size:0.78rem;">${escapeHtml(st.notes || "-")}</td>
+            </tr>`);
           });
         });
 
         document.getElementById("devCompKpiGrid").innerHTML = `
-          <div class="kpi-card"><div class="label">إجمالي القعدات مع شركتك</div><div class="val">${rows.length}</div></div>
+          <div class="kpi-card"><div class="label">عملاء جايين / لايف الآن</div><div class="val" style="color:#fcd34d;">${incomingItems.length}</div></div>
+          <div class="kpi-card"><div class="label">بانتظار توجيهك اليدوي</div><div class="val" style="color:${pendingManualCount > 0 ? "#fb7185" : "#94a3b8"};">${pendingManualCount}</div></div>
+          <div class="kpi-card"><div class="label">إجمالي القعدات</div><div class="val">${tableRows.length}</div></div>
           <div class="kpi-card"><div class="label">تعاقدات / حجوزات</div><div class="val" style="color:#34d399;">${deals}</div></div>`;
+
+        const incCountEl = document.getElementById("devCompIncomingCount");
+        if (incCountEl) incCountEl.textContent = incomingItems.length;
+
+        const incWrap = document.getElementById("devCompIncomingCards");
+        if (incWrap) {
+          if (incomingItems.length === 0) {
+            incWrap.innerHTML = `<div style="text-align:center; padding:14px; color:var(--text-muted); font-size:0.82rem;">لا يوجد عملاء متجهين لشركتك حالياً — أول ما عميل يتوجهلك هيظهرلك هنا فوراً بتفاصيله وبالتنبيه الصوتي.</div>`;
+          } else {
+            incWrap.innerHTML = incomingItems
+              .map(({ c, st, idx }) => {
+                const reqSummary = [c.interested_area, c.investment_type, c.preferred_system]
+                  .filter((x) => x && x !== "غير محدد")
+                  .join(" • ") || "غير محدد";
+                const needsAssign = st.needs_dev_manual_routing && !st.sales_id;
+                const stBadge =
+                  st.status === "LIVE"
+                    ? `<span class="badge-live">🟢 قاعد حالياً (${formatElapsedMinutes(st.started_at_ms)})</span>`
+                    : st.status === "IN_TRANSIT"
+                    ? `<span class="badge badge-gold">🚶 عميل جايلك في الطريق الآن!</span>`
+                    : needsAssign
+                    ? `<span class="badge badge-danger">🖐️ مطلوب اختيار سيلز للعميل</span>`
+                    : `<span class="badge badge-info">⏳ قادم لك في خط السير</span>`;
+
+                const repOpts = devReps
+                  .map((r) => {
+                    const liveSt = getRepLiveState(r.id);
+                    const lbl = liveSt === "FREE" ? "🟢 متاح" : liveSt === "LIVE" ? "🔴 مشغول" : "🚶 جايله عميل";
+                    return `<option value="${r.id}" ${st.sales_id === r.id ? "selected" : ""}>${escapeHtml(r.name)} (${escapeHtml(r.code)}) — ${lbl}</option>`;
+                  })
+                  .join("");
+
+                return `
+                <div class="journey-card" style="padding:12px; margin-bottom:10px; ${needsAssign ? "border-color:rgba(251,113,133,0.6);" : ""}">
+                  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
+                    <div>
+                      <strong style="color:#fcd34d;">#${c.seq_number}</strong>
+                      <strong style="margin-right:6px;">${escapeHtml(c.client_name)}</strong>
+                      <span dir="ltr" style="color:var(--primary-bright); font-size:0.78rem; margin-right:6px;">${escapeHtml(c.client_phone || "")}</span>
+                    </div>
+                    ${stBadge}
+                  </div>
+                  <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:6px;">
+                    📍 <strong>الطلب:</strong> ${escapeHtml(reqSummary)} &nbsp;|&nbsp; 🚶 <strong>الأشر:</strong> <span style="color:#fff;">${escapeHtml(c.assigned_usher_name || "-")}</span>
+                    ${c.reception_notes ? `<div style="margin-top:3px; color:#fcd34d;">📝 ملاحظة: ${escapeHtml(c.reception_notes)}</div>` : ""}
+                  </div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; padding-top:7px; border-top:1px solid rgba(45,212,191,0.12);">
+                    <div style="font-size:0.8rem;">
+                      💼 <strong>رايح لـ:</strong> <span class="badge badge-mint">${escapeHtml(st.sales_name || "لم يتم التحديد بعد")}</span>
+                    </div>
+                    ${
+                      st.status !== "LIVE" && devReps.length > 0
+                        ? `<div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                            <select id="devAssignSel_${c.id}_${idx}" class="form-control" style="width:auto; padding:5px 9px; font-size:0.78rem;">
+                              ${repOpts}
+                            </select>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="assignDevRepToStop('${c.id}', ${idx})">توجيه ✅</button>
+                          </div>`
+                        : ""
+                    }
+                  </div>
+                </div>`;
+              })
+              .join("");
+          }
+        }
+
+        const orderWrap = document.getElementById("devCompSalesOrderList");
+        if (orderWrap) {
+          if (devReps.length === 0) {
+            orderWrap.innerHTML = `<div style="text-align:center; padding:12px; color:var(--text-muted); font-size:0.8rem;">لا يوجد سيلز مسجلين لشركتك بعد — أضفهم من لوحة الشركة في سيستم الدعوات.</div>`;
+          } else {
+            orderWrap.innerHTML = devReps
+              .map((r, idx) => {
+                const liveSt = getRepLiveState(r.id);
+                const statusBadge =
+                  liveSt === "FREE"
+                    ? `<span class="badge badge-success">🟢 متاح</span>`
+                    : liveSt === "LIVE"
+                    ? `<span class="badge badge-danger">🔴 مشغول في قعدة</span>`
+                    : `<span class="badge badge-gold">🚶 عميل في الطريق</span>`;
+                return `
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; padding:8px 10px; border:1px solid var(--border); border-radius:10px; margin-bottom:6px; background:var(--bg-input);">
+                  <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                    <strong style="color:${idx === 0 ? "#fcd34d" : "#2dd4bf"};">#${idx + 1}</strong>
+                    ${idx === 0 ? `<span class="badge badge-gold" style="font-size:0.65rem;">الأقوى ⭐</span>` : ""}
+                    <span class="badge badge-mint">${escapeHtml(r.code)}</span>
+                    <strong>${escapeHtml(r.name)}</strong>
+                    ${statusBadge}
+                  </div>
+                  <div style="display:flex; gap:5px;">
+                    <button type="button" class="btn btn-gold btn-sm" ${idx === 0 ? "disabled" : ""} onclick="moveDevSalesOrder('${r.id}', 'TOP')" title="نقل للأول">⏫</button>
+                    <button type="button" class="btn btn-outline btn-sm" ${idx === 0 ? "disabled" : ""} onclick="moveDevSalesOrder('${r.id}', -1)" title="رفع للأعلى">⬆️</button>
+                    <button type="button" class="btn btn-outline btn-sm" ${idx === devReps.length - 1 ? "disabled" : ""} onclick="moveDevSalesOrder('${r.id}', 1)" title="إنزال للأسفل">⬇️</button>
+                  </div>
+                </div>`;
+              })
+              .join("");
+          }
+        }
+
         document.getElementById("devCompSittingsTbody").innerHTML =
-          rows.join("") || `<tr><td colspan="6" style="text-align:center; padding:18px; color:var(--text-muted);">لا توجد قعدات مسجلة لشركتك بعد.</td></tr>`;
+          tableRows.join("") || `<tr><td colspan="8" style="text-align:center; padding:18px; color:var(--text-muted);">لا توجد قعدات مسجلة لشركتك بعد.</td></tr>`;
       }
 
       function printSingleDeveloperReport() {
