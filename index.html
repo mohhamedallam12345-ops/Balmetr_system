@@ -1,3 +1,8 @@
+
+
+
+رمز HTML
+expo_live_v4
 <!doctype html>
 <html lang="ar" dir="rtl">
   <head>
@@ -1858,6 +1863,7 @@
         teamsList: ["المعرض", "الجمعية", "الوديعة", "القاهرة"],
         teamMetaConfig: {},
         exhRoleOverrides: {},
+        exhTeamOverrides: {},
         teamSalesOrder: {},
         devSalesOrder: {}, // keyed by developerId -> [dev_sales_id, ...]
         devRoutingMode: {}, // keyed by developerId -> "AUTO" | "MANUAL"
@@ -1932,6 +1938,11 @@
             try {
               const p = JSON.parse(row.value);
               if (p && typeof p === "object") appState.exhRoleOverrides = p;
+            } catch (e) {}
+          } else if (row.key === "exh_team_overrides") {
+            try {
+              const p = JSON.parse(row.value);
+              if (p && typeof p === "object") appState.exhTeamOverrides = p;
             } catch (e) {}
           } else if (row.key === "team_sales_order") {
             try {
@@ -2019,7 +2030,7 @@
         let ownerKey = "";
         if ((u.role === "dev_sales" || appState.activeRole === "dev_manager") && u.parent_admin_id) ownerKey = u.parent_admin_id;
         else if (u.role === "developer") ownerKey = u.id;
-        else ownerKey = `team_${u.team || "المعرض"}`;
+        else ownerKey = `team_${getEffectiveTeamForExh(u)}`;
 
         if (appState.offersByOwner.has(ownerKey)) return;
         const { data, error } = await sb
@@ -2198,6 +2209,15 @@
       function getExhRoleOverride(acc, exhId = appState.activeExhibitionId) {
         if (!acc || !exhId || exhId === "ALL") return "";
         return appState.exhRoleOverrides?.[`${exhId}::${acc.id}`] || "";
+      }
+
+      function getEffectiveTeamForExh(acc, exhId = appState.activeExhibitionId) {
+        if (!acc) return "المعرض";
+        if (exhId && exhId !== "ALL") {
+          const ov = appState.exhTeamOverrides?.[`${exhId}::${acc.id}`];
+          if (ov) return ov;
+        }
+        return acc.team || "المعرض";
       }
 
       function getUserRoles(u) {
@@ -2429,8 +2449,15 @@
         appState.activeExhibitionId = exhId;
         appState.absentInvitationsLoadedForExh = null;
         appState.invitationsCache = [];
+        if (appState.currentUser) {
+          const nextRoles = getUserRoles(appState.currentUser);
+          if (nextRoles.length > 0) appState.activeRole = nextRoles[0];
+        }
         setSyncBadge("syncing");
-        await loadCheckinsForActiveExh();
+        await Promise.all([
+          loadCheckinsForActiveExh(),
+          ensureOffersLoadedForUser(appState.currentUser),
+        ]);
         setSyncBadge(true);
         renderChromeAndRoute();
       }
@@ -2512,7 +2539,7 @@
         const allTeamSales = appState.accounts.filter(
           (a) =>
             accountHasRole(a, "sales") &&
-            (a.team || "المعرض") === teamName &&
+            getEffectiveTeamForExh(a) === teamName &&
             !a.hide_in_sitting
         );
         // STRICT: Only sales reps explicitly assigned & active in THIS exhibition!
@@ -3005,7 +3032,7 @@
 
         // Case 1: Invited by an ACTIVE table B.almetr Sales Rep -> Goes DIRECTLY to them first!
         if (isOwnerActiveOnTable) {
-          assignedTeam = ownerAcc.team || "المعرض";
+          assignedTeam = getEffectiveTeamForExh(ownerAcc);
           stops.push({
             stop_id: `st_${Date.now()}_own`,
             stop_name: `💼 ${ownerAcc.name} (${ownerAcc.code})`,
@@ -3033,7 +3060,7 @@
           // If invited by an inactive B.almetr sales rep, prioritize their own team's active table reps first; otherwise weighted exhibition teams
           let teamReps = [];
           if (ownerAcc && accountHasRole(ownerAcc, "sales")) {
-            const ownTeam = ownerAcc.team || "المعرض";
+            const ownTeam = getEffectiveTeamForExh(ownerAcc);
             const ownTeamActiveReps = getOrderedTeamSales(ownTeam);
             if (ownTeamActiveReps.length > 0) {
               assignedTeam = ownTeam;
@@ -3624,7 +3651,7 @@
       function renderSalesSitView() {
         const _su = appState.currentUser;
         if (_su) {
-          const _oKey = _su.role === "dev_sales" && _su.parent_admin_id ? _su.parent_admin_id : `team_${_su.team || "المعرض"}`;
+          const _oKey = _su.role === "dev_sales" && _su.parent_admin_id ? _su.parent_admin_id : `team_${getEffectiveTeamForExh(_su)}`;
           const _oList = appState.offersByOwner.get(_oKey) || [];
           const _mb = document.getElementById("salesMissingOffersBanner");
           if (_mb) _mb.style.display = _oList.length === 0 ? "block" : "none";
@@ -3837,7 +3864,7 @@
             ? u.parent_admin_id
             : u.role === "developer"
             ? u.id
-            : `team_${u.team || "المعرض"}`;
+            : `team_${getEffectiveTeamForExh(u)}`;
         const offers = appState.offersByOwner.get(ownerKey) || [];
         const offSel = document.getElementById("sitOfferSelect");
         const prevOff = offSel.value;
@@ -3984,7 +4011,7 @@
           const ownerKey =
             u.role === "dev_sales" && u.parent_admin_id
               ? u.parent_admin_id
-              : `team_${u.team || "المعرض"}`;
+              : `team_${getEffectiveTeamForExh(u)}`;
           const found = (appState.offersByOwner.get(ownerKey) || []).find((o) => o.id === offerVal);
           if (found) {
             offerSummary = `${found.project_name} (${found.unit_type || "-"} - ${found.area || "-"}) | الإجمالي: ${found.total_price || "-"} | مقدم: ${found.downpayment || "-"} | ${found.installment || "-"} / ${found.years || "-"}${found.expected_roi ? ` | عائد: ${found.expected_roi}` : ""}${found.details ? ` | تفاصيل: ${found.details}` : ""}`;
