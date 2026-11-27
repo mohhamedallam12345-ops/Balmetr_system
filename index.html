@@ -990,6 +990,55 @@
           display: inline-flex;
         }
       }
+      /* V5 Visual Separation & Collapsible Panels */
+      .card {
+        border: 1.5px solid rgba(45, 212, 191, 0.28);
+        border-top: 3px solid rgba(45, 212, 191, 0.55);
+        margin-bottom: 16px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.42);
+      }
+      .journey-card {
+        border: 1.5px solid rgba(45, 212, 191, 0.34);
+        border-right: 4px solid var(--primary-bright);
+        margin-bottom: 14px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+      }
+      .journey-card.urgent-pickup {
+        border-right-color: var(--gold);
+      }
+      .collapse-panel {
+        background: rgba(6, 20, 40, 0.9);
+        border: 1.5px solid rgba(45, 212, 191, 0.28);
+        border-right: 4px solid var(--gold);
+        border-radius: 13px;
+        margin-top: 10px;
+        overflow: hidden;
+      }
+      .collapse-panel-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 10px 13px;
+        background: rgba(11, 31, 60, 0.85);
+        border: none;
+        color: #f8fafc;
+        font-family: inherit;
+        font-size: 0.82rem;
+        font-weight: 900;
+        cursor: pointer;
+        text-align: right;
+      }
+      .collapse-panel-body {
+        display: none;
+        padding: 11px 13px;
+        border-top: 1px solid rgba(45, 212, 191, 0.16);
+      }
+      .collapse-panel.open .collapse-panel-body {
+        display: block;
+      }
+
     </style>
   </head>
   <body>
@@ -1344,20 +1393,41 @@
         </div>
       </section>
 
-      <!-- ==================== 4. TEAM LEADER VIEW (READ-ONLY LIVE MONITORING — AUTO ROUTING) ==================== -->
+      <!-- ==================== 4. TEAM LEADER VIEW (SITTING + AUTO/MANUAL TEAM ROUTING) ==================== -->
       <section id="teamLeaderView" class="mobile-wrap" style="display: none">
         <div id="tlTeamSwitcherBar" class="switcher-bar" style="display: none">
           <span style="font-size: 0.78rem; font-weight: 900; color: #fcd34d">🏷️ تيماتك:</span>
           <div id="tlTeamSwitcherPills" class="h-scroll-row"></div>
         </div>
 
+        <div id="tlOwnSittingAlertBox"></div>
+
         <div class="card">
           <div class="card-header">
-            <div class="card-title" id="tlHeaderTitle">🎖️ متابعة التيم لايف</div>
-            <span class="badge badge-mint">⚡ توزيع تلقائي حسب القوة</span>
+            <div class="card-title" id="tlHeaderTitle">🎖️ متابعة وتوزيع التيم لايف</div>
+            <button type="button" class="btn btn-primary btn-sm" onclick="switchActiveRole('sales')">
+              💼 قعداتي مع العملاء (<span id="tlOwnQueueCnt">0</span>)
+            </button>
           </div>
+
+          <!-- Auto / Manual Team Routing Controls -->
+          <div style="background: var(--bg-input); border: 1.5px solid var(--border-strong); border-radius: 12px; padding: 11px 12px; margin-bottom: 12px">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px">
+              <span style="font-size: 0.82rem; font-weight: 900; color: #fcd34d">🎛️ وضع توزيع التيم في هذا المعرض:</span>
+              <div style="display: flex; gap: 6px">
+                <button type="button" id="tlModeAutoBtn" class="btn btn-success btn-sm" onclick="setTeamRoutingModeFromLeader('AUTO')">⚡ تلقائي (حسب القوة)</button>
+                <button type="button" id="tlModeManualBtn" class="btn btn-outline btn-sm" onclick="setTeamRoutingModeFromLeader('MANUAL')">✋ يدوي (أوزّع أنا)</button>
+              </div>
+            </div>
+            <div id="tlExhOverrideNotice" style="display: none; margin-top: 7px; font-size: 0.75rem; color: #fcd34d; font-weight: 800"></div>
+            <div id="tlManualQueueBox" style="display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border)"></div>
+          </div>
+
           <div class="kpi-grid" id="tlKpiGrid"></div>
-          <div style="font-size: 0.84rem; font-weight: 900; color: var(--primary-bright); margin-bottom: 8px">👥 حالة سيلز التيم لايف (من الأقوى للأضعف):</div>
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 8px">
+            <span style="font-size: 0.84rem; font-weight: 900; color: var(--primary-bright)">👥 حالة سيلز التيم لايف (من الأقوى للأضعف — يشمل التيم ليدر):</span>
+            <span id="tlOrderSaveStatus" style="font-size: 0.74rem; font-weight: 800; color: var(--primary-bright)"></span>
+          </div>
           <div id="tlLiveRepsCards"></div>
         </div>
       </section>
@@ -1378,6 +1448,13 @@
             </div>
           </div>
           <div id="admManualQueueBox" style="display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border)"></div>
+          <div id="admSubRoutingCollapse" class="collapse-panel">
+            <button type="button" class="collapse-panel-btn" onclick="toggleLiveCollapse('admSubRoutingCollapse')">
+              <span>🎛️ تحكم التوزيع لكل تيم ومطور (تلقائي ⚡ / يدوي ✋)</span>
+              <span class="badge badge-mint" data-live-arrow="admSubRoutingCollapse">اضغط للفتح ▾</span>
+            </button>
+            <div class="collapse-panel-body" id="admTeamsDevsRoutingStrip"></div>
+          </div>
         </div>
 
         <div class="kpi-grid" id="admKpiGrid"></div>
@@ -1861,7 +1938,8 @@
         exhTeamOverrides: {},
         teamSalesOrder: {},
         devSalesOrder: {}, // keyed by developerId -> [dev_sales_id, ...]
-        devRoutingMode: {}, // keyed by developerId -> "AUTO" | "MANUAL"
+        devRoutingMode: {}, // keyed by "exhId::devId" or developerId -> "AUTO" | "MANUAL"
+        teamRoutingMode: {}, // keyed by "exhId::teamName" -> "AUTO" | "MANUAL"
         exhRoutingMode: {}, // keyed by exhId -> "AUTO" | "MANUAL"
         offersByOwner: new Map(),
         journeyReportConfig: { ...DEFAULT_REPORT_CONFIG },
@@ -1909,6 +1987,18 @@
 
       function closeModal(id) {
         document.getElementById(id).style.display = "none";
+      }
+
+      function toggleLiveCollapse(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const opened = el.classList.toggle("open");
+        const arr = document.querySelector(`[data-live-arrow="${id}"]`);
+        if (arr) arr.textContent = opened ? "إغلاق ▴" : "اضغط للفتح ▾";
+      }
+
+      function isExternalBroker(acc) {
+        return Boolean(acc && acc.role === "broker" && acc.parent_admin_id);
       }
 
       function rebuildAccountsMap() {
@@ -1960,6 +2050,11 @@
             try {
               const p = JSON.parse(row.value);
               if (p && typeof p === "object") appState.devRoutingMode = p;
+            } catch (e) {}
+          } else if (row.key === "team_routing_mode") {
+            try {
+              const p = JSON.parse(row.value);
+              if (p && typeof p === "object") appState.teamRoutingMode = p;
             } catch (e) {}
           } else if (row.key.startsWith("exh_routing_mode::")) {
             appState.exhRoutingMode[row.key.replace("exh_routing_mode::", "")] = row.value;
@@ -2015,7 +2110,11 @@
           p_token: appState.sessionToken,
           p_exhibition_id: exh.id === "ALL" ? null : exh.id,
         });
-        if (!error && Array.isArray(data)) {
+        if (error) {
+          console.error("get_scoped_checkins error:", error);
+          return;
+        }
+        if (Array.isArray(data)) {
           appState.checkins = data;
         }
       }
@@ -2044,7 +2143,7 @@
         if (!u || !newRow) return;
         const r = appState.activeRole;
 
-        if (r === "usher" && newRow.assigned_usher_id === u.id) {
+        if (r === "usher" && (String(newRow.assigned_usher_id || "") === String(u.id || "") || (!newRow.assigned_usher_id && newRow.journey_status === "WAITING_USHER"))) {
           if (newRow.journey_status === "WAITING_USHER" && oldRow?.journey_status !== "WAITING_USHER") {
             playLoudAlert("URGENT");
             return;
@@ -2073,9 +2172,25 @@
             const wasIncoming = devStopsOld.some((st) => st.status === "IN_TRANSIT" || st.status === "PENDING");
             if (incomingNow && !wasIncoming) playLoudAlert("INCOMING");
           }
+        } else if (r === "team_leader") {
+          const managed = getLeaderManagedTeams(u);
+          const needsTeamManual = (newRow.journey_logs || []).some(
+            (st) => st.needs_manual_routing && !st.sales_id && st.status !== "DONE" && managed.includes(st.team)
+          );
+          const hadTeamManual = (oldRow?.journey_logs || []).some(
+            (st) => st.needs_manual_routing && !st.sales_id && st.status !== "DONE" && managed.includes(st.team)
+          );
+          const isIncomingForMe = (newRow.journey_logs || []).some(
+            (st) => st.status === "IN_TRANSIT" && stopBelongsToUser(st, u)
+          );
+          const wasIncomingForMe = (oldRow?.journey_logs || []).some(
+            (st) => st.status === "IN_TRANSIT" && stopBelongsToUser(st, u)
+          );
+          if (needsTeamManual && !hadTeamManual) playLoudAlert("URGENT");
+          else if (isIncomingForMe && !wasIncomingForMe) playLoudAlert("INCOMING");
         } else if (["exh_manager", "manager"].includes(r)) {
-          const needsManual = (newRow.journey_logs || []).some((st) => st.needs_manual_routing && st.status !== "DONE");
-          const hadManual = (oldRow?.journey_logs || []).some((st) => st.needs_manual_routing && st.status !== "DONE");
+          const needsManual = (newRow.journey_logs || []).some((st) => (st.needs_manual_routing || st.needs_dev_manual_routing) && !st.sales_id && st.status !== "DONE");
+          const hadManual = (oldRow?.journey_logs || []).some((st) => (st.needs_manual_routing || st.needs_dev_manual_routing) && !st.sales_id && st.status !== "DONE");
           if (needsManual && !hadManual) playLoudAlert("URGENT");
         }
       }
@@ -2102,9 +2217,11 @@
               if (!matchesExh) return;
 
               const u = appState.currentUser;
+              const privList = ["manager", "exh_manager", "reception", "usher", "team_leader", "broker"];
               const isPrivileged = u && (
-                ["manager", "exh_manager", "reception", "usher", "team_leader", "broker"].includes(u.role) ||
-                (Array.isArray(u.expo_roles) && u.expo_roles.some((r) => ["manager", "exh_manager", "reception", "usher", "team_leader", "broker"].includes(r)))
+                privList.includes(appState.activeRole) ||
+                privList.includes(u.role) ||
+                (Array.isArray(u.expo_roles) && u.expo_roles.some((r) => privList.includes(r)))
               );
 
               if (!isPrivileged) {
@@ -2224,6 +2341,9 @@
           u.expo_roles.forEach((r) => {
             if (r && !roles.includes(r)) roles.push(r);
           });
+        }
+        if (roles.includes("team_leader") && !roles.includes("sales")) {
+          roles.push("sales");
         }
         return roles;
       }
@@ -2533,7 +2653,7 @@
       function getOrderedTeamSales(teamName) {
         const allTeamSales = appState.accounts.filter(
           (a) =>
-            accountHasRole(a, "sales") &&
+            (accountHasRole(a, "sales") || accountHasRole(a, "team_leader")) &&
             getEffectiveTeamForExh(a) === teamName &&
             !a.hide_in_sitting
         );
@@ -2573,7 +2693,7 @@
         }
         if (stop.stop_type === "BROKER") {
           const brokers = filterAccountsForActiveExh(
-            appState.accounts.filter((a) => accountHasRole(a, "broker"))
+            appState.accounts.filter((a) => accountHasRole(a, "broker") && !isExternalBroker(a))
           );
           if (brokers.length === 0) return false;
           return brokers.every((b) => getRepLiveState(b.id) === "LIVE");
@@ -3018,10 +3138,10 @@
         let assignedTeam = "المعرض";
         const isManualExh = appState.exhRoutingMode[exh?.id || ""] === "MANUAL";
 
-        // Check if inviting sales rep is EXPLICITLY active on a table in THIS exhibition
+        // Check if inviting sales rep or team leader is EXPLICITLY active on a table in THIS exhibition
         const isOwnerActiveOnTable =
           ownerAcc &&
-          accountHasRole(ownerAcc, "sales") &&
+          (accountHasRole(ownerAcc, "sales") || accountHasRole(ownerAcc, "team_leader")) &&
           isAccountInActiveExhibition(ownerAcc) &&
           !ownerAcc.hide_in_sitting;
 
@@ -3083,8 +3203,11 @@
             teamReps = getOrderedTeamSales(assignedTeam);
           }
 
+          const isTeamManual =
+            isManualExh ||
+            appState.teamRoutingMode?.[`${exh?.id || ""}::${assignedTeam}`] === "MANUAL";
           let chosenRep = null;
-          if (!isManualExh && teamReps.length > 0) {
+          if (!isTeamManual && teamReps.length > 0) {
             // AUTO Strength Order: Always scan from index 0 (strongest) and pick first FREE active table rep!
             chosenRep =
               teamReps.find((r) => getRepLiveState(r.id) === "FREE") ||
@@ -3097,10 +3220,10 @@
             stop_id: `st_${Date.now()}_tm`,
             stop_name: chosenRep
               ? `🏷️ تيم ${assignedTeam} ← ${chosenRep.name}`
-              : `🏷️ تيم ${assignedTeam} (بانتظار توجيه مدير المعرض)`,
+              : `🏷️ تيم ${assignedTeam} (بانتظار التوجيه اليدوي)`,
             stop_type: "BALMETR",
             team: assignedTeam,
-            needs_manual_routing: isManualExh || !chosenRep,
+            needs_manual_routing: isTeamManual || !chosenRep,
             sales_id: chosenRep?.id || null,
             sales_code: chosenRep?.code || "",
             sales_name: chosenRep?.name || `تيم ${assignedTeam}`,
@@ -3108,9 +3231,9 @@
           });
         }
 
-        // Helper: build developer stop with Strength-Based Auto Routing OR Developer Manager Manual Routing
+        // Helper: build developer stop with Strength-Based Auto Routing OR Developer Manager Manual Routing (per exhibition)
         const makeDevStop = (dev, forcedDevSalesAcc = null, isMandatory = false) => {
-          const isDevManual = appState.devRoutingMode?.[dev.id] === "MANUAL";
+          const isDevManual = getDeveloperRoutingModeForExh(dev.id) === "MANUAL";
           const tag = isMandatory ? " ⭐" : "";
           if (forcedDevSalesAcc && isAccountInActiveExhibition(forcedDevSalesAcc)) {
             return {
@@ -3368,7 +3491,11 @@
         if (!u) return;
         document.getElementById("usherHeaderTitle").textContent = `🚶 الأشر: ${u.name}`;
 
-        const myClients = appState.checkins.filter((c) => c.assigned_usher_id === u.id);
+        const myClients = appState.checkins.filter(
+          (c) =>
+            String(c.assigned_usher_id || "") === String(u.id || "") ||
+            (!c.assigned_usher_id && c.journey_status === "WAITING_USHER")
+        );
         const counts = { ACTION: 0, LIVE: 0, TRANSIT: 0, DONE: 0 };
         myClients.forEach((c) => {
           counts[classifyUsherClient(c)]++;
@@ -3594,8 +3721,8 @@
 
         document.getElementById("printJourneySheetContainer").innerHTML = `
           <div class="journey-print-sheet" style="position:relative; overflow:hidden; -webkit-print-color-adjust:exact; print-color-adjust:exact;">
-            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; opacity:0.065; z-index:0;">
-              <img src="Logo_White.png" alt="B.almetr" style="width:360px; filter:invert(1) brightness(0.15); transform:rotate(-16deg);" onerror="this.style.display='none';" />
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; opacity:0.13; mix-blend-mode:multiply; z-index:20;">
+              <img src="Logo_White.png" alt="B.almetr" style="width:390px; filter:invert(1) brightness(0.12); transform:rotate(-18deg);" onerror="this.style.display='none';" />
             </div>
             <div style="position:relative; z-index:1;">
               <div class="jp-header" style="background:#051224; color:#ffffff; padding:14px 16px; border-radius:10px; border-bottom:3px solid #2dd4bf; margin-bottom:14px;">
@@ -3931,7 +4058,7 @@
         const newDevStops = [];
         allDevs.forEach((d) => {
           if (doesDeveloperMatchSpec(d, sitEditReq.specInventory, sitEditReq.systems)) {
-            const isDevManual = appState.devRoutingMode?.[d.id] === "MANUAL";
+            const isDevManual = getDeveloperRoutingModeForExh(d.id) === "MANUAL";
             const chosenDevRep = isDevManual ? null : pickAutoDeveloperRep(d.id);
             newDevStops.push({
               stop_id: `st_${Date.now()}_${d.code}_${Math.random().toString(36).slice(2, 5)}`,
@@ -4046,9 +4173,75 @@
         renderTeamLeaderView();
       }
 
+      async function setTeamRoutingMode(teamName, mode) {
+        const exh = getActiveExhibition();
+        if (!exh || exh.id === "ALL") {
+          return alert("⚠️ اختر معرضاً محدداً من الأعلى أولاً.");
+        }
+        const key = `${exh.id}::${teamName}`;
+        const nextMap = { ...(appState.teamRoutingMode || {}), [key]: mode };
+        appState.teamRoutingMode = nextMap;
+        renderActiveRoleView();
+        const { error } = await sb.from("system_settings").upsert({
+          key: "team_routing_mode",
+          value: JSON.stringify(nextMap),
+        });
+        if (error) alert("❌ تعذر حفظ وضع توزيع التيم!");
+      }
+
+      function setTeamRoutingModeFromLeader(mode) {
+        const teamName = appState.activeLeaderTeam || getLeaderManagedTeams(appState.currentUser)[0];
+        if (teamName) setTeamRoutingMode(teamName, mode);
+      }
+
+      async function assignManualStopByTeamLeader(checkinId, stopIdx) {
+        const repId = document.getElementById(`tlManualSel_${checkinId}_${stopIdx}`)?.value;
+        const chk = appState.checkins.find((c) => c.id === checkinId);
+        const stopId = chk?.journey_logs?.[stopIdx]?.stop_id;
+        if (!repId || !stopId) return;
+        const { data, error } = await sb.rpc("assign_stop_rep_atomic", {
+          p_token: appState.sessionToken,
+          p_checkin_id: checkinId,
+          p_stop_id: stopId,
+          p_rep_id: repId,
+        });
+        if (error || !data?.ok) return alert("❌ " + (data?.message || error?.message || "تعذر التوجيه!"));
+        await loadCheckinsForActiveExh();
+        renderTeamLeaderView();
+      }
+
+      async function moveTeamLeaderRepOrder(teamName, repId, direction) {
+        const exh = getActiveExhibition();
+        if (!exh || exh.id === "ALL") return;
+        const ordered = getOrderedTeamSales(teamName);
+        const ids = ordered.map((r) => r.id);
+        const idx = ids.indexOf(repId);
+        if (idx < 0) return;
+        if (direction === "TOP") {
+          if (idx === 0) return;
+          ids.splice(idx, 1);
+          ids.unshift(repId);
+        } else {
+          const tIdx = idx + direction;
+          if (tIdx < 0 || tIdx >= ids.length) return;
+          [ids[idx], ids[tIdx]] = [ids[tIdx], ids[idx]];
+        }
+        const exhKey = `${exh.id}::${teamName}`;
+        appState.teamSalesOrder = { ...(appState.teamSalesOrder || {}), [exhKey]: ids };
+        renderTeamLeaderView();
+        const stEl = document.getElementById("tlOrderSaveStatus");
+        if (stEl) stEl.textContent = "⏳ جاري الحفظ...";
+        const { error } = await sb.from("system_settings").upsert({
+          key: "team_sales_order",
+          value: JSON.stringify(appState.teamSalesOrder),
+        });
+        if (stEl) stEl.textContent = error ? "❌ تعذر الحفظ" : "✅ تم حفظ ترتيب التيم";
+      }
+
       function renderTeamLeaderView() {
         const u = appState.currentUser;
-        if (!u) return;
+        const exh = getActiveExhibition();
+        if (!u || !exh) return;
         const managedTeams = getLeaderManagedTeams(u);
         if (!appState.activeLeaderTeam || !managedTeams.includes(appState.activeLeaderTeam)) {
           appState.activeLeaderTeam = managedTeams[0];
@@ -4070,9 +4263,85 @@
 
         document.getElementById("tlHeaderTitle").textContent = `🎖️ تيم (${teamName}) — ${u.name}`;
 
+        // Own sitting alert for Team Leader (since Team Leader sits with clients too!)
+        const ownClients = appState.checkins.filter(
+          (c) => c.journey_status !== "COMPLETED" && findMatchingStopForUser(c, u)
+        );
+        const ownCntEl = document.getElementById("tlOwnQueueCnt");
+        if (ownCntEl) ownCntEl.textContent = ownClients.length;
+        const ownAlertEl = document.getElementById("tlOwnSittingAlertBox");
+        if (ownAlertEl) {
+          ownAlertEl.innerHTML = ownClients
+            .filter((c) => {
+              const st = findMatchingStopForUser(c, u);
+              return st && (st.status === "IN_TRANSIT" || st.status === "LIVE");
+            })
+            .map((c) => {
+              const st = findMatchingStopForUser(c, u);
+              return `<div class="alert-banner-gold" style="cursor:pointer;" onclick="switchActiveRole('sales'); openClientForSitting('${c.id}');">
+                🔔 <strong>عميل لقعدتك أنت:</strong> #${c.seq_number} ${escapeHtml(c.client_name)} (${st.status === "LIVE" ? "🟢 قاعد معاك الآن" : "🚶 في الطريق لك"}) — اضغط لفتح القعدة 👈
+              </div>`;
+            })
+            .join("");
+        }
+
+        // Auto / Manual Team Mode buttons
+        const isExhManual = appState.exhRoutingMode?.[exh.id] === "MANUAL";
+        const isTeamManual = appState.teamRoutingMode?.[`${exh.id}::${teamName}`] === "MANUAL";
+        const autoBtn = document.getElementById("tlModeAutoBtn");
+        const manBtn = document.getElementById("tlModeManualBtn");
+        if (autoBtn) autoBtn.className = !isTeamManual ? "btn btn-success btn-sm" : "btn btn-outline btn-sm";
+        if (manBtn) manBtn.className = isTeamManual ? "btn btn-gold btn-sm" : "btn btn-outline btn-sm";
+        const ovNotice = document.getElementById("tlExhOverrideNotice");
+        if (ovNotice) {
+          if (isExhManual) {
+            ovNotice.style.display = "block";
+            ovNotice.textContent = "⚠️ ملاحظة: مدير المعرض مفعّل وضع «يدوي» على المعرض كله حالياً — يمكنك توجيه عملاء تيمك من القائمة بالأسفل.";
+          } else {
+            ovNotice.style.display = "none";
+          }
+        }
+
         const reps = getOrderedTeamSales(teamName);
+
+        // Manual pending queue for THIS team
+        const tlManualItems = [];
+        appState.checkins.forEach((c) => {
+          if (c.journey_status === "COMPLETED") return;
+          (c.journey_logs || []).forEach((st, idx) => {
+            if (st.needs_manual_routing && !st.sales_id && st.status !== "DONE" && st.team === teamName) {
+              tlManualItems.push({ c, st, idx });
+            }
+          });
+        });
+        const tlManualBox = document.getElementById("tlManualQueueBox");
+        if (tlManualBox) {
+          if (tlManualItems.length > 0) {
+            tlManualBox.style.display = "block";
+            tlManualBox.innerHTML =
+              `<div style="font-size:0.78rem; font-weight:900; color:#fda4af; margin-bottom:7px;">🔔 عملاء بانتظار توجيهك اليدوي (${tlManualItems.length}):</div>` +
+              tlManualItems
+                .map(
+                  ({ c, idx }) => `
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:7px; padding:7px 9px; background:rgba(5,18,36,0.75); border-radius:10px;">
+                  <span style="font-size:0.82rem;"><strong>#${c.seq_number} ${escapeHtml(c.client_name)}</strong></span>
+                  <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                    <select id="tlManualSel_${c.id}_${idx}" class="form-control" style="width:auto; padding:5px 9px; font-size:0.8rem;">
+                      ${reps.map((r) => `<option value="${r.id}">${escapeHtml(r.name)} (${escapeHtml(r.code)}) — ${getRepLiveState(r.id) === "FREE" ? "🟢 متاح" : "🔴 مشغول"}</option>`).join("")}
+                    </select>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="assignManualStopByTeamLeader('${c.id}', ${idx})">توجيه ✅</button>
+                  </div>
+                </div>`
+                )
+                .join("");
+          } else {
+            tlManualBox.style.display = "none";
+          }
+        }
+
         let liveCnt = 0;
         let dealsCnt = 0;
+        const safeTeamJs = escapeHtml(teamName).replace(/'/g, "\\'");
         const cardsHtml = reps
           .map((r, idx) => {
             const st = getRepLiveState(r.id);
@@ -4098,14 +4367,17 @@
             return `
             <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:10px 12px; background:var(--bg-input); border:1px solid var(--border); border-radius:12px; margin-bottom:8px; flex-wrap:wrap;">
               <div>
-                <strong style="color:#fcd34d;">#${idx + 1}</strong>
+                <strong style="color:${idx === 0 ? "#fcd34d" : "#2dd4bf"};">#${idx + 1}</strong>
                 <strong style="margin-right:6px;">${escapeHtml(r.name)}</strong>
                 <span class="badge badge-mint" style="margin-right:4px;">${escapeHtml(r.code)}</span>
+                ${accountHasRole(r, "team_leader") ? `<span class="badge badge-gold" style="font-size:0.65rem;">🎖️ ليدر</span>` : ""}
               </div>
-              <div style="display:flex; gap:6px; align-items:center;">
+              <div style="display:flex; gap:5px; align-items:center; flex-wrap:wrap;">
                 ${stBadge}
                 <span class="badge badge-info">قعدات: ${totalSits}</span>
                 <span class="badge badge-gold">تعاقد: ${repDeals}</span>
+                <button type="button" class="btn btn-outline btn-sm" style="padding:3px 6px; min-height:28px;" ${idx === 0 ? "disabled" : ""} onclick="moveTeamLeaderRepOrder('${safeTeamJs}', '${r.id}', -1)" title="رفع">⬆️</button>
+                <button type="button" class="btn btn-outline btn-sm" style="padding:3px 6px; min-height:28px;" ${idx === reps.length - 1 ? "disabled" : ""} onclick="moveTeamLeaderRepOrder('${safeTeamJs}', '${r.id}', 1)" title="إنزال">⬇️</button>
               </div>
             </div>`;
           })
@@ -4181,12 +4453,49 @@
         document.getElementById("exhModeAutoBtn").className = !isManual ? "btn btn-success btn-sm" : "btn btn-outline btn-sm";
         document.getElementById("exhModeManualBtn").className = isManual ? "btn btn-gold btn-sm" : "btn btn-outline btn-sm";
 
-        // Manual pending queue for Exhibition Manager
+        // Render Per-Team & Per-Developer Auto/Manual controls for Exhibition Manager & Master Admin
+        const subStrip = document.getElementById("admTeamsDevsRoutingStrip");
+        if (subStrip) {
+          if (exh.id === "ALL") {
+            subStrip.innerHTML = `<div style="font-size:0.78rem; color:#fcd34d;">اختر معرضاً محدداً من الأعلى للتحكم في التوزيع اليدوي/التلقائي لكل تيم ومطور.</div>`;
+          } else {
+            const sTeams = getSalesTeamsList();
+            const actDevs = filterAccountsForActiveExh(appState.accounts.filter((a) => a.role === "developer"), true);
+            const teamControlsHtml = sTeams
+              .map((t) => {
+                const isTmMan = appState.teamRoutingMode?.[`${exh.id}::${t}`] === "MANUAL";
+                const safeT = escapeHtml(t).replace(/'/g, "\\'");
+                return `<div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:7px 9px; background:var(--bg-input); border:1px solid var(--border); border-radius:10px; margin-bottom:6px; flex-wrap:wrap;">
+                  <strong style="font-size:0.8rem;">💼 تيم: ${escapeHtml(t)}</strong>
+                  <div style="display:flex; gap:5px;">
+                    <button type="button" class="btn ${!isTmMan ? "btn-success" : "btn-outline"} btn-sm" style="padding:3px 9px; min-height:28px; font-size:0.73rem;" onclick="setTeamRoutingMode('${safeT}', 'AUTO')">⚡ تلقائي</button>
+                    <button type="button" class="btn ${isTmMan ? "btn-gold" : "btn-outline"} btn-sm" style="padding:3px 9px; min-height:28px; font-size:0.73rem;" onclick="setTeamRoutingMode('${safeT}', 'MANUAL')">✋ يدوي</button>
+                  </div>
+                </div>`;
+              })
+              .join("");
+            const devControlsHtml = actDevs
+              .map((d) => {
+                const isDevMan = getDeveloperRoutingModeForExh(d.id) === "MANUAL";
+                return `<div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:7px 9px; background:var(--bg-input); border:1px solid var(--border); border-radius:10px; margin-bottom:6px; flex-wrap:wrap;">
+                  <strong style="font-size:0.8rem;">🏗️ مطور: ${escapeHtml(d.name)} (${escapeHtml(d.code)})</strong>
+                  <div style="display:flex; gap:5px;">
+                    <button type="button" class="btn ${!isDevMan ? "btn-success" : "btn-outline"} btn-sm" style="padding:3px 9px; min-height:28px; font-size:0.73rem;" onclick="setDeveloperRoutingModeForId('${d.id}', 'AUTO')">⚡ تلقائي</button>
+                    <button type="button" class="btn ${isDevMan ? "btn-gold" : "btn-outline"} btn-sm" style="padding:3px 9px; min-height:28px; font-size:0.73rem;" onclick="setDeveloperRoutingModeForId('${d.id}', 'MANUAL')">✋ يدوي</button>
+                  </div>
+                </div>`;
+              })
+              .join("");
+            subStrip.innerHTML = teamControlsHtml + (devControlsHtml ? `<div style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--border);">${devControlsHtml}</div>` : "");
+          }
+        }
+
+        // Manual pending queue for Exhibition Manager (Teams + Developers)
         const manualItems = [];
         appState.checkins.forEach((c) => {
           if (c.journey_status === "COMPLETED") return;
           (c.journey_logs || []).forEach((st, idx) => {
-            if (st.needs_manual_routing && !st.sales_id && st.status !== "DONE") {
+            if ((st.needs_manual_routing || st.needs_dev_manual_routing) && !st.sales_id && st.status !== "DONE") {
               manualItems.push({ c, st, idx });
             }
           });
@@ -4195,21 +4504,24 @@
         if (manualItems.length > 0) {
           manualBox.style.display = "block";
           const allActiveSales = filterAccountsForActiveExh(
-            appState.accounts.filter((a) => accountHasRole(a, "sales") || accountHasRole(a, "broker"))
+            appState.accounts.filter((a) => (accountHasRole(a, "sales") || accountHasRole(a, "team_leader") || (accountHasRole(a, "broker") && !isExternalBroker(a))))
           );
           manualBox.innerHTML = manualItems
-            .map(
-              ({ c, st, idx }) => `
+            .map(({ c, st, idx }) => {
+              const pool = st.stop_type === "DEVELOPER" && st.developer_id
+                ? getOrderedDeveloperSales(st.developer_id)
+                : allActiveSales;
+              return `
             <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:7px;">
-              <span style="font-size:0.82rem;">🔔 <strong>#${c.seq_number} ${escapeHtml(c.client_name)}</strong> (${escapeHtml(st.team || "")})</span>
+              <span style="font-size:0.82rem;">🔔 <strong>#${c.seq_number} ${escapeHtml(c.client_name)}</strong> (${escapeHtml(st.team || st.stop_name || "")})</span>
               <div style="display:flex; gap:6px;">
                 <select id="mgrManualSel_${c.id}_${idx}" class="form-control" style="width:auto; padding:5px 9px; font-size:0.82rem;">
-                  ${allActiveSales.map((r) => `<option value="${r.id}">${escapeHtml(r.name)} (${escapeHtml(r.code)}) — ${getRepLiveState(r.id) === "FREE" ? "متاح" : "مشغول"}</option>`).join("")}
+                  ${pool.map((r) => `<option value="${r.id}">${escapeHtml(r.name)} (${escapeHtml(r.code)}) — ${getRepLiveState(r.id) === "FREE" ? "متاح" : "مشغول"}</option>`).join("")}
                 </select>
                 <button type="button" class="btn btn-primary btn-sm" onclick="assignManualStopByManager('${c.id}', ${idx})">توجيه ✅</button>
               </div>
-            </div>`
-            )
+            </div>`;
+            })
             .join("");
         } else {
           manualBox.style.display = "none";
@@ -5057,13 +5369,43 @@
       }
 
       // ==================== 6. DEVELOPER COMPANY VIEW (MANAGER + STRENGTH ORDER + AUTO/MANUAL) ====================
+      function getDeveloperRoutingModeForExh(developerId, exhId = appState.activeExhibitionId) {
+        if (!developerId) return "AUTO";
+        if (exhId && exhId !== "ALL") {
+          const k = `${exhId}::${developerId}`;
+          if (appState.devRoutingMode?.[k]) return appState.devRoutingMode[k];
+        }
+        return appState.devRoutingMode?.[developerId] || "AUTO";
+      }
+
+      async function setDeveloperRoutingModeForId(developerId, mode) {
+        if (!developerId) return;
+        const exhId = appState.activeExhibitionId;
+        const key = exhId && exhId !== "ALL" ? `${exhId}::${developerId}` : developerId;
+        appState.devRoutingMode = { ...(appState.devRoutingMode || {}), [key]: mode };
+        renderActiveRoleView();
+        try {
+          await sb.from("system_settings").upsert({
+            key: "dev_routing_mode",
+            value: JSON.stringify(appState.devRoutingMode),
+          });
+        } catch (err) {
+          console.error(err);
+          alert("❌ تعذر حفظ وضع التوزيع");
+        }
+      }
+
       function getOrderedDeveloperSales(developerId) {
         const allDevReps = appState.accounts.filter(
           (a) => a.role === "dev_sales" && a.parent_admin_id === developerId
         );
         const activeDevReps = filterAccountsForActiveExh(allDevReps, true);
         const pool = activeDevReps.length > 0 ? activeDevReps : allDevReps;
-        const order = Array.isArray(appState.devSalesOrder?.[developerId])
+        const exhId = appState.activeExhibitionId;
+        const exhKey = exhId && exhId !== "ALL" ? `${exhId}::${developerId}` : developerId;
+        const order = Array.isArray(appState.devSalesOrder?.[exhKey])
+          ? appState.devSalesOrder[exhKey]
+          : Array.isArray(appState.devSalesOrder?.[developerId])
           ? appState.devSalesOrder[developerId]
           : [];
         const orderMap = new Map(order.map((id, idx) => [id, idx]));
@@ -5094,17 +5436,7 @@
       async function setDeveloperRoutingMode(mode) {
         const devCo = getDevCompanyForUser(appState.currentUser);
         if (!devCo) return;
-        appState.devRoutingMode = { ...(appState.devRoutingMode || {}), [devCo.id]: mode };
-        renderDeveloperCompanyView();
-        try {
-          await sb.from("system_settings").upsert({
-            key: "dev_routing_mode",
-            value: JSON.stringify(appState.devRoutingMode),
-          });
-        } catch (err) {
-          console.error(err);
-          alert("❌ تعذر حفظ وضع التوزيع");
-        }
+        await setDeveloperRoutingModeForId(devCo.id, mode);
       }
 
       async function moveDevSalesOrder(salesId, direction) {
@@ -5127,7 +5459,9 @@
           ids[targetIdx] = tmp;
         }
 
-        appState.devSalesOrder = { ...(appState.devSalesOrder || {}), [devCo.id]: ids };
+        const exhId = appState.activeExhibitionId;
+        const exhKey = exhId && exhId !== "ALL" ? `${exhId}::${devCo.id}` : devCo.id;
+        appState.devSalesOrder = { ...(appState.devSalesOrder || {}), [exhKey]: ids };
         const stEl = document.getElementById("devOrderSaveStatus");
         if (stEl) stEl.textContent = "⏳ جاري الحفظ...";
         renderDeveloperCompanyView();
@@ -5137,7 +5471,7 @@
             value: JSON.stringify(appState.devSalesOrder),
           });
           if (error) throw error;
-          if (stEl) stEl.textContent = "✅ تم حفظ ترتيب القوة تلقائياً";
+          if (stEl) stEl.textContent = "✅ تم حفظ ترتيب القوة لهذا المعرض تلقائياً";
         } catch (err) {
           console.error(err);
           if (stEl) stEl.textContent = "❌ تعذر الحفظ";
@@ -5175,7 +5509,7 @@
         const missDevBanner = document.getElementById("devCompMissingOffersBanner");
         if (missDevBanner) missDevBanner.style.display = devOffers.length === 0 ? "block" : "none";
 
-        const isManual = appState.devRoutingMode?.[u.id] === "MANUAL";
+        const isManual = getDeveloperRoutingModeForExh(u.id) === "MANUAL";
         const autoBtn = document.getElementById("devModeAutoBtn");
         const manBtn = document.getElementById("devModeManualBtn");
         const badgeEl = document.getElementById("devCompModeBadge");
@@ -5583,6 +5917,36 @@
           if (ms > 0) el.textContent = `${Math.max(1, Math.round((Date.now() - ms) / 60000))} د`;
         });
       }, 30000);
+
+      // Lightweight fallback safety sync every 12s (protects Ushers/Sales/Leaders if WebSocket drops; never wipes active form inputs)
+      let _syncInFlight = false;
+      function buildCheckinsSignature(list) {
+        return (list || [])
+          .map((c) => `${c.id}|${c.journey_status}|${c.assigned_usher_id || ""}|${(c.journey_logs || []).map((s) => `${s.stop_id}:${s.status}:${s.sales_id || ""}:${s.handoff_ack}`).join(",")}`)
+          .join(";");
+      }
+      setInterval(async () => {
+        if (_syncInFlight || !appState.currentUser || !appState.sessionToken) return;
+        if (document.visibilityState !== "visible") return;
+        if (appState.activeRole === "reception") return;
+        const editModal = document.getElementById("editCheckinModal");
+        if (editModal && editModal.style.display === "flex") return;
+        const tag = (document.activeElement?.tagName || "").toUpperCase();
+        if (["INPUT", "TEXTAREA", "SELECT"].includes(tag)) return;
+        _syncInFlight = true;
+        try {
+          const prevMap = new Map(appState.checkins.map((c) => [c.id, c]));
+          const oldSig = buildCheckinsSignature(appState.checkins);
+          await loadCheckinsForActiveExh();
+          const newSig = buildCheckinsSignature(appState.checkins);
+          if (newSig !== oldSig) {
+            appState.checkins.forEach((c) => checkAndTriggerSoundForCheckinChange(c, prevMap.get(c.id) || null));
+            renderActiveRoleView();
+          }
+        } catch (e) {} finally {
+          _syncInFlight = false;
+        }
+      }, 12000);
 
       window.addEventListener("online", async () => {
         if (!appState.currentUser) return;
